@@ -2,20 +2,27 @@ import { createBrowserRouter } from 'react-router-dom';
 import type { RouteObject } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import About from '../pages/About';
+import App from '../App';
 
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <Home />,
-  },
-  {
-    path: '/about',
-    element: <About />,
-  },
-  {
-    path: '*',
-    element: <h1>404 - Página no encontrada</h1>,
-  },
+    element: <App />,
+    children: [
+      {
+        index: true,
+        element: <Home />
+      },
+      {
+        path: 'about',
+        element: <About />
+      },
+      {
+        path: '*',
+        element: <div>404 Not Found</div>
+      },
+    ]
+  }
 ];
 
 export const router = createBrowserRouter(routes);

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;background:#e9edf1;font-family:'Inter',-apple-system,system-ui,sans-serif}
+    a{color:#27374D}
+    a:hover{color:#526D82}
+    ::-webkit-scrollbar{width:0;height:0}
+  </style>
+</helmet>
+<div style="display:flex;justify-content:center;align-items:center;min-height:100vh;padding:40px 20px;box-sizing:border-box">
+  <div style="width:402px;height:874px;border-radius:48px;background:#000;padding:14px;box-sizing:border-box;box-shadow:0 40px 80px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.12);position:relative">
+    <div style="position:absolute;top:25px;left:50%;transform:translateX(-50%);width:126px;height:37px;border-radius:24px;background:#000;z-index:50"></div>
+    <div style="height:100%;border-radius:36px;overflow:hidden;display:flex;flex-direction:column;background:#DDE6ED;font-family:'Inter',-apple-system,system-ui,sans-serif;position:relative">
+
+      <!-- Header -->
+      <div style="flex:none;padding:56px 20px 16px;background:#27374D;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <sc-if value="{{ isFormScreen }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ cancelForm }}" style="all:unset;cursor:pointer;color:#DDE6ED;font-size:15px;font-weight:500;display:flex;align-items:center;gap:4px">
+              <svg width="8" height="14" viewBox="0 0 8 14" style="flex-shrink:0"><path d="M7 1L1 7l6 6" stroke="#9DB2BF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Atrás
+            </button>
+          </sc-if>
+          <sc-if value="{{ isListScreen }}" hint-placeholder-val="{{ true }}">
+            <div style="width:22px;height:22px;border-radius:6px;background:#526D82;display:flex;align-items:center;justify-content:center">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" stroke="#DDE6ED" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="8" r="4" stroke="#DDE6ED" stroke-width="2"/></svg>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isListScreen }}" hint-placeholder-val="{{ true }}">
+            <div style="width:22px"></div>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#9DB2BF">{{ eyebrow }}</div>
+          <div style="font-size:26px;font-weight:700;color:#DDE6ED;letter-spacing:-0.3px">{{ headerTitle }}</div>
+        </div>
+      </div>
+
+      <!-- LIST SCREEN -->
+      <sc-if value="{{ isListScreen }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;overflow:auto;padding:16px 16px 100px">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ users }}" as="u" hint-placeholder-count="4">
+              <button onClick="{{ u.select }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #ffffff;border-radius:14px;padding:12px 14px;box-shadow:0 1px 2px rgba(39,55,77,0.06)">
+                <div style="width:42px;height:42px;border-radius:11px;background:{{ u.avatarBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <span style="color:#fff;font-size:15px;font-weight:600">{{ u.initials }}</span>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;text-align:left">
+                  <div style="font-size:15px;font-weight:600;color:#27374D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.fullName }}</div>
+                  <div style="font-size:13px;color:#526D82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.email }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+                  <span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;background:{{ u.roleTint }};color:{{ u.roleColor }}">{{ u.role }}</span>
+                  <div style="display:flex;align-items:center;gap:5px">
+                    <span style="width:6px;height:6px;border-radius:50%;background:{{ u.statusColor }}"></span>
+                    <span style="font-size:11px;color:#526D82">{{ u.statusLabel }}</span>
+                  </div>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="position:absolute;left:16px;right:16px;bottom:30px">
+          <button onClick="{{ openCreate }}" style="all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:14px;background:#27374D;box-shadow:0 6px 16px rgba(39,55,77,0.35)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#DDE6ED" stroke-width="2.4" stroke-linecap="round"/></svg>
+            <span style="color:#DDE6ED;font-size:15px;font-weight:600">Nuevo usuario</span>
+          </button>
+        </div>
+      </sc-if>
+
+      <!-- FORM SCREEN (create / edit) -->
+      <sc-if value="{{ isFormScreen }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow:auto;padding:20px 20px 24px">
+          <div style="display:flex;flex-direction:column;gap:16px">
+
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:12px;font-weight:600;color:#526D82;text-transform:uppercase;letter-spacing:.05em">Usuario</label>
+              <input value="{{ form.username }}" onChange="{{ setUsername }}" placeholder="p.ej. jrivas" style="box-sizing:border-box;width:100%;padding:13px 14px;border-radius:12px;border:1px solid #9DB2BF;background:#fff;font-size:15px;color:#27374D;font-family:inherit"/>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:12px;font-weight:600;color:#526D82;text-transform:uppercase;letter-spacing:.05em">Nombre completo</label>
+              <input value="{{ form.fullName }}" onChange="{{ setFullName }}" placeholder="Nombre y apellido" style="box-sizing:border-box;width:100%;padding:13px 14px;border-radius:12px;border:1px solid #9DB2BF;background:#fff;font-size:15px;color:#27374D;font-family:inherit"/>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:12px;font-weight:600;color:#526D82;text-transform:uppercase;letter-spacing:.05em">Correo</label>
+              <input value="{{ form.email }}" onChange="{{ setEmail }}" placeholder="usuario@empresa.com" style="box-sizing:border-box;width:100%;padding:13px 14px;border-radius:12px;border:1px solid #9DB2BF;background:#fff;font-size:15px;color:#27374D;font-family:inherit"/>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:12px;font-weight:600;color:#526D82;text-transform:uppercase;letter-spacing:.05em">Rol</label>
+              <div style="display:flex;gap:8px">
+                <sc-for list="{{ roleOptions }}" as="opt" hint-placeholder-count="3">
+                  <button onClick="{{ opt.select }}" style="all:unset;cursor:pointer;flex:1;text-align:center;padding:10px 6px;border-radius:10px;font-size:13px;font-weight:600;border:1.5px solid {{ opt.borderColor }};background:{{ opt.bg }};color:{{ opt.color }}">{{ opt.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:12px;font-weight:600;color:#526D82;text-transform:uppercase;letter-spacing:.05em">Estado</label>
+              <div style="display:flex;gap:8px">
+                <button onClick="{{ setActive }}" style="all:unset;cursor:pointer;flex:1;text-align:center;padding:10px 6px;border-radius:10px;font-size:13px;font-weight:600;border:1.5px solid {{ activeBorder }};background:{{ activeBg }};color:{{ activeColor }}">Activo</button>
+                <button onClick="{{ setInactive }}" style="all:unset;cursor:pointer;flex:1;text-align:center;padding:10px 6px;border-radius:10px;font-size:13px;font-weight:600;border:1.5px solid {{ inactiveBorder }};background:{{ inactiveBg }};color:{{ inactiveColor }}">Inactivo</button>
+              </div>
+            </div>
+
+            <sc-if value="{{ formError }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px;color:#27374D;background:#fff;border:1px solid #9DB2BF;padding:10px 12px;border-radius:10px">{{ formError }}</div>
+            </sc-if>
+
+            <div style="display:flex;gap:10px;margin-top:6px">
+              <button onClick="{{ cancelForm }}" style="all:unset;cursor:pointer;flex:1;text-align:center;padding:14px;border-radius:12px;border:1.5px solid #526D82;color:#526D82;font-size:15px;font-weight:600">Cancelar</button>
+              <button onClick="{{ saveUser }}" style="all:unset;cursor:pointer;flex:1;text-align:center;padding:14px;border-radius:12px;background:#27374D;color:#DDE6ED;font-size:15px;font-weight:600">{{ saveLabel }}</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ACTION SHEET -->
+      <sc-if value="{{ showSheet }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(39,55,77,0.45);z-index:40"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;z-index:41;background:#DDE6ED;border-radius:22px 22px 0 0;padding:20px 18px 34px;box-shadow:0 -8px 24px rgba(39,55,77,0.25)">
+          <div style="width:36px;height:4px;border-radius:2px;background:#9DB2BF;margin:0 auto 16px"></div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+            <div style="width:44px;height:44px;border-radius:12px;background:{{ selected.avatarBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="color:#fff;font-size:16px;font-weight:600">{{ selected.initials }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:15px;font-weight:600;color:#27374D">{{ selected.fullName }}</div>
+              <div style="font-size:13px;color:#526D82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ selected.email }}</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button onClick="{{ openEditSelected }}" style="all:unset;cursor:pointer;box-sizing:border-box;width:100%;padding:14px;border-radius:12px;background:#27374D;color:#DDE6ED;font-size:15px;font-weight:600;text-align:center">Editar usuario</button>
+            <button onClick="{{ requestDelete }}" style="all:unset;cursor:pointer;box-sizing:border-box;width:100%;padding:14px;border-radius:12px;border:1.5px solid #526D82;color:#526D82;font-size:15px;font-weight:600;text-align:center">Eliminar usuario</button>
+            <button onClick="{{ closeSheet }}" style="all:unset;cursor:pointer;box-sizing:border-box;width:100%;padding:14px;font-size:14px;color:#526D82;text-align:center">Cancelar</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- DELETE CONFIRM -->
+      <sc-if value="{{ showDeleteConfirm }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:rgba(39,55,77,0.5);z-index:50;display:flex;align-items:center;justify-content:center;padding:28px">
+          <div style="background:#fff;border-radius:16px;padding:22px;width:100%;box-shadow:0 12px 30px rgba(39,55,77,0.3)">
+            <div style="font-size:16px;font-weight:700;color:#27374D;margin-bottom:6px">Eliminar usuario</div>
+            <div style="font-size:14px;color:#526D82;line-height:1.5;margin-bottom:20px">¿Confirmas que deseas eliminar a <strong style="color:#27374D">{{ selected.fullName }}</strong>? Esta acción no se puede deshacer.</div>
+            <div style="display:flex;gap:10px">
+              <button onClick="{{ cancelDelete }}" style="all:unset;cursor:pointer;flex:1;text-align:center;padding:12px;border-radius:10px;border:1.5px solid #9DB2BF;color:#526D82;font-size:14px;font-weight:600">Cancelar</button>
+              <button onClick="{{ confirmDelete }}" style="all:unset;cursor:pointer;flex:1;text-align:center;padding:12px;border-radius:10px;background:#27374D;color:#DDE6ED;font-size:14px;font-weight:600">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+    <div style="position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;pointer-events:none">
+      <div style="width:139px;height:5px;border-radius:100px;background:rgba(255,255,255,0.4)"></div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;appName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Usuarios&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;defaultRole&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Operador&quot;,&quot;options&quot;:[&quot;Administrador&quot;,&quot;Operador&quot;,&quot;Lector&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+const ROLES = ['Administrador', 'Operador', 'Lector'];
+
+function initials(name) {
+  return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+}
+
+function roleStyle(role) {
+  if (role === 'Administrador') return { bg: '#27374D', tint: '#DCE2E8', color: '#27374D' };
+  if (role === 'Operador') return { bg: '#526D82', tint: '#E4E9EC', color: '#3d5164' };
+  return { bg: '#9DB2BF', tint: '#EEF2F4', color: '#526D82' };
+}
+
+class Component extends DCLogic {
+  state = {
+    screen: 'list', // list | create | edit
+    users: [
+      { id: 1, username: 'jrivas', fullName: 'Julia Rivas', email: 'julia.rivas@empresa.com', role: 'Administrador', status: 'active' },
+      { id: 2, username: 'mcastro', fullName: 'Mario Castro', email: 'mario.castro@empresa.com', role: 'Operador', status: 'active' },
+      { id: 3, username: 'lgomez', fullName: 'Laura Gómez', email: 'laura.gomez@empresa.com', role: 'Lector', status: 'inactive' },
+      { id: 4, username: 'dperez', fullName: 'Diego Pérez', email: 'diego.perez@empresa.com', role: 'Operador', status: 'active' },
+    ],
+    nextId: 5,
+    selectedId: null,
+    showSheet: false,
+    showDeleteConfirm: false,
+    form: { username: '', fullName: '', email: '', role: this.props.defaultRole ?? 'Operador', status: 'active' },
+    formError: '',
+  };
+
+  openCreate = () => this.setState({ screen: 'create', form: { username: '', fullName: '', email: '', role: this.props.defaultRole ?? 'Operador', status: 'active' }, formError: '' });
+
+  selectUser = (id) => this.setState({ selectedId: id, showSheet: true });
+  closeSheet = () => this.setState({ showSheet: false });
+
+  openEditSelected = () => {
+    const u = this.state.users.find(x => x.id === this.state.selectedId);
+    if (!u) return;
+    this.setState({ screen: 'edit', showSheet: false, form: { username: u.username, fullName: u.fullName, email: u.email, role: u.role, status: u.status }, formError: '' });
+  };
+
+  cancelForm = () => this.setState({ screen: 'list', formError: '' });
+
+  setField = (key) => (e) => this.setState(s => ({ form: { ...s.form, [key]: e.target.value } }));
+  setRole = (role) => () => this.setState(s => ({ form: { ...s.form, role } }));
+  setStatus = (status) => () => this.setState(s => ({ form: { ...s.form, status } }));
+
+  saveUser = () => {
+    const { form, screen, selectedId, users, nextId } = this.state;
+    if (!form.fullName.trim() || !form.username.trim() || !form.email.trim()) {
+      this.setState({ formError: 'Completa usuario, nombre y correo.' });
+      return;
+    }
+    if (screen === 'edit') {
+      this.setState({
+        users: users.map(u => u.id === selectedId ? { ...u, ...form } : u),
+        screen: 'list', formError: '',
+      });
+    } else {
+      this.setState({
+        users: [...users, { id: nextId, ...form }],
+        nextId: nextId + 1, screen: 'list', formError: '',
+      });
+    }
+  };
+
+  requestDelete = () => this.setState({ showSheet: false, showDeleteConfirm: true });
+  cancelDelete = () => this.setState({ showDeleteConfirm: false });
+  confirmDelete = () => {
+    this.setState(s => ({
+      users: s.users.filter(u => u.id !== s.selectedId),
+      showDeleteConfirm: false, selectedId: null,
+    }));
+  };
+
+  renderVals() {
+    const { screen, users, selectedId, showSheet, showDeleteConfirm, form, formError } = this.state;
+    const isListScreen = screen === 'list';
+    const isFormScreen = screen === 'create' || screen === 'edit';
+
+    const decorate = (u) => {
+      const rs = roleStyle(u.role);
+      return {
+        ...u,
+        initials: initials(u.fullName),
+        avatarBg: rs.bg,
+        roleTint: rs.tint,
+        roleColor: rs.color,
+        statusColor: u.status === 'active' ? '#27374D' : '#9DB2BF',
+        statusLabel: u.status === 'active' ? 'Activo' : 'Inactivo',
+        select: () => this.selectUser(u.id),
+      };
+    };
+
+    const selectedRaw = users.find(u => u.id === selectedId);
+    const selected = selectedRaw ? decorate(selectedRaw) : { fullName: '', email: '', initials: '', avatarBg: '#526D82' };
+
+    const roleOptions = ROLES.map(r => {
+      const active = form.role === r;
+      return {
+        label: r,
+        select: this.setRole(r),
+        bg: active ? '#27374D' : '#fff',
+        color: active ? '#DDE6ED' : '#526D82',
+        borderColor: active ? '#27374D' : '#9DB2BF',
+      };
+    });
+
+    return {
+      isListScreen, isFormScreen,
+      eyebrow: isListScreen ? 'Sysadmin' : (screen === 'edit' ? 'Editar' : 'Nuevo'),
+      headerTitle: isListScreen ? (this.props.appName ?? 'Usuarios') : (screen === 'edit' ? 'Editar usuario' : 'Nuevo usuario'),
+      users: users.map(decorate),
+      openCreate: this.openCreate,
+      cancelForm: this.cancelForm,
+      saveUser: this.saveUser,
+      saveLabel: screen === 'edit' ? 'Guardar cambios' : 'Crear usuario',
+      form,
+      formError,
+      setUsername: this.setField('username'),
+      setFullName: this.setField('fullName'),
+      setEmail: this.setField('email'),
+      roleOptions,
+      setActive: this.setStatus('active'),
+      setInactive: this.setStatus('inactive'),
+      activeBorder: form.status === 'active' ? '#27374D' : '#9DB2BF',
+      activeBg: form.status === 'active' ? '#27374D' : '#fff',
+      activeColor: form.status === 'active' ? '#DDE6ED' : '#526D82',
+      inactiveBorder: form.status === 'inactive' ? '#27374D' : '#9DB2BF',
+      inactiveBg: form.status === 'inactive' ? '#27374D' : '#fff',
+      inactiveColor: form.status === 'inactive' ? '#DDE6ED' : '#526D82',
+      showSheet, showDeleteConfirm, selected,
+      openEditSelected: this.openEditSelected,
+      requestDelete: this.requestDelete,
+      closeSheet: this.closeSheet,
+      cancelDelete: this.cancelDelete,
+      confirmDelete: this.confirmDelete,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

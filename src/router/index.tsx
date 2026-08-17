@@ -14,6 +14,26 @@ const routes: RouteObject[] = [
         element: <Home />
       },
       {
+        path: 'users',
+        element: <Home />
+      },
+      {
+        path: 'users/new',
+        element: <Home />
+      },
+      {
+        path: 'users/:id',
+        element: <Home />
+      },
+      {
+        path: 'users/:id/edit',
+        element: <Home />
+      },
+      {
+        path: 'users/:id/delete',
+        element: <Home />
+      },
+      {
         path: 'about',
         element: <About />
       },

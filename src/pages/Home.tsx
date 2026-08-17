@@ -1,7 +1,6 @@
+import { UserManagement } from '../components/users/UserManagement';
 
 export function Home() {
-  return (
-    <div>Home</div>
-  )
+  return <UserManagement />;
 }
 

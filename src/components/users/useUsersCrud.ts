@@ -39,6 +39,11 @@ export function useUsersCrud() {
   const [users, setUsers] = useState<User[]>([]);
   const [form, setForm] = useState<UserFormState>(emptyForm());
   const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const pathParts = location.pathname.split('/').filter(Boolean);
   const selectedId = pathParts[0] === 'users' && pathParts[1] && !Number.isNaN(Number(pathParts[1]))
@@ -62,6 +67,9 @@ export function useUsersCrud() {
     let isMounted = true;
 
     const loadUsers = async () => {
+      setIsLoadingUsers(true);
+      setLoadError('');
+
       try {
         const response = await handleGetAllUser();
         if (!isMounted) return;
@@ -69,6 +77,11 @@ export function useUsersCrud() {
       } catch {
         if (!isMounted) return;
         setUsers([]);
+        setLoadError('No se pudo cargar la lista de usuarios. Intenta nuevamente.');
+      } finally {
+        if (isMounted) {
+          setIsLoadingUsers(false);
+        }
       }
     };
 
@@ -85,6 +98,9 @@ export function useUsersCrud() {
     let isMounted = true;
 
     const loadOneUser = async () => {
+      setIsLoadingUser(true);
+      setError('');
+
       try {
         const userFromApi = await handleGetByIdUser(String(selectedId));
         if (!isMounted) return;
@@ -99,6 +115,10 @@ export function useUsersCrud() {
       } catch {
         if (!isMounted) return;
         setError('No se pudo cargar el usuario.');
+      } finally {
+        if (isMounted) {
+          setIsLoadingUser(false);
+        }
       }
     };
 
@@ -153,21 +173,24 @@ export function useUsersCrud() {
       return;
     }
 
+    setIsSaving(true);
+    setError('');
+
     try {
       if (screen === 'edit' && selectedId !== null) {
         const updated = await handleUpdateUser(String(selectedId), toRequest(form));
         setUsers((current) => current.map((user) => (user.id === selectedId ? toUser(updated) : user)));
-        setError('');
         navigate('/users');
         return;
       }
 
       const created = await handleAddUser(toRequest(form));
       setUsers((current) => [...current, toUser(created)]);
-      setError('');
       navigate('/users');
     } catch {
       setError('No se pudo guardar el usuario.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -191,6 +214,9 @@ export function useUsersCrud() {
       return;
     }
 
+    setIsDeleting(true);
+    setError('');
+
     try {
       await handleDeleteUser(String(selectedId));
       setUsers((current) => current.filter((user) => user.id !== selectedId));
@@ -198,6 +224,8 @@ export function useUsersCrud() {
     } catch {
       setError('No se pudo eliminar el usuario.');
       navigate('/users');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -205,6 +233,11 @@ export function useUsersCrud() {
     users,
     form,
     formError: error,
+    loadError,
+    isLoadingUsers,
+    isLoadingUser,
+    isSaving,
+    isDeleting,
     screen,
     selected: selectedUser,
     showSheet,

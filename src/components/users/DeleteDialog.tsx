@@ -1,10 +1,11 @@
 interface DeleteDialogProps {
   selectedName: string;
+  isDeleting?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
-export function DeleteDialog({ selectedName, onCancel, onConfirm }: DeleteDialogProps) {
+export function DeleteDialog({ selectedName, isDeleting = false, onCancel, onConfirm }: DeleteDialogProps) {
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#27374D]/50 p-7">
       <div className="w-full rounded-2xl bg-white p-[22px] shadow-[0_12px_30px_rgba(39,55,77,0.3)]">
@@ -16,16 +17,18 @@ export function DeleteDialog({ selectedName, onCancel, onConfirm }: DeleteDialog
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 rounded-[10px] border border-[#9DB2BF] px-3 py-3 text-[14px] font-semibold text-[#526D82]"
+            disabled={isDeleting}
+            className="flex-1 rounded-[10px] border border-[#9DB2BF] px-3 py-3 text-[14px] font-semibold text-[#526D82] disabled:cursor-not-allowed disabled:opacity-60"
           >
             Cancelar
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="flex-1 rounded-[10px] bg-[#27374D] px-3 py-3 text-[14px] font-semibold text-[#DDE6ED]"
+            disabled={isDeleting}
+            className="flex-1 rounded-[10px] bg-[#27374D] px-3 py-3 text-[14px] font-semibold text-[#DDE6ED] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Eliminar
+            {isDeleting ? 'Eliminando...' : 'Eliminar'}
           </button>
         </div>
       </div>

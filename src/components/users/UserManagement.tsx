@@ -9,6 +9,11 @@ export function UserManagement() {
     users,
     form,
     formError,
+    loadError,
+    isLoadingUsers,
+    isLoadingUser,
+    isSaving,
+    isDeleting,
     screen,
     selected,
     showSheet,
@@ -65,12 +70,22 @@ export function UserManagement() {
           </div>
         </div>
 
-        {isListScreen ? <List users={users} onSelect={goToUser} onCreate={openCreate} /> : null}
+        {isListScreen ? (
+          <List
+            users={users}
+            isLoading={isLoadingUsers}
+            error={loadError}
+            onSelect={goToUser}
+            onCreate={openCreate}
+          />
+        ) : null}
 
         {isFormScreen ? (
           <Form
             form={form}
             formError={formError}
+            isLoading={isLoadingUser}
+            isSaving={isSaving}
             onFullNameChange={setField('fullName')}
             onEmailChange={setField('email')}
             onPhoneChange={setField('phone')}
@@ -91,7 +106,12 @@ export function UserManagement() {
         ) : null}
 
         {showDeleteConfirm && selected ? (
-          <DeleteDialog selectedName={selected.fullName} onCancel={cancelDelete} onConfirm={confirmDelete} />
+          <DeleteDialog
+            selectedName={selected.fullName}
+            isDeleting={isDeleting}
+            onCancel={cancelDelete}
+            onConfirm={confirmDelete}
+          />
         ) : null}
       </div>
     </div>

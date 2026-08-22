@@ -3,19 +3,21 @@ import type { FormErrors } from './validation';
 
 interface FormProps {
   form: {
-    fullName: string;
-    email: string;
-    phone: string;
-    password: string;
+    name: string;
+    specie: string;
+    breed: string;
+    birthDate: string;
+    clientId: string;
   };
   formError: string;
   fieldErrors?: FormErrors;
   isLoading?: boolean;
   isSaving?: boolean;
-  onFullNameChange: (value: string) => void;
-  onEmailChange: (value: string) => void;
-  onPhoneChange: (value: string) => void;
-  onPasswordChange: (value: string) => void;
+  onNameChange: (value: string) => void;
+  onSpecieChange: (value: string) => void;
+  onBreedChange: (value: string) => void;
+  onBirthDateChange: (value: string) => void;
+  onClientIdChange: (value: string) => void;
   onCancel: () => void;
   onSave: () => void;
   saveLabel: string;
@@ -27,10 +29,11 @@ export function Form({
   fieldErrors = {},
   isLoading = false,
   isSaving = false,
-  onFullNameChange,
-  onEmailChange,
-  onPhoneChange,
-  onPasswordChange,
+  onNameChange,
+  onSpecieChange,
+  onBreedChange,
+  onBirthDateChange,
+  onClientIdChange,
   onCancel,
   onSave,
   saveLabel,
@@ -41,48 +44,57 @@ export function Form({
         {isLoading ? (
           <div className="flex items-center justify-center rounded-2xl bg-white px-4 py-6 text-[14px] font-medium text-[#27374D] shadow-sm">
             <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-[#9DB2BF] border-t-[#27374D]" />
-            Cargando usuario...
+            Cargando mascota...
           </div>
         ) : (
           <>
             <FormField
-              label="Nombre completo"
-              value={form.fullName}
-              onChange={onFullNameChange}
-              error={fieldErrors.fullName}
-              placeholder="Nombre y apellido"
-              maxLength={100}
+              label="Nombre"
+              value={form.name}
+              onChange={onNameChange}
+              error={fieldErrors.name}
+              placeholder="Nombre de la mascota"
+              maxLength={50}
               disabled={isSaving}
             />
 
             <FormField
-              label="Correo"
-              type="email"
-              value={form.email}
-              onChange={onEmailChange}
-              error={fieldErrors.email}
-              placeholder="usuario@empresa.com"
+              label="Especie"
+              value={form.specie}
+              onChange={onSpecieChange}
+              error={fieldErrors.specie}
+              placeholder="Perro, gato, ..."
+              maxLength={50}
               disabled={isSaving}
             />
 
             <FormField
-              label="Teléfono"
-              type="tel"
-              value={form.phone}
-              onChange={onPhoneChange}
-              error={fieldErrors.phone}
-              placeholder="+54 9 11 1234 5678"
+              label="Raza"
+              value={form.breed}
+              onChange={onBreedChange}
+              error={fieldErrors.breed}
+              placeholder="Labrador, siamés, ..."
+              maxLength={50}
               disabled={isSaving}
             />
 
             <FormField
-              label="Contraseña"
-              type="password"
-              value={form.password}
-              onChange={onPasswordChange}
-              error={fieldErrors.password}
-              placeholder="Mínimo 6 caracteres"
-              maxLength={100}
+              label="Fecha de nacimiento"
+              type="date"
+              value={form.birthDate}
+              onChange={onBirthDateChange}
+              error={fieldErrors.birthDate}
+              disabled={isSaving}
+            />
+
+            <FormField
+              label="ID del dueño"
+              type="number"
+              min={1}
+              value={form.clientId}
+              onChange={onClientIdChange}
+              error={fieldErrors.clientId}
+              placeholder="1"
               disabled={isSaving}
             />
           </>

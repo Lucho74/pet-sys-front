@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
   handleAddUser,
   handleDeleteUser,
@@ -9,6 +10,8 @@ import {
 } from '../../services/users/userService';
 import type { IUserRequest, IUserResponse } from '../../services/users/IUser';
 import type { User, UserFormState } from './types';
+import { validateUserForm } from './validation';
+import type { FormErrors } from './validation';
 
 const emptyForm = (): UserFormState => ({
   fullName: '',
@@ -39,6 +42,7 @@ export function useUsersCrud() {
   const [users, setUsers] = useState<User[]>([]);
   const [form, setForm] = useState<UserFormState>(emptyForm());
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
   const [loadError, setLoadError] = useState('');
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
@@ -78,6 +82,7 @@ export function useUsersCrud() {
         if (!isMounted) return;
         setUsers([]);
         setLoadError('No se pudo cargar la lista de usuarios. Intenta nuevamente.');
+        toast.error('No se pudo cargar la lista de usuarios.');
       } finally {
         if (isMounted) {
           setIsLoadingUsers(false);
@@ -115,6 +120,7 @@ export function useUsersCrud() {
       } catch {
         if (!isMounted) return;
         setError('No se pudo cargar el usuario.');
+        toast.error('No se pudo cargar el usuario.');
       } finally {
         if (isMounted) {
           setIsLoadingUser(false);
@@ -134,11 +140,19 @@ export function useUsersCrud() {
       ...current,
       [field]: value,
     }));
+
+    setFieldErrors((current) => {
+      if (!(field in current)) return current;
+      const rest = { ...current };
+      delete rest[field];
+      return rest;
+    });
   };
 
   const resetForm = () => {
     setForm(emptyForm());
     setError('');
+    setFieldErrors({});
   };
 
   const openCreate = () => {
@@ -156,11 +170,13 @@ export function useUsersCrud() {
       password: selectedUser.password,
     });
     setError('');
+    setFieldErrors({});
     navigate(`/users/${selectedUser.id}/edit`);
   };
 
   const cancelForm = () => {
     setError('');
+    setFieldErrors({});
     navigate('/users');
   };
 
@@ -168,8 +184,12 @@ export function useUsersCrud() {
   const goToUser = (userId: number) => navigate(`/users/${userId}`);
 
   const saveUser = async () => {
-    if (!form.fullName.trim() || !form.email.trim() || !form.phone.trim() || !form.password.trim()) {
-      setError('Completa nombre, correo, teléfono y contraseña.');
+    const errors = validateUserForm(form);
+    setFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setError('');
+      toast.error('Revisa los campos marcados en rojo.');
       return;
     }
 
@@ -180,15 +200,18 @@ export function useUsersCrud() {
       if (screen === 'edit' && selectedId !== null) {
         const updated = await handleUpdateUser(String(selectedId), toRequest(form));
         setUsers((current) => current.map((user) => (user.id === selectedId ? toUser(updated) : user)));
+        toast.success('Usuario actualizado correctamente.');
         navigate('/users');
         return;
       }
 
       const created = await handleAddUser(toRequest(form));
       setUsers((current) => [...current, toUser(created)]);
+      toast.success('Usuario creado correctamente.');
       navigate('/users');
     } catch {
       setError('No se pudo guardar el usuario.');
+      toast.error('No se pudo guardar el usuario.');
     } finally {
       setIsSaving(false);
     }
@@ -220,9 +243,11 @@ export function useUsersCrud() {
     try {
       await handleDeleteUser(String(selectedId));
       setUsers((current) => current.filter((user) => user.id !== selectedId));
+      toast.success('Usuario eliminado correctamente.');
       navigate('/users');
     } catch {
       setError('No se pudo eliminar el usuario.');
+      toast.error('No se pudo eliminar el usuario.');
       navigate('/users');
     } finally {
       setIsDeleting(false);
@@ -233,6 +258,7 @@ export function useUsersCrud() {
     users,
     form,
     formError: error,
+    fieldErrors,
     loadError,
     isLoadingUsers,
     isLoadingUser,

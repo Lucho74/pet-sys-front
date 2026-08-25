@@ -4,14 +4,6 @@ export interface Pet {
   specie: string;
   breed: string;
   birthDate: string;
-  clientId: number;
-}
-
-export interface PetOwner {
-  id: number;
-  fullName: string;
-  email: string;
-  dni: string;
 }
 
 export interface PetFormState {
@@ -20,4 +12,9 @@ export interface PetFormState {
   breed: string;
   birthDate: string;
   clientId: string;
+}
+
+export interface PetsOutletContext {
+  pets: Pet[];
+  removePet: (petId: number) => void;
 }

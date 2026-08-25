@@ -1,30 +1,19 @@
 import { FormField } from '../common/FormField';
 import { SelectField } from '../common/SelectField';
 import { ROLE_LABELS } from './types';
+import type { UserFormState } from './types';
 import type { FormErrors } from './validation';
 
 const ROLE_OPTIONS = Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }));
 
 interface FormProps {
-  form: {
-    fullName: string;
-    email: string;
-    phone: string;
-    password: string;
-    roleName: string;
-    dni: string;
-  };
+  form: UserFormState;
   formError: string;
-  fieldErrors?: FormErrors;
+  fieldErrors: FormErrors;
   canChangeRole?: boolean;
   isLoading?: boolean;
   isSaving?: boolean;
-  onFullNameChange: (value: string) => void;
-  onEmailChange: (value: string) => void;
-  onPhoneChange: (value: string) => void;
-  onPasswordChange: (value: string) => void;
-  onRoleNameChange: (value: string) => void;
-  onDniChange: (value: string) => void;
+  onChange: (field: keyof UserFormState, value: string) => void;
   onCancel: () => void;
   onSave: () => void;
   saveLabel: string;
@@ -33,16 +22,11 @@ interface FormProps {
 export function Form({
   form,
   formError,
-  fieldErrors = {},
+  fieldErrors,
   canChangeRole = true,
   isLoading = false,
   isSaving = false,
-  onFullNameChange,
-  onEmailChange,
-  onPhoneChange,
-  onPasswordChange,
-  onRoleNameChange,
-  onDniChange,
+  onChange,
   onCancel,
   onSave,
   saveLabel,
@@ -60,7 +44,7 @@ export function Form({
             <SelectField
               label="Rol"
               value={form.roleName}
-              onChange={onRoleNameChange}
+              onChange={(value) => onChange('roleName', value)}
               options={ROLE_OPTIONS}
               error={fieldErrors.roleName}
               hint={canChangeRole ? undefined : 'El rol no se puede cambiar después de crear el usuario.'}
@@ -70,7 +54,7 @@ export function Form({
             <FormField
               label="Nombre completo"
               value={form.fullName}
-              onChange={onFullNameChange}
+              onChange={(value) => onChange('fullName', value)}
               error={fieldErrors.fullName}
               placeholder="Nombre y apellido"
               maxLength={100}
@@ -81,7 +65,7 @@ export function Form({
               <FormField
                 label="DNI"
                 value={form.dni}
-                onChange={onDniChange}
+                onChange={(value) => onChange('dni', value)}
                 error={fieldErrors.dni}
                 placeholder="30123456"
                 maxLength={20}
@@ -93,7 +77,7 @@ export function Form({
               label="Correo"
               type="email"
               value={form.email}
-              onChange={onEmailChange}
+              onChange={(value) => onChange('email', value)}
               error={fieldErrors.email}
               placeholder="usuario@empresa.com"
               disabled={isSaving}
@@ -103,7 +87,7 @@ export function Form({
               label="Teléfono"
               type="tel"
               value={form.phone}
-              onChange={onPhoneChange}
+              onChange={(value) => onChange('phone', value)}
               error={fieldErrors.phone}
               placeholder="+54 9 11 1234 5678"
               disabled={isSaving}
@@ -113,7 +97,7 @@ export function Form({
               label="Contraseña"
               type="password"
               value={form.password}
-              onChange={onPasswordChange}
+              onChange={(value) => onChange('password', value)}
               error={fieldErrors.password}
               placeholder="Mínimo 6 caracteres"
               maxLength={100}

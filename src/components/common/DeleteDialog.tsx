@@ -1,17 +1,18 @@
 interface DeleteDialogProps {
-  selectedName: string;
+  title: string;
+  name: string;
   isDeleting?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
-export function DeleteDialog({ selectedName, isDeleting = false, onCancel, onConfirm }: DeleteDialogProps) {
+export function DeleteDialog({ title, name, isDeleting = false, onCancel, onConfirm }: DeleteDialogProps) {
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#27374D]/50 p-7">
       <div className="w-full rounded-2xl bg-white p-[22px] shadow-[0_12px_30px_rgba(39,55,77,0.3)]">
-        <div className="mb-1.5 text-[16px] font-bold text-[#27374D]">Eliminar mascota</div>
+        <div className="mb-1.5 text-[16px] font-bold text-[#27374D]">{title}</div>
         <div className="mb-5 text-[14px] leading-6 text-[#526D82]">
-          ¿Confirmas que deseas eliminar a <strong className="text-[#27374D]">{selectedName}</strong>? Esta acción no se puede deshacer.
+          ¿Confirmas que deseas eliminar a <strong className="text-[#27374D]">{name}</strong>? Esta acción no se puede deshacer.
         </div>
         <div className="flex gap-2.5">
           <button

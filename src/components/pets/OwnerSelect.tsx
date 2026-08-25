@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, X } from 'lucide-react';
-import type { PetOwner } from './types';
+import type { IUserResponse } from '../../services/users/IUser';
 
 const MIN_SEARCH_LENGTH = 2;
 const MAX_RESULTS = 8;
@@ -8,7 +8,7 @@ const MAX_DNI_LENGTH = 20;
 
 interface OwnerSelectProps {
   label: string;
-  owners: PetOwner[];
+  owners: IUserResponse[];
   value: string;
   onChange: (ownerId: string) => void;
   isLoadingOwners?: boolean;
@@ -33,7 +33,8 @@ export function OwnerSelect({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const selected = owners.find((owner) => String(owner.id) === value) ?? null;
-  const selectedDni = selected ? selected.dni : '';
+  const selectedDni = selected?.dni ?? '';
+  const selectedName = selected?.fullName ?? 'Sin nombre';
   const displayValue = isOpen ? query : selectedDni;
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export function OwnerSelect({
   const hasSearch = search.length >= MIN_SEARCH_LENGTH;
 
   const matches = hasSearch
-    ? owners.filter((owner) => owner.dni.includes(search))
+    ? owners.filter((owner) => owner.dni?.includes(search))
     : [];
 
   const visibleOwners = matches.slice(0, MAX_RESULTS);
@@ -69,7 +70,7 @@ export function OwnerSelect({
     }
   };
 
-  const handleSelect = (owner: PetOwner) => {
+  const handleSelect = (owner: IUserResponse) => {
     onChange(String(owner.id));
     setIsOpen(false);
   };
@@ -116,7 +117,7 @@ export function OwnerSelect({
         {selected && !disabled ? (
           <button
             type="button"
-            aria-label={`Quitar a ${selected.fullName} como dueño`}
+            aria-label={`Quitar a ${selectedName} como dueño`}
             onMouseDown={(event) => event.preventDefault()}
             onClick={handleClear}
             className="absolute right-2 top-1/2 flex h-[26px] w-[26px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-[#526D82] transition-colors hover:bg-[#DDE6ED] hover:text-[#27374D]"
@@ -189,7 +190,7 @@ export function OwnerSelect({
 
       {error ? <span className="text-[12px] leading-4 text-[#c0392b]">{error}</span> : null}
       {!error && selected ? (
-        <span className="text-[12px] leading-4 text-[#526D82]">Dueño: {selected.fullName}</span>
+        <span className="text-[12px] leading-4 text-[#526D82]">Dueño: {selectedName}</span>
       ) : null}
     </div>
   );

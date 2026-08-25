@@ -1,28 +1,19 @@
 import { FormField } from '../common/FormField';
 import { OwnerSelect } from './OwnerSelect';
-import type { PetOwner } from './types';
+import type { IUserResponse } from '../../services/users/IUser';
+import type { PetFormState } from './types';
 import type { FormErrors } from './validation';
 
 interface FormProps {
-  form: {
-    name: string;
-    specie: string;
-    breed: string;
-    birthDate: string;
-    clientId: string;
-  };
+  form: PetFormState;
   formError: string;
-  fieldErrors?: FormErrors;
-  owners: PetOwner[];
+  fieldErrors: FormErrors;
+  owners: IUserResponse[];
   isLoadingOwners?: boolean;
   ownersError?: string;
   isLoading?: boolean;
   isSaving?: boolean;
-  onNameChange: (value: string) => void;
-  onSpecieChange: (value: string) => void;
-  onBreedChange: (value: string) => void;
-  onBirthDateChange: (value: string) => void;
-  onClientIdChange: (value: string) => void;
+  onChange: (field: keyof PetFormState, value: string) => void;
   onCancel: () => void;
   onSave: () => void;
   saveLabel: string;
@@ -31,17 +22,13 @@ interface FormProps {
 export function Form({
   form,
   formError,
-  fieldErrors = {},
+  fieldErrors,
   owners,
   isLoadingOwners = false,
   ownersError = '',
   isLoading = false,
   isSaving = false,
-  onNameChange,
-  onSpecieChange,
-  onBreedChange,
-  onBirthDateChange,
-  onClientIdChange,
+  onChange,
   onCancel,
   onSave,
   saveLabel,
@@ -59,7 +46,7 @@ export function Form({
             <FormField
               label="Nombre"
               value={form.name}
-              onChange={onNameChange}
+              onChange={(value) => onChange('name', value)}
               error={fieldErrors.name}
               placeholder="Nombre de la mascota"
               maxLength={50}
@@ -69,7 +56,7 @@ export function Form({
             <FormField
               label="Especie"
               value={form.specie}
-              onChange={onSpecieChange}
+              onChange={(value) => onChange('specie', value)}
               error={fieldErrors.specie}
               placeholder="Perro, gato, ..."
               maxLength={50}
@@ -79,7 +66,7 @@ export function Form({
             <FormField
               label="Raza"
               value={form.breed}
-              onChange={onBreedChange}
+              onChange={(value) => onChange('breed', value)}
               error={fieldErrors.breed}
               placeholder="Labrador, siamés, ..."
               maxLength={50}
@@ -90,7 +77,7 @@ export function Form({
               label="Fecha de nacimiento"
               type="date"
               value={form.birthDate}
-              onChange={onBirthDateChange}
+              onChange={(value) => onChange('birthDate', value)}
               error={fieldErrors.birthDate}
               disabled={isSaving}
             />
@@ -99,7 +86,7 @@ export function Form({
               label="DNI del dueño"
               owners={owners}
               value={form.clientId}
-              onChange={onClientIdChange}
+              onChange={(value) => onChange('clientId', value)}
               isLoadingOwners={isLoadingOwners}
               ownersError={ownersError}
               error={fieldErrors.clientId}

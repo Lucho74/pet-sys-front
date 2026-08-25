@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import type { User } from './types';
 import { ROLE_LABELS } from './types';
@@ -7,11 +8,11 @@ interface ListProps {
   users: User[];
   isLoading: boolean;
   error: string;
-  onSelect: (userId: number) => void;
-  onCreate: () => void;
+  createTo: string;
+  itemTo: (userId: number) => string;
 }
 
-export function List({ users, isLoading, error, onSelect, onCreate }: ListProps) {
+export function List({ users, isLoading, error, createTo, itemTo }: ListProps) {
   return (
     <>
       <div className="flex-1 overflow-auto px-4 pb-[100px] pt-4">
@@ -37,10 +38,9 @@ export function List({ users, isLoading, error, onSelect, onCreate }: ListProps)
         ) : (
           <div className="flex flex-col gap-2.5">
             {users.map((user) => (
-              <button
+              <Link
                 key={user.id}
-                type="button"
-                onClick={() => onSelect(user.id)}
+                to={itemTo(user.id)}
                 className="flex cursor-pointer items-center gap-3 rounded-[14px] border border-white bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(39,55,77,0.06)]"
               >
                 <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] bg-[#27374D]">
@@ -61,21 +61,20 @@ export function List({ users, isLoading, error, onSelect, onCreate }: ListProps)
                     <div className="truncate text-[12px] text-[#526D82]">{user.phone}</div>
                   ) : null}
                 </div>
-              </button>
+              </Link>
             ))}
           </div>
         )}
       </div>
 
       <div className="absolute inset-x-4 bottom-7">
-        <button
-          type="button"
-          onClick={onCreate}
+        <Link
+          to={createTo}
           className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-[#27374D] px-4 py-[15px] shadow-[0_6px_16px_rgba(39,55,77,0.35)]"
         >
           <Plus size={15} strokeWidth={2.4} className="text-[#DDE6ED]" />
           <span className="text-[15px] font-semibold text-[#DDE6ED]">Nuevo usuario</span>
-        </button>
+        </Link>
       </div>
     </>
   );

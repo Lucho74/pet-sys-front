@@ -11,7 +11,6 @@ export interface User {
   fullName: string;
   email: string;
   phone: string;
-  password: string;
   roleName: UserRole;
   dni: string;
 }
@@ -23,4 +22,9 @@ export interface UserFormState {
   password: string;
   roleName: string;
   dni: string;
+}
+
+export interface UsersOutletContext {
+  users: User[];
+  removeUser: (userId: number) => void;
 }

@@ -4,6 +4,7 @@ export type FormErrors = Partial<Record<keyof UserFormState, string>>;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+()\s-]+$/;
+const VALID_ROLES = ['Client', 'Veterinarian', 'Admin'];
 
 export function validateUserForm(form: UserFormState): FormErrors {
   const errors: FormErrors = {};
@@ -37,6 +38,22 @@ export function validateUserForm(form: UserFormState): FormErrors {
     errors.password = 'La contraseña debe tener al menos 6 caracteres.';
   } else if (form.password.length > 100) {
     errors.password = 'La contraseña no puede superar los 100 caracteres.';
+  }
+
+  if (!VALID_ROLES.includes(form.roleName)) {
+    errors.roleName = 'Selecciona un rol válido.';
+  }
+
+  if (form.roleName === 'Client') {
+    const dni = form.dni.trim();
+
+    if (!dni) {
+      errors.dni = 'El DNI es obligatorio para los clientes.';
+    } else if (!/^[0-9]+$/.test(dni)) {
+      errors.dni = 'El DNI solo puede tener números.';
+    } else if (dni.length > 20) {
+      errors.dni = 'El DNI no puede superar los 20 caracteres.';
+    }
   }
 
   return errors;

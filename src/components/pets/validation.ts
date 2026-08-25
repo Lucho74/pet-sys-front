@@ -39,10 +39,8 @@ export function validatePetForm(form: PetFormState): FormErrors {
   }
 
   const clientId = Number(form.clientId);
-  if (!form.clientId.trim()) {
-    errors.clientId = 'El ID del dueño es obligatorio.';
-  } else if (!Number.isInteger(clientId) || clientId < 1) {
-    errors.clientId = 'El ID del dueño debe ser un número entero mayor a 0.';
+  if (!form.clientId.trim() || !Number.isInteger(clientId) || clientId < 1) {
+    errors.clientId = 'Busca el DNI y selecciona el dueño de la lista.';
   }
 
   return errors;

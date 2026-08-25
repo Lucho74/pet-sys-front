@@ -7,6 +7,13 @@ export interface Pet {
   clientId: number;
 }
 
+export interface PetOwner {
+  id: number;
+  fullName: string;
+  email: string;
+  dni: string;
+}
+
 export interface PetFormState {
   name: string;
   specie: string;

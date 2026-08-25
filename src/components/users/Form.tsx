@@ -1,5 +1,9 @@
 import { FormField } from '../common/FormField';
+import { SelectField } from '../common/SelectField';
+import { ROLE_LABELS } from './types';
 import type { FormErrors } from './validation';
+
+const ROLE_OPTIONS = Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }));
 
 interface FormProps {
   form: {
@@ -7,15 +11,20 @@ interface FormProps {
     email: string;
     phone: string;
     password: string;
+    roleName: string;
+    dni: string;
   };
   formError: string;
   fieldErrors?: FormErrors;
+  canChangeRole?: boolean;
   isLoading?: boolean;
   isSaving?: boolean;
   onFullNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
+  onRoleNameChange: (value: string) => void;
+  onDniChange: (value: string) => void;
   onCancel: () => void;
   onSave: () => void;
   saveLabel: string;
@@ -25,12 +34,15 @@ export function Form({
   form,
   formError,
   fieldErrors = {},
+  canChangeRole = true,
   isLoading = false,
   isSaving = false,
   onFullNameChange,
   onEmailChange,
   onPhoneChange,
   onPasswordChange,
+  onRoleNameChange,
+  onDniChange,
   onCancel,
   onSave,
   saveLabel,
@@ -45,6 +57,16 @@ export function Form({
           </div>
         ) : (
           <>
+            <SelectField
+              label="Rol"
+              value={form.roleName}
+              onChange={onRoleNameChange}
+              options={ROLE_OPTIONS}
+              error={fieldErrors.roleName}
+              hint={canChangeRole ? undefined : 'El rol no se puede cambiar después de crear el usuario.'}
+              disabled={isSaving || !canChangeRole}
+            />
+
             <FormField
               label="Nombre completo"
               value={form.fullName}
@@ -54,6 +76,18 @@ export function Form({
               maxLength={100}
               disabled={isSaving}
             />
+
+            {form.roleName === 'Client' ? (
+              <FormField
+                label="DNI"
+                value={form.dni}
+                onChange={onDniChange}
+                error={fieldErrors.dni}
+                placeholder="30123456"
+                maxLength={20}
+                disabled={isSaving}
+              />
+            ) : null}
 
             <FormField
               label="Correo"

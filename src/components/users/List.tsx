@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react';
 import type { User } from './types';
+import { ROLE_LABELS } from './types';
 import { initials } from '../../utils/initials';
 
 interface ListProps {
@@ -47,9 +48,18 @@ export function List({ users, isLoading, error, onSelect, onCreate }: ListProps)
                 </div>
 
                 <div className="min-w-0 flex-1 text-left">
-                  <div className="truncate text-[15px] font-semibold text-[#27374D]">{user.fullName}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-[15px] font-semibold text-[#27374D]">{user.fullName}</span>
+                    <span className="shrink-0 rounded-full bg-[#DDE6ED] px-2 py-0.5 text-[11px] font-semibold text-[#526D82]">
+                      {ROLE_LABELS[user.roleName]}
+                    </span>
+                  </div>
                   <div className="truncate text-[13px] text-[#526D82]">{user.email}</div>
-                  {user.phone ? <div className="truncate text-[12px] text-[#526D82]">{user.phone}</div> : null}
+                  {user.dni ? (
+                    <div className="truncate text-[12px] text-[#526D82]">DNI {user.dni}</div>
+                  ) : user.phone ? (
+                    <div className="truncate text-[12px] text-[#526D82]">{user.phone}</div>
+                  ) : null}
                 </div>
               </button>
             ))}

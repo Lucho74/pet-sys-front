@@ -8,7 +8,12 @@ import {
   handleGetByIdUser,
   handleUpdateUser,
 } from '../../services/users/userService';
-import type { IUserRequest, IUserResponse } from '../../services/users/IUser';
+import type {
+  ICreateUserRequest,
+  IUpdateUserRequest,
+  IUserResponse,
+  UserRole,
+} from '../../services/users/IUser';
 import type { User, UserFormState } from './types';
 import { validateUserForm } from './validation';
 import type { FormErrors } from './validation';
@@ -18,7 +23,12 @@ const emptyForm = (): UserFormState => ({
   email: '',
   phone: '',
   password: '',
+  roleName: 'Client',
+  dni: '',
 });
+
+const toRole = (roleName: string | null): UserRole =>
+  roleName === 'Veterinarian' || roleName === 'Admin' ? roleName : 'Client';
 
 const toUser = (userFromApi: IUserResponse): User => ({
   id: Number(userFromApi.id),
@@ -26,13 +36,26 @@ const toUser = (userFromApi: IUserResponse): User => ({
   email: userFromApi.email?.trim() || '',
   phone: userFromApi.phone?.trim() || '',
   password: userFromApi.password?.trim() || '',
+  roleName: toRole(userFromApi.roleName),
+  dni: userFromApi.dni?.trim() || '',
 });
 
-const toRequest = (form: UserFormState): IUserRequest => ({
+const toCreateRequest = (form: UserFormState): ICreateUserRequest => ({
   fullName: form.fullName,
   email: form.email,
   phone: form.phone,
-  password: form.password || '123456',
+  password: form.password,
+  userType: toRole(form.roleName),
+  dni: toRole(form.roleName) === 'Client' ? form.dni : null,
+});
+
+const toUpdateRequest = (form: UserFormState): IUpdateUserRequest => ({
+  fullName: form.fullName,
+  email: form.email,
+  phone: form.phone,
+  password: form.password,
+  roleName: toRole(form.roleName),
+  dni: toRole(form.roleName) === 'Client' ? form.dni : null,
 });
 
 export function useUsersCrud() {
@@ -116,6 +139,8 @@ export function useUsersCrud() {
           email: user.email,
           phone: user.phone,
           password: user.password,
+          roleName: user.roleName,
+          dni: user.dni,
         });
       } catch {
         if (!isMounted) return;
@@ -168,6 +193,8 @@ export function useUsersCrud() {
       email: selectedUser.email,
       phone: selectedUser.phone,
       password: selectedUser.password,
+      roleName: selectedUser.roleName,
+      dni: selectedUser.dni,
     });
     setError('');
     setFieldErrors({});
@@ -198,14 +225,14 @@ export function useUsersCrud() {
 
     try {
       if (screen === 'edit' && selectedId !== null) {
-        const updated = await handleUpdateUser(String(selectedId), toRequest(form));
+        const updated = await handleUpdateUser(String(selectedId), toUpdateRequest(form));
         setUsers((current) => current.map((user) => (user.id === selectedId ? toUser(updated) : user)));
         toast.success('Usuario actualizado correctamente.');
         navigate('/users');
         return;
       }
 
-      const created = await handleAddUser(toRequest(form));
+      const created = await handleAddUser(toCreateRequest(form));
       setUsers((current) => [...current, toUser(created)]);
       toast.success('Usuario creado correctamente.');
       navigate('/users');

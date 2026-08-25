@@ -8,8 +8,10 @@ import {
   handleGetByIdPet,
   handleUpdatePet,
 } from '../../services/pets/petService';
+import { handleGetAllUser } from '../../services/users/userService';
 import type { IPetRequest, IPetResponse } from '../../services/pets/IPet';
-import type { Pet, PetFormState } from './types';
+import type { IUserResponse } from '../../services/users/IUser';
+import type { Pet, PetFormState, PetOwner } from './types';
 import { validatePetForm } from './validation';
 import type { FormErrors } from './validation';
 
@@ -30,6 +32,13 @@ const toPet = (petFromApi: IPetResponse): Pet => ({
   clientId: Number(petFromApi.clientId) || 0,
 });
 
+const toOwner = (userFromApi: IUserResponse): PetOwner => ({
+  id: Number(userFromApi.id),
+  fullName: userFromApi.fullName?.trim() || 'Sin nombre',
+  email: userFromApi.email?.trim() || '',
+  dni: userFromApi.dni?.trim() || '',
+});
+
 const toRequest = (form: PetFormState): IPetRequest => ({
   name: form.name,
   specie: form.specie,
@@ -43,6 +52,9 @@ export function usePetsCrud() {
   const location = useLocation();
 
   const [pets, setPets] = useState<Pet[]>([]);
+  const [owners, setOwners] = useState<PetOwner[]>([]);
+  const [isLoadingOwners, setIsLoadingOwners] = useState(true);
+  const [ownersError, setOwnersError] = useState('');
   const [form, setForm] = useState<PetFormState>(emptyForm());
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -94,6 +106,35 @@ export function usePetsCrud() {
     };
 
     loadPets();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadOwners = async () => {
+      setIsLoadingOwners(true);
+      setOwnersError('');
+
+      try {
+        const response = await handleGetAllUser();
+        if (!isMounted) return;
+        setOwners(response.filter((user) => user.roleName === 'Client').map(toOwner));
+      } catch {
+        if (!isMounted) return;
+        setOwners([]);
+        setOwnersError('No se pudo cargar la lista de clientes.');
+      } finally {
+        if (isMounted) {
+          setIsLoadingOwners(false);
+        }
+      }
+    };
+
+    loadOwners();
 
     return () => {
       isMounted = false;
@@ -261,6 +302,9 @@ export function usePetsCrud() {
 
   return {
     pets,
+    owners,
+    isLoadingOwners,
+    ownersError,
     form,
     formError: error,
     fieldErrors,

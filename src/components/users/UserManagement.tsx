@@ -91,12 +91,15 @@ export function UserManagement() {
             form={form}
             formError={formError}
             fieldErrors={fieldErrors}
+            canChangeRole={screen !== 'edit'}
             isLoading={isLoadingUser}
             isSaving={isSaving}
             onFullNameChange={setField('fullName')}
             onEmailChange={setField('email')}
             onPhoneChange={setField('phone')}
             onPasswordChange={setField('password')}
+            onRoleNameChange={setField('roleName')}
+            onDniChange={setField('dni')}
             onCancel={cancelForm}
             onSave={saveUser}
             saveLabel={screen === 'edit' ? 'Guardar cambios' : 'Crear usuario'}

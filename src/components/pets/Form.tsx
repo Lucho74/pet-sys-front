@@ -1,4 +1,6 @@
 import { FormField } from '../common/FormField';
+import { OwnerSelect } from './OwnerSelect';
+import type { PetOwner } from './types';
 import type { FormErrors } from './validation';
 
 interface FormProps {
@@ -11,6 +13,9 @@ interface FormProps {
   };
   formError: string;
   fieldErrors?: FormErrors;
+  owners: PetOwner[];
+  isLoadingOwners?: boolean;
+  ownersError?: string;
   isLoading?: boolean;
   isSaving?: boolean;
   onNameChange: (value: string) => void;
@@ -27,6 +32,9 @@ export function Form({
   form,
   formError,
   fieldErrors = {},
+  owners,
+  isLoadingOwners = false,
+  ownersError = '',
   isLoading = false,
   isSaving = false,
   onNameChange,
@@ -87,14 +95,14 @@ export function Form({
               disabled={isSaving}
             />
 
-            <FormField
-              label="ID del dueño"
-              type="number"
-              min={1}
+            <OwnerSelect
+              label="DNI del dueño"
+              owners={owners}
               value={form.clientId}
               onChange={onClientIdChange}
+              isLoadingOwners={isLoadingOwners}
+              ownersError={ownersError}
               error={fieldErrors.clientId}
-              placeholder="1"
               disabled={isSaving}
             />
           </>

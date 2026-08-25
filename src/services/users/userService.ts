@@ -1,6 +1,6 @@
-import { type IUserRequest, type IUserResponse } from "./IUser"
+import { type ICreateUserRequest, type IUpdateUserRequest, type IUserResponse } from "./IUser"
 
-export const handleAddUser = async (newUser: IUserRequest): Promise<IUserResponse> => {
+export const handleAddUser = async (newUser: ICreateUserRequest): Promise<IUserResponse> => {
     const response = await fetch('https://localhost:7140/api/User', {
         method: 'POST',
         headers: {
@@ -28,7 +28,7 @@ export const handleDeleteUser = async (id: string): Promise<string> => {
     return response.text();
 };
 
-export const handleUpdateUser = async (id: string, updatedUser: IUserRequest): Promise<IUserResponse> => {
+export const handleUpdateUser = async (id: string, updatedUser: IUpdateUserRequest): Promise<IUserResponse> => {
     const response = await fetch(`https://localhost:7140/api/User/${id}`, {
         method: 'PUT',
         headers: {

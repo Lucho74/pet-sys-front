@@ -9,6 +9,9 @@ import { usePetsCrud } from './usePetsCrud';
 export function PetManagement() {
   const {
     pets,
+    owners,
+    isLoadingOwners,
+    ownersError,
     form,
     formError,
     fieldErrors,
@@ -91,6 +94,9 @@ export function PetManagement() {
             form={form}
             formError={formError}
             fieldErrors={fieldErrors}
+            owners={owners}
+            isLoadingOwners={isLoadingOwners}
+            ownersError={ownersError}
             isLoading={isLoadingPet}
             isSaving={isSaving}
             onNameChange={setField('name')}

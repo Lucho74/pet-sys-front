@@ -1,4 +1,5 @@
 import type { User } from './types';
+import { ROLE_LABELS } from './types';
 import { initials } from '../../utils/initials';
 
 interface ActionSheetProps {
@@ -22,7 +23,9 @@ export function ActionSheet({ selected, onClose, onEdit, onDelete }: ActionSheet
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[15px] font-semibold text-[#27374D]">{selected.fullName}</div>
-            <div className="truncate text-[13px] text-[#526D82]">{selected.email}</div>
+            <div className="truncate text-[13px] text-[#526D82]">
+              {ROLE_LABELS[selected.roleName]} · {selected.email}
+            </div>
           </div>
         </div>
         <div className="flex flex-col gap-2.5">

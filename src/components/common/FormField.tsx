@@ -1,3 +1,6 @@
+import { useId } from 'react';
+import { controlClasses, FIELD_ERROR_CLASSES, FIELD_LABEL_CLASSES } from './fieldStyles';
+
 interface FormFieldProps {
   label: string;
   value: string;
@@ -8,6 +11,7 @@ interface FormFieldProps {
   disabled?: boolean;
   maxLength?: number;
   min?: string | number;
+  autoComplete?: string;
 }
 
 export function FormField({
@@ -20,13 +24,18 @@ export function FormField({
   disabled = false,
   maxLength,
   min,
+  autoComplete,
 }: FormFieldProps) {
+  const inputId = useId();
+  const errorId = `${inputId}-error`;
+
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[12px] font-semibold uppercase tracking-[0.05em] text-[#526D82]">
+      <label htmlFor={inputId} className={FIELD_LABEL_CLASSES}>
         {label}
       </label>
       <input
+        id={inputId}
         type={type}
         min={min}
         maxLength={maxLength}
@@ -34,12 +43,16 @@ export function FormField({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         disabled={disabled}
+        autoComplete={autoComplete}
         aria-invalid={Boolean(error)}
-        className={`w-full rounded-xl border bg-white px-[14px] py-[13px] text-[15px] text-[#27374D] outline-none placeholder:text-slate-400 disabled:cursor-not-allowed disabled:opacity-60 ${
-          error ? 'border-[#c0392b]' : 'border-[#9DB2BF]'
-        }`}
+        aria-describedby={error ? errorId : undefined}
+        className={controlClasses(Boolean(error))}
       />
-      {error ? <span className="text-[12px] leading-4 text-[#c0392b]">{error}</span> : null}
+      {error ? (
+        <span id={errorId} className={FIELD_ERROR_CLASSES}>
+          {error}
+        </span>
+      ) : null}
     </div>
   );
 }

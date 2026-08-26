@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { PawPrint } from 'lucide-react';
+import { Stethoscope } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
+import { CreateButton } from '../../components/common/CreateButton';
 import { List } from '../../components/consultations/List';
 import { handleGetAllConsultations } from '../../services/consultation/consultationService';
 import { handleGetAllPet } from '../../services/pets/petService';
 import { handleGetAllUser } from '../../services/users/userService';
 import type { Consultation } from '../../components/consultations/types';
 import { hasDateTime } from '../../utils/datetime';
+
+const CREATE_TO = '/consultations/new';
+const CREATE_LABEL = 'Nueva consulta';
 
 export function ConsultationsListPage() {
     const [consultations, setConsultations] = useState<Consultation[]>([]);
@@ -60,12 +64,19 @@ export function ConsultationsListPage() {
     };
 
     return (
-        <ScreenShell eyebrow="Sysadmin" title="Consultas" icon={PawPrint} homeTo="/">
+        <ScreenShell
+            eyebrow="Sysadmin"
+            title="Consultas"
+            icon={Stethoscope}
+            homeTo="/"
+            action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
+        >
             <List
                 consultations={consultations}
                 isLoading={isLoading}
                 error={error}
-                createTo="/consultations/new"
+                createTo={CREATE_TO}
+                createLabel={CREATE_LABEL}
                 itemTo={(consultationId) => `/consultations/${consultationId}`}
             />
 

@@ -1,4 +1,5 @@
 import { FormField } from '../common/FormField';
+import { FormShell } from '../common/FormShell';
 import { SelectField } from '../common/SelectField';
 import { ROLE_LABELS } from './types';
 import type { UserFormState } from './types';
@@ -32,105 +33,81 @@ export function Form({
   saveLabel,
 }: FormProps) {
   return (
-    <div className="flex-1 overflow-auto px-5 pb-6 pt-5">
-      <div className="flex flex-col gap-4">
-        {isLoading ? (
-          <div className="flex items-center justify-center rounded-2xl bg-white px-4 py-6 text-[14px] font-medium text-[#27374D] shadow-sm">
-            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-[#9DB2BF] border-t-[#27374D]" />
-            Cargando usuario...
-          </div>
-        ) : (
-          <>
-            <SelectField
-              label="Rol"
-              value={form.roleName}
-              onChange={(value) => onChange('roleName', value)}
-              options={ROLE_OPTIONS}
-              error={fieldErrors.roleName}
-              hint={canChangeRole ? undefined : 'El rol no se puede cambiar después de crear el usuario.'}
-              disabled={isSaving || !canChangeRole}
-            />
+    <FormShell
+      formError={formError}
+      isLoading={isLoading}
+      isSaving={isSaving}
+      loadingLabel="Cargando usuario..."
+      onCancel={onCancel}
+      onSave={onSave}
+      saveLabel={saveLabel}
+    >
+      <SelectField
+        label="Rol"
+        value={form.roleName}
+        onChange={(value) => onChange('roleName', value)}
+        options={ROLE_OPTIONS}
+        error={fieldErrors.roleName}
+        hint={canChangeRole ? undefined : 'El rol no se puede cambiar después de crear el usuario.'}
+        disabled={isSaving || !canChangeRole}
+      />
 
-            <FormField
-              label="Nombre completo"
-              value={form.fullName}
-              onChange={(value) => onChange('fullName', value)}
-              error={fieldErrors.fullName}
-              placeholder="Nombre y apellido"
-              maxLength={100}
-              disabled={isSaving}
-            />
+      <FormField
+        label="Nombre completo"
+        value={form.fullName}
+        onChange={(value) => onChange('fullName', value)}
+        error={fieldErrors.fullName}
+        placeholder="Nombre y apellido"
+        maxLength={100}
+        autoComplete="name"
+        disabled={isSaving}
+      />
 
-            {form.roleName === 'Client' ? (
-              <FormField
-                label="DNI"
-                value={form.dni}
-                onChange={(value) => onChange('dni', value)}
-                error={fieldErrors.dni}
-                placeholder="30123456"
-                maxLength={20}
-                disabled={isSaving}
-              />
-            ) : null}
+      {form.roleName === 'Client' ? (
+        <FormField
+          label="DNI"
+          value={form.dni}
+          onChange={(value) => onChange('dni', value)}
+          error={fieldErrors.dni}
+          placeholder="30123456"
+          maxLength={20}
+          disabled={isSaving}
+        />
+      ) : null}
 
-            <FormField
-              label="Correo"
-              type="email"
-              value={form.email}
-              onChange={(value) => onChange('email', value)}
-              error={fieldErrors.email}
-              placeholder="usuario@empresa.com"
-              disabled={isSaving}
-            />
+      <FormField
+        label="Correo"
+        type="email"
+        value={form.email}
+        onChange={(value) => onChange('email', value)}
+        error={fieldErrors.email}
+        placeholder="usuario@empresa.com"
+        autoComplete="email"
+        disabled={isSaving}
+      />
 
-            <FormField
-              label="Teléfono"
-              type="tel"
-              value={form.phone}
-              onChange={(value) => onChange('phone', value)}
-              error={fieldErrors.phone}
-              placeholder="+54 9 11 1234 5678"
-              disabled={isSaving}
-            />
+      <FormField
+        label="Teléfono"
+        type="tel"
+        value={form.phone}
+        onChange={(value) => onChange('phone', value)}
+        error={fieldErrors.phone}
+        placeholder="+54 9 11 1234 5678"
+        autoComplete="tel"
+        disabled={isSaving}
+      />
 
-            <FormField
-              label="Contraseña"
-              type="password"
-              value={form.password}
-              onChange={(value) => onChange('password', value)}
-              error={fieldErrors.password}
-              placeholder="Mínimo 6 caracteres"
-              maxLength={100}
-              disabled={isSaving}
-            />
-          </>
-        )}
-
-        {formError ? (
-          <div className="rounded-[10px] border border-[#9DB2BF] bg-white px-3 py-2.5 text-[13px] text-[#27374D]">
-            {formError}
-          </div>
-        ) : null}
-
-        <div className="mt-1.5 flex gap-2.5">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isSaving}
-            className="flex-1 rounded-xl border border-[#526D82] px-4 py-[14px] text-[15px] font-semibold text-[#526D82] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Cancelar
-          </button>
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={isSaving || isLoading}
-            className="flex-1 rounded-xl bg-[#27374D] px-4 py-[14px] text-[15px] font-semibold text-[#DDE6ED] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isSaving ? 'Guardando...' : saveLabel}
-          </button>
-        </div>
-      </div>
-    </div>
+      <FormField
+        label="Contraseña"
+        type="password"
+        value={form.password}
+        onChange={(value) => onChange('password', value)}
+        error={fieldErrors.password}
+        placeholder="Mínimo 6 caracteres"
+        maxLength={100}
+        autoComplete="new-password"
+        disabled={isSaving}
+      />
+    </FormShell>
   );
 }

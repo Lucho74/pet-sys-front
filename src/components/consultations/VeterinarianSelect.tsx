@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, X } from 'lucide-react';
 import type { IUserResponse } from '../../services/users/IUser';
+import { matchesSearch } from '../../utils/search';
 
 const MIN_SEARCH_LENGTH = 2;
 const MAX_RESULTS = 8;
@@ -54,7 +55,7 @@ export function VeterinarianSelect({
   const hasSearch = search.length >= MIN_SEARCH_LENGTH;
 
   const matches = hasSearch
-    ? veterinarians.filter((veterinarian) => veterinarian.fullName?.includes(search))
+    ? veterinarians.filter((veterinarian) => matchesSearch(veterinarian.fullName, search))
     : [];
 
   const visibleVeterinarians = matches.slice(0, MAX_RESULTS);

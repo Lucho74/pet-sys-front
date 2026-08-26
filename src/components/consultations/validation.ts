@@ -1,8 +1,19 @@
+import { STATUS_LABELS } from './types';
 import type { ConsultationFormState } from './types';
+import { todayDate } from '../../utils/datetime';
+
+const VALID_STATUSES = Object.keys(STATUS_LABELS);
 
 export type FormErrors = Partial<Record<keyof ConsultationFormState, string>>;
 
-export function validateConsultationForm(form: ConsultationFormState): FormErrors {
+/**
+ * `initialDate` es el día que ya tenía la consulta al abrir el formulario.
+ * Si no se modifica, no se exige que sea futuro: una consulta pasada se sigue pudiendo editar.
+ */
+export function validateConsultationForm(
+  form: ConsultationFormState,
+  initialDate?: string,
+): FormErrors {
   const errors: FormErrors = {};
 
   const description = form.description.trim();
@@ -12,16 +23,17 @@ export function validateConsultationForm(form: ConsultationFormState): FormError
     errors.description = 'La descripción no puede superar los 500 caracteres.';
   }
 
-  const data = form.data.trim();
-  if (!data) {
-    errors.data = 'Los datos son obligatorios.';
-  } else if (data.length > 1000) {
-    errors.data = 'Los datos no pueden superar los 1000 caracteres.';
+  if (!form.date) {
+    errors.date = 'El día de la consulta es obligatorio.';
+  } else if (form.date !== initialDate && form.date < todayDate()) {
+    errors.date = 'No se puede agendar una consulta en el pasado.';
   }
 
   const status = form.status;
   if (!status) {
     errors.status = 'El estado es obligatorio.';
+  } else if (!VALID_STATUSES.includes(status)) {
+    errors.status = 'Selecciona un estado válido.';
   }
 
   const petId = form.petId;

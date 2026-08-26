@@ -1,10 +1,15 @@
 import { FormField } from '../common/FormField';
+import { SelectField } from '../common/SelectField';
 import { PetSelect } from './PetSelect';
 import { VeterinarianSelect } from './VeterinarianSelect';
+import { STATUS_LABELS } from './types';
 import type { IUserResponse } from '../../services/users/IUser';
 import type { ConsultationFormState } from './types';
 import type { FormErrors } from './validation';
 import type { IPetResponse } from '../../services/pets/IPet';
+import { todayDate } from '../../utils/datetime';
+
+const STATUS_OPTIONS = Object.entries(STATUS_LABELS).map(([value, label]) => ({ value, label }));
 
 interface FormProps {
   form: ConsultationFormState;
@@ -16,6 +21,7 @@ interface FormProps {
   pets: IPetResponse[];
   isLoadingPets?: boolean;
   petsError?: string;
+  canChangeStatus?: boolean;
   isLoading?: boolean;
   isSaving?: boolean;
   onChange: (field: keyof ConsultationFormState, value: string) => void;
@@ -34,6 +40,7 @@ export function Form({
   pets,
   isLoadingPets = false,
   petsError = '',
+  canChangeStatus = true,
   isLoading = false,
   isSaving = false,
   onChange,
@@ -62,22 +69,23 @@ export function Form({
             />
 
             <FormField
-              label="Dia y hora de la consulta"
-              value={form.data}
-              onChange={(value) => onChange('data', value)}
-              error={fieldErrors.data}
-              placeholder="Dia y hora de la consulta"
-              maxLength={1000}
+              label="Día de la consulta"
+              type="date"
+              value={form.date}
+              onChange={(value) => onChange('date', value)}
+              error={fieldErrors.date}
+              min={todayDate()}
               disabled={isSaving}
             />
 
-            <FormField
+            <SelectField
               label="Estado de la consulta"
               value={form.status}
               onChange={(value) => onChange('status', value)}
+              options={STATUS_OPTIONS}
               error={fieldErrors.status}
-              placeholder="Activa, Inactiva, ..."
-              disabled={isSaving}
+              hint={canChangeStatus ? undefined : 'Las consultas nuevas se crean como Pendiente.'}
+              disabled={isSaving || !canChangeStatus}
             />
 
             <VeterinarianSelect

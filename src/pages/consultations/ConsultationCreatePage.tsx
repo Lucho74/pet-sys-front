@@ -11,13 +11,14 @@ import { handleAddConsultation } from '../../services/consultation/consultationS
 import type { ConsultationFormState } from '../../components/consultations/types';
 import { validateConsultationForm } from '../../components/consultations/validation';
 import type { IPetResponse } from '../../services/pets/IPet';
+import { toApiDate } from '../../utils/datetime';
 
 export function ConsultationCreatePage() {
     const navigate = useNavigate();
 
     const [form, setForm] = useState<ConsultationFormState>({
         description: '',
-        data: '',
+        date: '',
         status: 'Pending',
         petId: '',
         veterinarianId: '',
@@ -64,7 +65,7 @@ export function ConsultationCreatePage() {
         try {
             await handleAddConsultation({
                 description: form.description,
-                data: form.data,
+                date: toApiDate(form.date),
                 petId: Number(form.petId),
                 veterinarianId: Number(form.veterinarianId),
             });
@@ -90,6 +91,7 @@ export function ConsultationCreatePage() {
                 pets={pets}
                 isLoadingPets={isLoadingPets}
                 petsError={petsError}
+                canChangeStatus={false}
                 isSaving={isSaving}
                 onChange={handleChange}
                 onCancel={() => navigate('/consultations')}

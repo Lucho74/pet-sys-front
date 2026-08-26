@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
+import { STATUS_BADGE_CLASSES, STATUS_LABELS } from './types';
 import type { Consultation } from './types';
-import { initials } from '../../utils/initials';
+import { formatDate } from '../../utils/datetime';
 
 interface ListProps {
   consultations: Consultation[];
@@ -47,9 +48,24 @@ export function List({ consultations, isLoading, error, createTo, itemTo }: List
                 </div>
 
                 <div className="min-w-0 flex-1 text-left">
-                  <div className="truncate text-[15px] font-semibold text-[#27374D]">{consultation.description}</div>
-                  <div className="truncate text-[13px] text-[#526D82]">{consultation.data}</div>
-                  {consultation.data ? <div className="truncate text-[12px] text-[#526D82]">Fecha y hora: {consultation.data}</div> : null}
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-[15px] font-semibold text-[#27374D]">
+                      {consultation.description}
+                    </span>
+                    <span
+                      className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                        STATUS_BADGE_CLASSES[consultation.status]
+                      }`}
+                    >
+                      {STATUS_LABELS[consultation.status]}
+                    </span>
+                  </div>
+                  <div className="truncate text-[13px] text-[#526D82]">
+                    {consultation.date ? formatDate(consultation.date) : 'Sin fecha asignada'}
+                  </div>
+                  <div className="truncate text-[12px] text-[#526D82]">
+                    Mascota: {consultation.petName} · Veterinario: {consultation.veterinarianName}
+                  </div>
                 </div>
               </Link>
             ))}

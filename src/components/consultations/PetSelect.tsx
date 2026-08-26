@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, X } from 'lucide-react';
 import type { IPetResponse } from '../../services/pets/IPet';
+import { matchesSearch } from '../../utils/search';
 
 const MIN_SEARCH_LENGTH = 2;
 const MAX_RESULTS = 8;
@@ -53,9 +54,7 @@ export function PetSelect({
   const search = isShowingSelection ? '' : query.trim();
   const hasSearch = search.length >= MIN_SEARCH_LENGTH;
 
-  const matches = hasSearch
-    ? pets.filter((pet) => pet.name?.includes(search))
-    : [];
+  const matches = hasSearch ? pets.filter((pet) => matchesSearch(pet.name, search)) : [];
 
   const visiblePets = matches.slice(0, MAX_RESULTS);
   const hiddenCount = matches.length - visiblePets.length;

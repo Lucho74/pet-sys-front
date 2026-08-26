@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, X } from 'lucide-react';
 import type { IUserResponse } from '../../services/users/IUser';
+import { matchesSearch } from '../../utils/search';
 
 const MIN_SEARCH_LENGTH = 2;
 const MAX_RESULTS = 8;
@@ -54,9 +55,7 @@ export function OwnerSelect({
   const search = isShowingSelection ? '' : query.trim();
   const hasSearch = search.length >= MIN_SEARCH_LENGTH;
 
-  const matches = hasSearch
-    ? owners.filter((owner) => owner.dni?.includes(search))
-    : [];
+  const matches = hasSearch ? owners.filter((owner) => matchesSearch(owner.dni, search)) : [];
 
   const visibleOwners = matches.slice(0, MAX_RESULTS);
   const hiddenCount = matches.length - visibleOwners.length;

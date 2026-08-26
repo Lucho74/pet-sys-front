@@ -11,6 +11,7 @@ import type { ConsultationFormState } from '../../components/consultations/types
 import { handleGetByIdConsultation, handleUpdateConsultation } from '../../services/consultation/consultationService';
 import { validateConsultationForm } from '../../components/consultations/validation';
 import type { IPetResponse } from '../../services/pets/IPet';
+import { hasDateTime, toApiDate, toInputDate } from '../../utils/datetime';
 
 export function ConsultationEditPage() {
     const { id = '' } = useParams();
@@ -18,7 +19,7 @@ export function ConsultationEditPage() {
 
     const [form, setForm] = useState<ConsultationFormState>({
         description: '',
-        data: '',
+        date: '',
         status: 'Pending',
         petId: '',
         veterinarianId: '',
@@ -29,6 +30,7 @@ export function ConsultationEditPage() {
     const [pets, setPets] = useState<IPetResponse[]>([]);
     const [isLoadingPets, setIsLoadingPets] = useState(true);
     const [petsError, setPetsError] = useState('');
+    const [initialDate, setInitialDate] = useState('');
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
     const [formError, setFormError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -36,15 +38,18 @@ export function ConsultationEditPage() {
 
     useEffect(() => {
         handleGetByIdConsultation(id)
-            .then((consultation) =>
+            .then((consultation) => {
+                const date = hasDateTime(consultation.date) ? toInputDate(consultation.date.trim()) : '';
+
+                setInitialDate(date);
                 setForm({
                     description: consultation.description?.trim() || '',
-                    data: consultation.data?.trim() || '',
+                    date,
                     status: consultation.status,
                     petId: String(consultation.petId),
                     veterinarianId: String(consultation.veterinarianId),
-                }),
-            )
+                });
+            })
             .catch(() => {
                 setFormError('No se pudo cargar la consulta.');
                 toast.error('No se pudo cargar la consulta.');
@@ -69,7 +74,7 @@ export function ConsultationEditPage() {
     };
 
     const handleSave = async () => {
-        const errors = validateConsultationForm(form);
+        const errors = validateConsultationForm(form, initialDate);
         setFieldErrors(errors);
 
         if (Object.keys(errors).length > 0) {
@@ -83,7 +88,7 @@ export function ConsultationEditPage() {
         try {
             await handleUpdateConsultation(id, {
                 description: form.description,
-                data: form.data,
+                date: toApiDate(form.date),
                 status: form.status,
                 petId: Number(form.petId),
                 veterinarianId: Number(form.veterinarianId),

@@ -22,6 +22,12 @@ const sections: Section[] = [
     description: 'Alta, edición y baja de mascotas',
     icon: PawPrint,
   },
+  {
+    to: '/consultations',
+    title: 'Consultas',
+    description: 'Alta, edición y baja de consultas',
+    icon: PawPrint,
+  }
 ];
 
 export function Home() {

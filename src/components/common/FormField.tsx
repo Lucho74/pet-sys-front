@@ -7,7 +7,7 @@ interface FormFieldProps {
   placeholder?: string;
   disabled?: boolean;
   maxLength?: number;
-  min?: number;
+  min?: string | number;
 }
 
 export function FormField({

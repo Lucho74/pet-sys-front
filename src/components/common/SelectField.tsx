@@ -1,3 +1,12 @@
+import { useId } from 'react';
+import { ChevronDown } from 'lucide-react';
+import {
+  controlClasses,
+  FIELD_ERROR_CLASSES,
+  FIELD_HINT_CLASSES,
+  FIELD_LABEL_CLASSES,
+} from './fieldStyles';
+
 interface SelectFieldOption {
   value: string;
   label: string;
@@ -22,28 +31,51 @@ export function SelectField({
   hint,
   disabled = false,
 }: SelectFieldProps) {
+  const selectId = useId();
+  const errorId = `${selectId}-error`;
+  const hintId = `${selectId}-hint`;
+
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[12px] font-semibold uppercase tracking-[0.05em] text-[#526D82]">
+      <label htmlFor={selectId} className={FIELD_LABEL_CLASSES}>
         {label}
       </label>
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        disabled={disabled}
-        aria-invalid={Boolean(error)}
-        className={`w-full appearance-none rounded-xl border bg-white px-[14px] py-[13px] text-[15px] text-[#27374D] outline-none disabled:cursor-not-allowed disabled:opacity-60 ${
-          error ? 'border-[#c0392b]' : 'border-[#9DB2BF]'
-        }`}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      {error ? <span className="text-[12px] leading-4 text-[#c0392b]">{error}</span> : null}
-      {!error && hint ? <span className="text-[12px] leading-4 text-[#526D82]">{hint}</span> : null}
+
+      <div className="relative">
+        <select
+          id={selectId}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          disabled={disabled}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : hint ? hintId : undefined}
+          className={`appearance-none ${controlClasses(Boolean(error), 'pl-[14px] pr-[38px] py-[13px] lg:py-[11px]')}`}
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <ChevronDown
+          size={17}
+          strokeWidth={2}
+          aria-hidden="true"
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#9DB2BF]"
+        />
+      </div>
+
+      {error ? (
+        <span id={errorId} className={FIELD_ERROR_CLASSES}>
+          {error}
+        </span>
+      ) : null}
+      {!error && hint ? (
+        <span id={hintId} className={FIELD_HINT_CLASSES}>
+          {hint}
+        </span>
+      ) : null}
     </div>
   );
 }

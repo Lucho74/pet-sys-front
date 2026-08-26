@@ -3,9 +3,13 @@ import { Outlet } from 'react-router-dom';
 import { PawPrint } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
+import { CreateButton } from '../../components/common/CreateButton';
 import { List } from '../../components/pets/List';
 import { handleGetAllPet } from '../../services/pets/petService';
 import type { Pet } from '../../components/pets/types';
+
+const CREATE_TO = '/pets/new';
+const CREATE_LABEL = 'Nueva mascota';
 
 export function PetsListPage() {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -37,12 +41,19 @@ export function PetsListPage() {
   };
 
   return (
-    <ScreenShell eyebrow="Sysadmin" title="Mascotas" icon={PawPrint} homeTo="/">
+    <ScreenShell
+      eyebrow="Sysadmin"
+      title="Mascotas"
+      icon={PawPrint}
+      homeTo="/"
+      action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
+    >
       <List
         pets={pets}
         isLoading={isLoading}
         error={error}
-        createTo="/pets/new"
+        createTo={CREATE_TO}
+        createLabel={CREATE_LABEL}
         itemTo={(petId) => `/pets/${petId}`}
       />
 

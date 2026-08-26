@@ -1,3 +1,7 @@
+import { useEffect, useId, useRef } from 'react';
+import { useEscapeKey } from '../../hooks/useEscapeKey';
+import { PRIMARY_BUTTON_CLASSES, SECONDARY_BUTTON_CLASSES } from './buttonStyles';
+
 interface DeleteDialogProps {
   title: string;
   name: string;
@@ -7,19 +11,38 @@ interface DeleteDialogProps {
 }
 
 export function DeleteDialog({ title, name, isDeleting = false, onCancel, onConfirm }: DeleteDialogProps) {
+  const titleId = useId();
+  const descriptionId = `${titleId}-description`;
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEscapeKey(onCancel);
+
+  useEffect(() => {
+    cancelButtonRef.current?.focus();
+  }, []);
+
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#27374D]/50 p-7">
-      <div className="w-full rounded-2xl bg-white p-[22px] shadow-[0_12px_30px_rgba(39,55,77,0.3)]">
-        <div className="mb-1.5 text-[16px] font-bold text-[#27374D]">{title}</div>
-        <div className="mb-5 text-[14px] leading-6 text-[#526D82]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#27374D]/50 p-7">
+      <div
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
+        className="w-full max-w-[420px] rounded-2xl bg-white p-[22px] shadow-[0_12px_30px_rgba(39,55,77,0.3)] sm:p-6"
+      >
+        <h2 id={titleId} className="mb-1.5 text-[16px] font-bold text-[#27374D]">
+          {title}
+        </h2>
+        <p id={descriptionId} className="mb-5 text-[14px] leading-6 text-[#526D82]">
           ¿Confirmas que deseas eliminar a <strong className="text-[#27374D]">{name}</strong>? Esta acción no se puede deshacer.
-        </div>
-        <div className="flex gap-2.5">
+        </p>
+        <div className="flex gap-2.5 sm:justify-end">
           <button
+            ref={cancelButtonRef}
             type="button"
             onClick={onCancel}
             disabled={isDeleting}
-            className="flex-1 rounded-[10px] border border-[#9DB2BF] px-3 py-3 text-[14px] font-semibold text-[#526D82] disabled:cursor-not-allowed disabled:opacity-60"
+            className={`flex-1 sm:min-w-[130px] sm:flex-none ${SECONDARY_BUTTON_CLASSES}`}
           >
             Cancelar
           </button>
@@ -27,7 +50,7 @@ export function DeleteDialog({ title, name, isDeleting = false, onCancel, onConf
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="flex-1 rounded-[10px] bg-[#27374D] px-3 py-3 text-[14px] font-semibold text-[#DDE6ED] disabled:cursor-not-allowed disabled:opacity-70"
+            className={`flex-1 sm:min-w-[130px] sm:flex-none ${PRIMARY_BUTTON_CLASSES}`}
           >
             {isDeleting ? 'Eliminando...' : 'Eliminar'}
           </button>

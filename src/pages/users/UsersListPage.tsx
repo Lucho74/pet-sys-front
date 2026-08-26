@@ -3,9 +3,13 @@ import { Outlet } from 'react-router-dom';
 import { User as UserIcon } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
+import { CreateButton } from '../../components/common/CreateButton';
 import { List } from '../../components/users/List';
 import { handleGetAllUser } from '../../services/users/userService';
 import type { User } from '../../components/users/types';
+
+const CREATE_TO = '/users/new';
+const CREATE_LABEL = 'Nuevo usuario';
 
 export function UsersListPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -39,12 +43,19 @@ export function UsersListPage() {
   };
 
   return (
-    <ScreenShell eyebrow="Sysadmin" title="Usuarios" icon={UserIcon} homeTo="/">
+    <ScreenShell
+      eyebrow="Sysadmin"
+      title="Usuarios"
+      icon={UserIcon}
+      homeTo="/"
+      action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
+    >
       <List
         users={users}
         isLoading={isLoading}
         error={error}
-        createTo="/users/new"
+        createTo={CREATE_TO}
+        createLabel={CREATE_LABEL}
         itemTo={(userId) => `/users/${userId}`}
       />
 

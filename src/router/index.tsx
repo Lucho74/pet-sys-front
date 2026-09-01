@@ -19,6 +19,7 @@ import { ConsultationEditPage } from '../pages/consultations/ConsultationEditPag
 import { ConsultationCreatePage } from '../pages/consultations/ConsultationCreatePage';
 import { ConsultationActionsPage } from '../pages/consultations/ConsultationActionsPage';
 import { ConsultationsListPage } from '../pages/consultations/ConsultationListPage';
+import { LoginPage } from '../pages/LoginPage';
 
 const routes: RouteObject[] = [
   {
@@ -67,6 +68,7 @@ const routes: RouteObject[] = [
       { path: '*', element: <NotFound /> },
     ],
   },
+  { path: 'login', element: <LoginPage /> },
 ];
 
 export const router = createBrowserRouter(routes);

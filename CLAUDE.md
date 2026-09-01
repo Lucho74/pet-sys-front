@@ -27,27 +27,54 @@ No hay suite de tests configurada todavía en este repo.
 ### Estructura por feature
 
 `src/` se organiza así:
-- `pages/` — componentes de página de alto nivel, montados por el router.
-- `components/<feature>/` — UI y hooks de una feature (ej. `components/users/`).
-- `services/<feature>/` — llamadas `fetch` a la API del backend y tipos de DTO.
+- `pages/<feature>/` — una página por pantalla, montada directo por el router: `<Entity>ListPage`, `<Entity>CreatePage`, `<Entity>EditPage`, `<Entity>ActionsPage`, `<Entity>DeletePage`. **No hay un hook `use<Feature>Crud` centralizado** — cada página maneja su propio `useState`/`useEffect` y llama directo al service (ver `PetCreatePage.tsx` como ejemplo canónico).
+- `components/<feature>/` — `types.ts` (modelo de dominio + `<Entity>FormState` + `<Feature>OutletContext`, este último para pasarle datos del list page a las rutas hijas vía `Outlet` context de React Router), `validation.ts` (función pura `validate<Entity>Form(form): FormErrors`), `Form.tsx` (presentación, envuelve `FormShell`), `List.tsx`.
+- `components/common/` — kit de UI compartido entre features: `FormShell.tsx` (envoltorio de formulario con grid 2 columnas en `sm+`, error inline, botones cancelar/guardar), `FormField.tsx` + `fieldStyles.ts` (input controlado con label/error/`autoComplete`), `ListState.tsx` (loading/error/empty state de listas), `buttonStyles.ts` (`PRIMARY_BUTTON_CLASSES`, `SECONDARY_BUTTON_CLASSES`, `GHOST_BUTTON_CLASSES`). Reusar esto en vez de repetir clases Tailwind sueltas.
+- `components/layout/` — `Sidebar.tsx` (nav fija con los ítems de `navigation.ts`, sin filtrado por rol ni por auth — se muestra siempre) y `ScreenShell.tsx` (header de página: props `eyebrow`/`title`/`icon`/`backTo`/`homeTo`/`action`).
+- `services/<feature>/` — `I<Entity>.ts` (DTOs) + `<entity>Service.ts` (funciones `handleXxx` con `fetch` directo). Sigue sin haber cliente HTTP centralizado ni manejo de auth/token — cada función de cada feature repite `fetch('https://localhost:7140/api/...')` hardcodeado, y no hay ningún `.env` en el repo.
 - `router/` — definición de rutas (`createBrowserRouter`).
 - `utils/` — helpers puros compartidos.
 
-El patrón se ve completo en `users/`, y es el que hay que replicar al agregar features nuevas (ej. `pets`):
-- `services/<feature>/I<Entity>.ts` — DTOs de request/response tal como los devuelve la API.
-- `services/<feature>/<entity>Service.ts` — funciones `handleXxx` que hacen `fetch` directo contra el backend. No hay cliente HTTP centralizado ni manejo de auth/token todavía — cada feature repite el boilerplate de `fetch`.
-- `components/<feature>/types.ts` — modelos de UI (distintos de los DTOs de la API; ver mapeo abajo).
-- `components/<feature>/use<Feature>Crud.ts` — hook que concentra estado, mapeo DTO↔UI y navegación de toda la feature.
-- Componentes de presentación puros (`List`, `Form`, `ActionSheet`, `DeleteDialog`, ...) que reciben todo por props, sin fetch propio.
-- Un componente contenedor (`<Feature>Management.tsx`) que arma el layout y conecta el hook con los componentes de presentación.
+Features existentes hoy siguiendo este patrón: `users`, `pets`, `consultations`.
 
-### Ruteo real de las pantallas de `users`
+### Ruteo
 
-Ojo con esto: las rutas `/users`, `/users/new`, `/users/:id`, `/users/:id/edit`, `/users/:id/delete` en `router/index.tsx` **todas** renderizan el mismo elemento (`Home` → `UserManagement`). El router no decide qué pantalla mostrar. En su lugar, `useUsersCrud.ts` parsea `location.pathname` manualmente para derivar `screen` (`list`/`create`/`edit`) y si hay que mostrar el `ActionSheet` o el `DeleteDialog` como overlay. Cualquier cambio a la navegación de usuarios (o de una feature nueva que copie este patrón) tiene que tocar esa lógica de parsing en el hook, no solo el router.
+`router/index.tsx` ya **no** usa el hack viejo de "todas las rutas renderizan el mismo elemento y un hook parsea el pathname" (eso quedó obsoleto). Cada ruta tiene su propio elemento, con este patrón repetido por feature:
+```
+{ path: '<feature>', element: <FeatureListPage />, children: [
+    { path: ':id', element: <FeatureActionsPage /> },
+    { path: ':id/delete', element: <FeatureDeletePage /> },
+]},
+{ path: '<feature>/new', element: <FeatureCreatePage /> },
+{ path: '<feature>/:id/edit', element: <FeatureEditPage /> },
+```
+El list page le pasa sus datos a las rutas hijas (`:id`, `:id/delete`) vía `Outlet` context (tipado como `<Feature>OutletContext` en `components/<feature>/types.ts`), no vía un hook central.
+
+Nota: hay una duplicación pre-existente de las entradas `pets/new` y `pets/:id/edit` en `router/index.tsx` — no parece intencional; si se toca el router de `pets` conviene limpiarla.
+
+`/login` (`pages/LoginPage.tsx`) es la única ruta que **no** cuelga de `{ path: '/', element: <App /> }` — está como hermana de nivel superior en `router/index.tsx` para no heredar el `Sidebar`/chrome de la app.
+
+`App.tsx` ya no es un `Outlet` pelado: ahora arma el layout global (`Sidebar` + `<main>` + `Outlet` + `ToastContainer` de `react-toastify`). Sigue sin existir ningún guard de auth, ruta protegida o concepto de "usuario actual" — todas las rutas son accesibles sin loguearse.
 
 ### Estilado
 
-Tailwind CSS 4 vía `@tailwindcss/vite`, con clases inline y una paleta de colores fija ya usada en toda la UI de usuarios: `#27374D` (oscuro principal), `#526D82`, `#9DB2BF`, `#DDE6ED` (fondo claro). Mantener esta paleta al agregar pantallas nuevas para consistencia visual. `src/design/Sysadmin Users.dc.html` es un export/mockup de diseño, no código de la app.
+Tailwind CSS 4 vía `@tailwindcss/vite`, con una paleta de colores fija: `#27374D` (oscuro principal), `#526D82`, `#9DB2BF`, `#DDE6ED` (fondo claro), y para estados de error `#c0392b` (borde/texto) y `#f5c2c7`/`#fff5f5`/`#7a1d1d` (fondo/texto en `ListState`). Mantener esta paleta al agregar pantallas nuevas. Los estilos de botones e inputs están centralizados en `components/common/buttonStyles.ts` y `fieldStyles.ts` — reusar esas constantes en vez de repetir clases sueltas. `src/design/Sysadmin Users.dc.html` es un export/mockup de diseño, no código de la app.
+
+Feedback (toasts): la convención es mostrar **siempre los dos canales juntos** en errores de guardado — `toast.error(...)` de `react-toastify` (montado una vez en `App.tsx`) *además* del error inline que ya renderiza `FormShell`/`FormField`, nunca uno en vez del otro. Éxito solo lleva `toast.success(...)` (la página navega enseguida).
+
+### Dependencias relevantes
+
+Se agregaron `react-toastify` (toasts) y `lucide-react` (íconos) desde el snapshot original. Sigue sin haber cliente HTTP centralizado, librería de forms/validación (la validación es a mano por feature en `validation.ts`), librería de state management, ni manejo de variables de entorno (`.env`).
+
+### Feature `auth` (login)
+
+`auth` no sigue el patrón CRUD de `pets`/`consultations`/`users` porque es una sola pantalla: `services/auth/{IAuth.ts,authService.ts}` + `components/auth/{types.ts,validation.ts,LoginForm.tsx}` + `pages/LoginPage.tsx` (estado local, sin hook dedicado, mismo estilo que `PetCreatePage.tsx`). `LoginForm` reusa `FormField`/`buttonStyles` de `components/common/` pero **no** usa `FormShell` (ese fuerza un botón "Cancelar" que no aplica pre-login).
+
+El backend todavía no tiene login (ver sección de backend más abajo), así que `authService.ts` apunta a un contrato **asumido**: `POST /api/Auth/login` con `{ email, password }` → `200 { token }`. Ajustar ahí (y en `IAuth.ts`) el día que el contrato real esté definido. El token se guarda en `localStorage` (`authToken`) y navega a `/` en éxito; **no hay route guards ni protección de otras rutas todavía** — cualquier ruta sigue siendo accesible sin loguearse.
+
+### Roles: no confundir con auth
+
+`UserRole` (`'Client' | 'Veterinarian' | 'Admin'`) vive en `services/users/IUser.ts` y es un **campo de dominio del User** (con un campo DNI condicional en el form cuando el rol es `Client`) — no es un mecanismo de autorización/permisos. No hay roles de auth ni control de acceso todavía en ningún lado del front.
 
 ### TypeScript
 
@@ -63,7 +90,7 @@ Snapshot al 2026-08-18. El backend se va a seguir expandiendo — verificar cont
 - IDs siempre `int`.
 
 **NO implementado todavía (no bloquear el front asumiendo que existen):**
-- Auth: no hay login/JWT. Se planea JWT + hashing vía ASP.NET Identity, pero hoy el password se guarda tal cual se manda.
+- Auth: no hay login/JWT real. Se planea JWT + hashing vía ASP.NET Identity, pero hoy el password se guarda tal cual se manda. El front ya tiene una pantalla de login (`/login`, ver "Feature `auth`" arriba) construida contra un contrato asumido (`POST /api/Auth/login`) — verificar y ajustar cuando el endpoint real exista.
 - Turnos (`Consultation`): la entidad y el repo existen en el dominio, pero no hay service ni controller — sin endpoint todavía.
 - Administración de veterinarios: `Admin`/`Veterinarian` existen como roles en el modelo, pero sin endpoints propios ni diferenciación real en la API.
 - Cirugías/internaciones: sin decidir cómo se modelan (¿campo `Type` en `Consultation` o entidades separadas?).

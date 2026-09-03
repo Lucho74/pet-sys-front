@@ -1,5 +1,5 @@
-import { STATUS_LABELS } from './types';
-import type { ConsultationFormState } from './types';
+import { STATUS_LABELS } from './consultationTypes';
+import type { ConsultationFormState } from './consultationTypes';
 import { todayDate } from '../../utils/datetime';
 
 const VALID_STATUSES = Object.keys(STATUS_LABELS);

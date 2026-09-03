@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import type { User } from './types';
-import { ROLE_LABELS } from './types';
+import type { User } from './userTypes';
+import { ROLE_LABELS } from './userTypes';
 import { initials } from '../../utils/initials';
 import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';

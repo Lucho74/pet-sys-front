@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import type { Pet } from './types';
+import type { Pet } from './petTypes';
 import { initials } from '../../utils/initials';
 import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';

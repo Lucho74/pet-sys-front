@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { Form } from '../../components/consultations/Form';
+import { Form } from '../../components/consultations/ConsultationForm';
 import { handleGetAllPet } from '../../services/pets/petService';
 import { handleGetAllUser } from '../../services/users/userService';
 import type { IUserResponse } from '../../services/users/IUser';
-import type { FormErrors } from '../../components/consultations/validation';
+import type { FormErrors } from '../../components/consultations/consultationValidation';
 import { handleAddConsultation } from '../../services/consultation/consultationService';
-import type { ConsultationFormState } from '../../components/consultations/types';
-import { validateConsultationForm } from '../../components/consultations/validation';
+import type { ConsultationFormState } from '../../components/consultations/consultationTypes';
+import { validateConsultationForm } from '../../components/consultations/consultationValidation';
 import type { IPetResponse } from '../../services/pets/IPet';
 import { toApiDate } from '../../utils/datetime';
 

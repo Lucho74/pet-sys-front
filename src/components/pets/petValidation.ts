@@ -1,4 +1,4 @@
-import type { PetFormState } from './types';
+import type { PetFormState } from './petTypes';
 
 export type FormErrors = Partial<Record<keyof PetFormState, string>>;
 

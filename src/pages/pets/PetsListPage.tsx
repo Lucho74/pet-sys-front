@@ -4,9 +4,9 @@ import { PawPrint } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { CreateButton } from '../../components/common/CreateButton';
-import { List } from '../../components/pets/List';
+import { List } from '../../components/pets/PetList';
 import { handleGetAllPet } from '../../services/pets/petService';
-import type { Pet } from '../../components/pets/types';
+import type { Pet } from '../../components/pets/petTypes';
 
 const CREATE_TO = '/pets/new';
 const CREATE_LABEL = 'Nueva mascota';

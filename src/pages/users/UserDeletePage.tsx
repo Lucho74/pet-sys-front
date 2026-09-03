@@ -3,7 +3,7 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { DeleteDialog } from '../../components/common/DeleteDialog';
 import { handleDeleteUser } from '../../services/users/userService';
-import type { UsersOutletContext } from '../../components/users/types';
+import type { UsersOutletContext } from '../../components/users/userTypes';
 
 export function UserDeletePage() {
   const { id } = useParams();

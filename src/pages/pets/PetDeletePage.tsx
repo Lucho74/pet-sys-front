@@ -3,7 +3,7 @@ import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { DeleteDialog } from '../../components/common/DeleteDialog';
 import { handleDeletePet } from '../../services/pets/petService';
-import type { PetsOutletContext } from '../../components/pets/types';
+import type { PetsOutletContext } from '../../components/pets/petTypes';
 
 export function PetDeletePage() {
   const { id } = useParams();

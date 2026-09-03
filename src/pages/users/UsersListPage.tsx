@@ -4,9 +4,9 @@ import { User as UserIcon } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { CreateButton } from '../../components/common/CreateButton';
-import { List } from '../../components/users/List';
+import { List } from '../../components/users/UserList';
 import { handleGetAllUser } from '../../services/users/userService';
-import type { User } from '../../components/users/types';
+import type { User } from '../../components/users/userTypes';
 
 const CREATE_TO = '/users/new';
 const CREATE_LABEL = 'Nuevo usuario';

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { STATUS_BADGE_CLASSES, STATUS_LABELS } from './types';
-import type { Consultation } from './types';
+import { STATUS_BADGE_CLASSES, STATUS_LABELS } from './consultationTypes';
+import type { Consultation } from './consultationTypes';
 import { formatDate } from '../../utils/datetime';
 import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';

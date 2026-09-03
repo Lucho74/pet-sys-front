@@ -4,11 +4,11 @@ import { Stethoscope } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { CreateButton } from '../../components/common/CreateButton';
-import { List } from '../../components/consultations/List';
+import { List } from '../../components/consultations/ConsultationList';
 import { handleGetAllConsultations } from '../../services/consultation/consultationService';
 import { handleGetAllPet } from '../../services/pets/petService';
 import { handleGetAllUser } from '../../services/users/userService';
-import type { Consultation } from '../../components/consultations/types';
+import type { Consultation } from '../../components/consultations/consultationTypes';
 import { hasDateTime } from '../../utils/datetime';
 
 const CREATE_TO = '/consultations/new';

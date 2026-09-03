@@ -2,8 +2,8 @@ import { FormField } from '../common/FormField';
 import { FormShell } from '../common/FormShell';
 import { OwnerSelect } from './OwnerSelect';
 import type { IUserResponse } from '../../services/users/IUser';
-import type { PetFormState } from './types';
-import type { FormErrors } from './validation';
+import type { PetFormState } from './petTypes';
+import type { FormErrors } from './petValidation';
 
 interface FormProps {
   form: PetFormState;

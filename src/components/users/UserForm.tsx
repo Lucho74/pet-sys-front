@@ -1,9 +1,9 @@
 import { FormField } from '../common/FormField';
 import { FormShell } from '../common/FormShell';
 import { SelectField } from '../common/SelectField';
-import { ROLE_LABELS } from './types';
-import type { UserFormState } from './types';
-import type { FormErrors } from './validation';
+import { ROLE_LABELS } from './userTypes';
+import type { UserFormState } from './userTypes';
+import type { FormErrors } from './userValidation';
 
 const ROLE_OPTIONS = Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }));
 

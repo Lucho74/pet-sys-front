@@ -1,6 +1,6 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ActionSheet } from '../../components/common/ActionSheet';
-import type { PetsOutletContext } from '../../components/pets/types';
+import type { PetsOutletContext } from '../../components/pets/petTypes';
 
 export function PetActionsPage() {
   const { id } = useParams();

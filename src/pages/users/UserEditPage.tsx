@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { Form } from '../../components/users/Form';
+import { Form } from '../../components/users/UserForm';
 import { handleGetByIdUser, handleUpdateUser } from '../../services/users/userService';
 import type { UserRole } from '../../services/users/IUser';
-import type { UserFormState } from '../../components/users/types';
-import { validateUserForm } from '../../components/users/validation';
-import type { FormErrors } from '../../components/users/validation';
+import type { UserFormState } from '../../components/users/userTypes';
+import { validateUserForm } from '../../components/users/userValidation';
+import type { FormErrors } from '../../components/users/userValidation';
 
 export function UserEditPage() {
   const { id = '' } = useParams();

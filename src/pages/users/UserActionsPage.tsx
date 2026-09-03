@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ActionSheet } from '../../components/common/ActionSheet';
-import { ROLE_LABELS } from '../../components/users/types';
-import type { UsersOutletContext } from '../../components/users/types';
+import { ROLE_LABELS } from '../../components/users/userTypes';
+import type { UsersOutletContext } from '../../components/users/userTypes';
 
 export function UserActionsPage() {
   const { id } = useParams();

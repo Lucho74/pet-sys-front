@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { DeleteDialog } from '../../components/common/DeleteDialog';
-import type { ConsultationsOutletContext } from '../../components/consultations/types';
+import type { ConsultationsOutletContext } from '../../components/consultations/consultationTypes';
 import { handleDeleteConsultation } from '../../services/consultation/consultationService';
 
 export function ConsultationDeletePage() {

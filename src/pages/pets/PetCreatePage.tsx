@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { Form } from '../../components/pets/Form';
+import { Form } from '../../components/pets/PetForm';
 import { handleAddPet } from '../../services/pets/petService';
 import { handleGetAllUser } from '../../services/users/userService';
 import type { IUserResponse } from '../../services/users/IUser';
-import type { PetFormState } from '../../components/pets/types';
-import { validatePetForm } from '../../components/pets/validation';
-import type { FormErrors } from '../../components/pets/validation';
+import type { PetFormState } from '../../components/pets/petTypes';
+import { validatePetForm } from '../../components/pets/petValidation';
+import type { FormErrors } from '../../components/pets/petValidation';
 
 export function PetCreatePage() {
   const navigate = useNavigate();

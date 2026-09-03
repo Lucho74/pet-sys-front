@@ -1,4 +1,4 @@
-import type { UserFormState } from './types';
+import type { UserFormState } from './userTypes';
 
 export type FormErrors = Partial<Record<keyof UserFormState, string>>;
 

@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ActionSheet } from '../../components/common/ActionSheet';
-import { STATUS_LABELS } from '../../components/consultations/types';
-import type { ConsultationsOutletContext } from '../../components/consultations/types';
+import { STATUS_LABELS } from '../../components/consultations/consultationTypes';
+import type { ConsultationsOutletContext } from '../../components/consultations/consultationTypes';
 import { formatDate } from '../../utils/datetime';
 
 

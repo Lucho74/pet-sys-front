@@ -3,10 +3,10 @@ import { FormShell } from '../common/FormShell';
 import { SelectField } from '../common/SelectField';
 import { PetSelect } from './PetSelect';
 import { VeterinarianSelect } from './VeterinarianSelect';
-import { STATUS_LABELS } from './types';
+import { STATUS_LABELS } from './consultationTypes';
 import type { IUserResponse } from '../../services/users/IUser';
-import type { ConsultationFormState } from './types';
-import type { FormErrors } from './validation';
+import type { ConsultationFormState } from './consultationTypes';
+import type { FormErrors } from './consultationValidation';
 import type { IPetResponse } from '../../services/pets/IPet';
 import { todayDate } from '../../utils/datetime';
 

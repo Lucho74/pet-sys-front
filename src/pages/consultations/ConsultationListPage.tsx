@@ -4,7 +4,7 @@ import { Stethoscope } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { CreateButton } from '../../components/common/CreateButton';
-import { List } from '../../components/consultations/ConsultationList';
+import { ConsultationList } from '../../components/consultations/ConsultationList';
 import { handleGetAllConsultations } from '../../services/consultation/consultationService';
 import { handleGetAllPet } from '../../services/pets/petService';
 import { handleGetAllUser } from '../../services/users/userService';
@@ -14,7 +14,7 @@ import { hasDateTime } from '../../utils/datetime';
 const CREATE_TO = '/consultations/new';
 const CREATE_LABEL = 'Nueva consulta';
 
-export function ConsultationsListPage() {
+export function ConsultationListPage() {
     const [consultations, setConsultations] = useState<Consultation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -71,7 +71,7 @@ export function ConsultationsListPage() {
             homeTo="/"
             action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
         >
-            <List
+            <ConsultationList
                 consultations={consultations}
                 isLoading={isLoading}
                 error={error}

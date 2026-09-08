@@ -6,7 +6,7 @@ import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';
 import { CARD_CLASSES, GRID_CLASSES } from '../common/listStyles';
 
-interface ListProps {
+interface UserListProps {
   users: User[];
   isLoading: boolean;
   error: string;
@@ -15,7 +15,7 @@ interface ListProps {
   itemTo: (userId: number) => string;
 }
 
-export function List({ users, isLoading, error, createTo, createLabel, itemTo }: ListProps) {
+export function UserList({ users, isLoading, error, createTo, createLabel, itemTo }: UserListProps) {
   const hasUsers = !isLoading && !error && users.length > 0;
 
   return (

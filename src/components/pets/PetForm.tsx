@@ -5,7 +5,7 @@ import type { IUserResponse } from '../../services/users/IUser';
 import type { PetFormState } from './petTypes';
 import type { FormErrors } from './petValidation';
 
-interface FormProps {
+interface PetFormProps {
   form: PetFormState;
   formError: string;
   fieldErrors: FormErrors;
@@ -20,7 +20,7 @@ interface FormProps {
   saveLabel: string;
 }
 
-export function Form({
+export function PetForm({
   form,
   formError,
   fieldErrors,
@@ -33,7 +33,7 @@ export function Form({
   onCancel,
   onSave,
   saveLabel,
-}: FormProps) {
+}: PetFormProps) {
   return (
     <FormShell
       formError={formError}

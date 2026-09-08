@@ -5,7 +5,7 @@ import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';
 import { CARD_CLASSES, GRID_CLASSES } from '../common/listStyles';
 
-interface ListProps {
+interface PetListProps {
   pets: Pet[];
   isLoading: boolean;
   error: string;
@@ -14,7 +14,7 @@ interface ListProps {
   itemTo: (petId: number) => string;
 }
 
-export function List({ pets, isLoading, error, createTo, createLabel, itemTo }: ListProps) {
+export function PetList({ pets, isLoading, error, createTo, createLabel, itemTo }: PetListProps) {
   const hasPets = !isLoading && !error && pets.length > 0;
 
   return (

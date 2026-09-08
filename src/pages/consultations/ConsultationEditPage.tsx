@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { Form } from '../../components/consultations/ConsultationForm';
+import { ConsultationForm } from '../../components/consultations/ConsultationForm';
 import { handleGetAllPet } from '../../services/pets/petService';
 import { handleGetAllUser } from '../../services/users/userService';
 import type { IUserResponse } from '../../services/users/IUser';
@@ -105,7 +105,7 @@ export function ConsultationEditPage() {
 
     return (
         <ScreenShell eyebrow="Editar" title="Editar consulta" backTo="/consultations">
-            <Form
+            <ConsultationForm
                 form={form}
                 formError={formError}
                 fieldErrors={fieldErrors}

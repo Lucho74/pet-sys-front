@@ -6,7 +6,7 @@ import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';
 import { CARD_CLASSES, WIDE_GRID_CLASSES } from '../common/listStyles';
 
-interface ListProps {
+interface ConsultationListProps {
   consultations: Consultation[];
   isLoading: boolean;
   error: string;
@@ -15,14 +15,14 @@ interface ListProps {
   itemTo: (consultationId: number) => string;
 }
 
-export function List({
+export function ConsultationList({
   consultations,
   isLoading,
   error,
   createTo,
   createLabel,
   itemTo,
-}: ListProps) {
+}: ConsultationListProps) {
   const hasConsultations = !isLoading && !error && consultations.length > 0;
 
   return (

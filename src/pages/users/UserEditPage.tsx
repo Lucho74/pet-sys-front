@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { Form } from '../../components/users/UserForm';
+import { UserForm } from '../../components/users/UserForm';
 import { handleGetByIdUser, handleUpdateUser } from '../../services/users/userService';
 import type { UserRole } from '../../services/users/IUser';
 import type { UserFormState } from '../../components/users/userTypes';
@@ -83,7 +83,7 @@ export function UserEditPage() {
 
   return (
     <ScreenShell eyebrow="Editar" title="Editar usuario" backTo="/users">
-      <Form
+      <UserForm
         form={form}
         formError={formError}
         fieldErrors={fieldErrors}

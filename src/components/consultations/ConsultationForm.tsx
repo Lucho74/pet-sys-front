@@ -92,7 +92,7 @@ export function Form({
       />
 
       <VeterinarianSelect
-        label="DNI del veterinario"
+        label="Veterinario"
         veterinarians={veterinarians}
         value={form.veterinarianId}
         onChange={(value) => onChange('veterinarianId', value)}

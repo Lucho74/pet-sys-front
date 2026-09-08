@@ -4,7 +4,7 @@ import { User as UserIcon } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { CreateButton } from '../../components/common/CreateButton';
-import { List } from '../../components/users/UserList';
+import { UserList } from '../../components/users/UserList';
 import { handleGetAllUser } from '../../services/users/userService';
 import type { User } from '../../components/users/userTypes';
 
@@ -50,7 +50,7 @@ export function UsersListPage() {
       homeTo="/"
       action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
     >
-      <List
+      <UserList
         users={users}
         isLoading={isLoading}
         error={error}

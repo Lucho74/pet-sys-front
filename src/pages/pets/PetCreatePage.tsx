@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { Form } from '../../components/pets/PetForm';
+import { PetForm } from '../../components/pets/PetForm';
 import { handleAddPet } from '../../services/pets/petService';
 import { handleGetAllUser } from '../../services/users/userService';
 import type { IUserResponse } from '../../services/users/IUser';
@@ -71,7 +71,7 @@ export function PetCreatePage() {
 
   return (
     <ScreenShell eyebrow="Nueva" title="Nueva mascota" backTo="/pets">
-      <Form
+      <PetForm
         form={form}
         formError={formError}
         fieldErrors={fieldErrors}

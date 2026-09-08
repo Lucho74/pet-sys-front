@@ -4,7 +4,7 @@ import { PawPrint } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { CreateButton } from '../../components/common/CreateButton';
-import { List } from '../../components/pets/PetList';
+import { PetList } from '../../components/pets/PetList';
 import { handleGetAllPet } from '../../services/pets/petService';
 import type { Pet } from '../../components/pets/petTypes';
 
@@ -48,7 +48,7 @@ export function PetsListPage() {
       homeTo="/"
       action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
     >
-      <List
+      <PetList
         pets={pets}
         isLoading={isLoading}
         error={error}

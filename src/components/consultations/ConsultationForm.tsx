@@ -12,7 +12,7 @@ import { todayDate } from '../../utils/datetime';
 
 const STATUS_OPTIONS = Object.entries(STATUS_LABELS).map(([value, label]) => ({ value, label }));
 
-interface FormProps {
+interface ConsultationFormProps {
   form: ConsultationFormState;
   formError: string;
   fieldErrors: FormErrors;
@@ -31,7 +31,7 @@ interface FormProps {
   saveLabel: string;
 }
 
-export function Form({
+export function ConsultationForm({
   form,
   formError,
   fieldErrors,
@@ -48,7 +48,7 @@ export function Form({
   onCancel,
   onSave,
   saveLabel,
-}: FormProps) {
+}: ConsultationFormProps) {
   return (
     <FormShell
       formError={formError}
@@ -92,7 +92,7 @@ export function Form({
       />
 
       <VeterinarianSelect
-        label="DNI del veterinario"
+        label="Veterinario"
         veterinarians={veterinarians}
         value={form.veterinarianId}
         onChange={(value) => onChange('veterinarianId', value)}

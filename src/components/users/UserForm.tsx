@@ -7,7 +7,7 @@ import type { FormErrors } from './userValidation';
 
 const ROLE_OPTIONS = Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }));
 
-interface FormProps {
+interface UserFormProps {
   form: UserFormState;
   formError: string;
   fieldErrors: FormErrors;
@@ -20,7 +20,7 @@ interface FormProps {
   saveLabel: string;
 }
 
-export function Form({
+export function UserForm({
   form,
   formError,
   fieldErrors,
@@ -31,7 +31,7 @@ export function Form({
   onCancel,
   onSave,
   saveLabel,
-}: FormProps) {
+}: UserFormProps) {
   return (
     <FormShell
       formError={formError}

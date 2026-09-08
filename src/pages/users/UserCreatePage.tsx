@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { Form } from '../../components/users/UserForm';
+import { UserForm } from '../../components/users/UserForm';
 import { handleAddUser } from '../../services/users/userService';
 import type { UserRole } from '../../services/users/IUser';
 import type { UserFormState } from '../../components/users/userTypes';
@@ -62,7 +62,7 @@ export function UserCreatePage() {
 
   return (
     <ScreenShell eyebrow="Nuevo" title="Nuevo usuario" backTo="/users">
-      <Form
+      <UserForm
         form={form}
         formError={formError}
         fieldErrors={fieldErrors}

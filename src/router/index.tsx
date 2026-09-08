@@ -18,7 +18,7 @@ import { ConsultationDeletePage } from '../pages/consultations/ConsultationDelet
 import { ConsultationEditPage } from '../pages/consultations/ConsultationEditPage';
 import { ConsultationCreatePage } from '../pages/consultations/ConsultationCreatePage';
 import { ConsultationActionsPage } from '../pages/consultations/ConsultationActionsPage';
-import { ConsultationsListPage } from '../pages/consultations/ConsultationListPage';
+import { ConsultationListPage } from '../pages/consultations/ConsultationListPage';
 
 const routes: RouteObject[] = [
   {
@@ -51,7 +51,7 @@ const routes: RouteObject[] = [
 
       {
         path: 'consultations',
-        element: <ConsultationsListPage />,
+        element: <ConsultationListPage />,
         children: [
           { path: ':id', element: <ConsultationActionsPage /> },
           { path: ':id/delete', element: <ConsultationDeletePage /> },

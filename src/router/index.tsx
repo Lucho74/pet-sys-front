@@ -19,49 +19,65 @@ import { ConsultationEditPage } from '../pages/consultations/ConsultationEditPag
 import { ConsultationCreatePage } from '../pages/consultations/ConsultationCreatePage';
 import { ConsultationActionsPage } from '../pages/consultations/ConsultationActionsPage';
 import { ConsultationListPage } from '../pages/consultations/ConsultationListPage';
+import { LoginPage } from '../pages/auth/LoginPage';
+import Protected from './Protected';
+import PublicOnly from './PublicOnly';
 
 const routes: RouteObject[] = [
+  {
+    element: <PublicOnly />,
+    children: [
+      { path: 'login', element: <LoginPage /> },
+    ]
+  },
+
   {
     path: '/',
     element: <App />,
     children: [
-      { index: true, element: <Home /> },
-
       {
-        path: 'users',
-        element: <UsersListPage />,
+        element: <Protected />,
         children: [
-          { path: ':id', element: <UserActionsPage /> },
-          { path: ':id/delete', element: <UserDeletePage /> },
-        ],
-      },
-      { path: 'users/new', element: <UserCreatePage /> },
-      { path: 'users/:id/edit', element: <UserEditPage /> },
+          
+          { index: true, element: <Home /> },
 
-      {
-        path: 'pets',
-        element: <PetsListPage />,
-        children: [
-          { path: ':id', element: <PetActionsPage /> },
-          { path: ':id/delete', element: <PetDeletePage /> },
-        ],
-      },
-      { path: 'pets/new', element: <PetCreatePage /> },
-      { path: 'pets/:id/edit', element: <PetEditPage /> },
+          {
+            path: 'users',
+            element: <UsersListPage />,
+            children: [
+              { path: ':id', element: <UserActionsPage /> },
+              { path: ':id/delete', element: <UserDeletePage /> },
+            ],
+          },
+          { path: 'users/new', element: <UserCreatePage /> },
+          { path: 'users/:id/edit', element: <UserEditPage /> },
 
-      {
-        path: 'consultations',
-        element: <ConsultationListPage />,
-        children: [
-          { path: ':id', element: <ConsultationActionsPage /> },
-          { path: ':id/delete', element: <ConsultationDeletePage /> },
-        ],
-      },
-      { path: 'consultations/new', element: <ConsultationCreatePage /> },
-      { path: 'consultations/:id/edit', element: <ConsultationEditPage /> },
+          {
+            path: 'pets',
+            element: <PetsListPage />,
+            children: [
+              { path: ':id', element: <PetActionsPage /> },
+              { path: ':id/delete', element: <PetDeletePage /> },
+            ],
+          },
+          { path: 'pets/new', element: <PetCreatePage /> },
+          { path: 'pets/:id/edit', element: <PetEditPage /> },
 
-      { path: 'pets/new', element: <PetCreatePage /> },
-      { path: 'pets/:id/edit', element: <PetEditPage /> },
+          {
+            path: 'consultations',
+            element: <ConsultationListPage />,
+            children: [
+              { path: ':id', element: <ConsultationActionsPage /> },
+              { path: ':id/delete', element: <ConsultationDeletePage /> },
+            ],
+          },
+          { path: 'consultations/new', element: <ConsultationCreatePage /> },
+          { path: 'consultations/:id/edit', element: <ConsultationEditPage /> },
+
+          { path: 'pets/new', element: <PetCreatePage /> },
+          { path: 'pets/:id/edit', element: <PetEditPage /> },
+        ]
+      },
 
       { path: 'about', element: <About /> },
       { path: '*', element: <NotFound /> },

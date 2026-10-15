@@ -73,10 +73,6 @@ export function LoginForm({
             </button>
             </form>
 
-            <footer className="mt-6 border-t border-[#C8D4DC] pt-5 text-center text-sm text-[#27374D]">
-            ¿No tenés cuenta?{' '}
-            <span className="font-medium text-[#536FBA]">Registrarse</span>
-            </footer>
         </section>
     )
 }

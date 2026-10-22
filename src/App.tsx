@@ -1,6 +1,4 @@
 import { Outlet } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/ReactToastify.css'
 import { Sidebar } from './components/layout/Sidebar'
 
 function App() {
@@ -13,15 +11,6 @@ function App() {
         <Outlet />
       </main>
 
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        pauseOnHover
-        theme="colored"
-      />
     </div>
   )
 }

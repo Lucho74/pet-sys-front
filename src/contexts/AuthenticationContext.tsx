@@ -1,7 +1,9 @@
 import { createContext, useContext } from "react";
+import type { UserRole } from "../services/users/IUser";
 
 interface AuthenticationContextValue {
     token: string | null;
+    role: UserRole | null;
     handleUserLogin: (newToken: string) => boolean;
     handleUserLogout: () => void;
 }

@@ -16,10 +16,7 @@ const AuthenticationContextProvider = ({ children }: Props) => {
   const [role, setRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
-    if(!token || !isTokenValid(token)) {
-      setRole(null);
-      return;
-    }
+    if(!token || !isTokenValid(token)) return;
 
     let canceled = false;
 
@@ -39,6 +36,7 @@ const AuthenticationContextProvider = ({ children }: Props) => {
   const HandleUserLogin = (newToken: string): boolean => {
     if (!isTokenValid(newToken)) return false;
 
+    setRole(null);
     setToken(newToken);
     localStorage.setItem(TOKEN_KEY, newToken);
     return true;

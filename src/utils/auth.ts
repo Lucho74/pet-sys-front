@@ -1,5 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 
+export const TOKEN_KEY = 'pet-sys-token';
+
 export const isTokenValid = (token: string | null): boolean => {
     if (!token) return false;
 

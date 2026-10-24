@@ -1,12 +1,9 @@
 import { type ICreateUserRequest, type IUpdateUserRequest, type IUserResponse } from "./IUser"
+import { apiFetch } from "../apiClient";
 
 export const handleAddUser = async (newUser: ICreateUserRequest): Promise<IUserResponse> => {
-    const response = await fetch('https://localhost:7140/api/User', {
+    const response = await apiFetch('/User', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify(newUser)
     });
 
@@ -18,11 +15,8 @@ export const handleAddUser = async (newUser: ICreateUserRequest): Promise<IUserR
 };
 
 export const handleDeleteUser = async (id: string): Promise<string> => {
-    const response = await fetch(`https://localhost:7140/api/User/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+    const response = await apiFetch(`/User/${id}`, { 
+        method: 'DELETE' 
     });
 
     if (!response.ok) {
@@ -33,12 +27,8 @@ export const handleDeleteUser = async (id: string): Promise<string> => {
 };
 
 export const handleUpdateUser = async (id: string, updatedUser: IUpdateUserRequest): Promise<IUserResponse> => {
-    const response = await fetch(`https://localhost:7140/api/User/${id}`, {
+    const response = await apiFetch(`/User/${id}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify(updatedUser)
     });
 
@@ -50,12 +40,7 @@ export const handleUpdateUser = async (id: string, updatedUser: IUpdateUserReque
 };
 
 export const handleGetByIdUser = async (id: string): Promise<IUserResponse> => {
-    const response = await fetch(`https://localhost:7140/api/User/${id}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
+    const response = await apiFetch(`/User/${id}`);
 
     if (!response.ok) {
         throw new Error('Error getting user');
@@ -65,12 +50,7 @@ export const handleGetByIdUser = async (id: string): Promise<IUserResponse> => {
 };
 
 export const handleGetAllUser = async (): Promise<IUserResponse[]> => {
-    const response = await fetch('https://localhost:7140/api/User', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
+    const response = await apiFetch('/User');
 
     if (response.status === 404) {
         return [];

@@ -1,17 +1,13 @@
+import { apiFetch } from "../apiClient";
 import type { IUserResponse } from "../users/IUser";
 import type { ILoginRequest } from "./IAuth";
 
 
 export const HandleLogin = async (loginRequest: ILoginRequest) => {
-    const response = await fetch('https://localhost:7140/api/Authentication/authenticate',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginRequest)
-        }
-    );
+    const response = await apiFetch('/Authentication/authenticate', {
+        method: 'POST',
+        body: JSON.stringify(loginRequest)
+    });
     if(!response.ok){
         throw new Error('Login failed');
     }
@@ -26,12 +22,7 @@ export const HandleLogin = async (loginRequest: ILoginRequest) => {
 }
 
 export const handleGetCurrentUser = async (): Promise<IUserResponse> => {
-    const response = await fetch('https://localhost:7140/api/User/me', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
+    const response = await apiFetch('/User/me');
     if (!response.ok) {
         throw new Error('Failed to fetch current user');
     }

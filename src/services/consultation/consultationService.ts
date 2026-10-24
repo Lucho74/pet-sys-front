@@ -1,12 +1,9 @@
 import type { IConsultationResponse, ICreateConsultationRequest, IUpdateConsultationRequest } from "./IConsultation";
+import { apiFetch } from "../apiClient";
 
 export const handleAddConsultation = async (newConsultation: ICreateConsultationRequest): Promise<IConsultationResponse> => {
-    const response = await fetch('https://localhost:7140/api/Consultation', {
+    const response = await apiFetch('/Consultation', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify(newConsultation)
     });
 
@@ -18,11 +15,8 @@ export const handleAddConsultation = async (newConsultation: ICreateConsultation
 };
 
 export const handleDeleteConsultation = async (id: string): Promise<string> => {
-    const response = await fetch(`https://localhost:7140/api/Consultation/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+    const response = await apiFetch(`/Consultation/${id}`, { 
+        method: 'DELETE' 
     });
 
     if (!response.ok) {
@@ -33,12 +27,8 @@ export const handleDeleteConsultation = async (id: string): Promise<string> => {
 };
 
 export const handleUpdateConsultation = async (id: string, updatedConsultation: IUpdateConsultationRequest): Promise<IConsultationResponse> => {
-    const response = await fetch(`https://localhost:7140/api/Consultation/${id}`, {
+    const response = await apiFetch(`/Consultation/${id}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify(updatedConsultation)
     });
 
@@ -50,12 +40,7 @@ export const handleUpdateConsultation = async (id: string, updatedConsultation: 
 };
 
 export const handleGetByIdConsultation = async (id: string): Promise<IConsultationResponse> => {
-    const response = await fetch(`https://localhost:7140/api/Consultation/${id}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
+    const response = await apiFetch(`/Consultation/${id}`);
 
     if (!response.ok) {
         throw new Error('Error getting consultation');
@@ -65,12 +50,7 @@ export const handleGetByIdConsultation = async (id: string): Promise<IConsultati
 };
 
 export const handleGetAllConsultations = async (): Promise<IConsultationResponse[]> => {
-    const response = await fetch('https://localhost:7140/api/Consultation', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
+    const response = await apiFetch('/Consultation');
 
     if (response.status === 404) {
         return [];

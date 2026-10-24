@@ -1,12 +1,9 @@
 import { type IPetRequest, type IPetResponse } from "./IPet"
+import { apiFetch } from "../apiClient";
 
 export const handleAddPet = async (newPet: IPetRequest): Promise<IPetResponse> => {
-    const response = await fetch('https://localhost:7140/api/Pet', {
+    const response = await apiFetch('/Pet', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify(newPet)
     });
 
@@ -18,11 +15,8 @@ export const handleAddPet = async (newPet: IPetRequest): Promise<IPetResponse> =
 };
 
 export const handleDeletePet = async (id: string): Promise<string> => {
-    const response = await fetch(`https://localhost:7140/api/Pet/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+    const response = await apiFetch(`/Pet/${id}`, { 
+        method: 'DELETE' 
     });
 
     if (!response.ok) {
@@ -33,12 +27,8 @@ export const handleDeletePet = async (id: string): Promise<string> => {
 };
 
 export const handleUpdatePet = async (id: string, updatedPet: IPetRequest): Promise<IPetResponse> => {
-    const response = await fetch(`https://localhost:7140/api/Pet/${id}`, {
+    const response = await apiFetch(`/Pet/${id}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify(updatedPet)
     });
 
@@ -50,12 +40,7 @@ export const handleUpdatePet = async (id: string, updatedPet: IPetRequest): Prom
 };
 
 export const handleGetByIdPet = async (id: string): Promise<IPetResponse> => {
-    const response = await fetch(`https://localhost:7140/api/Pet/${id}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
+    const response = await apiFetch(`/Pet/${id}`);
 
     if (!response.ok) {
         throw new Error('Error getting pet');
@@ -65,12 +50,7 @@ export const handleGetByIdPet = async (id: string): Promise<IPetResponse> => {
 };
 
 export const handleGetAllPet = async (): Promise<IPetResponse[]> => {
-    const response = await fetch('https://localhost:7140/api/Pet', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
+    const response = await apiFetch('/Pet');
 
     if (response.status === 404) {
         return [];

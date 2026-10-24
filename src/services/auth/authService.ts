@@ -1,3 +1,4 @@
+import type { IUserResponse } from "../users/IUser";
 import type { ILoginRequest } from "./IAuth";
 
 
@@ -22,4 +23,17 @@ export const HandleLogin = async (loginRequest: ILoginRequest) => {
     }
 
     return { token };
+}
+
+export const handleGetCurrentUser = async (): Promise<IUserResponse> => {
+    const response = await fetch('https://localhost:7140/api/User/me', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch current user');
+    }
+    return response.json();
 }

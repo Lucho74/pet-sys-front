@@ -38,7 +38,7 @@ No hay suite de tests configurada todavía en este repo.
 
 Hay tres features implementadas con el mismo patrón — `users`, `pets` y `consultations` — y es el que hay que replicar al agregar una nueva:
 - `services/<feature>/I<Entity>.ts` — DTOs de request/response tal como los devuelve la API.
-- `services/<feature>/<entity>Service.ts` — funciones `handleXxx` que hacen `fetch` directo contra el backend. No hay cliente HTTP centralizado ni manejo de auth/token todavía — cada feature repite el boilerplate de `fetch`.
+- `services/<feature>/<entity>Service.ts` — funciones `handleXxx` que hacen `fetch` directo contra el backend. No hay cliente HTTP centralizado todavía — cada feature repite el boilerplate de `fetch`, incluido el header `Authorization: Bearer ${localStorage.getItem('token')}` (el JWT que guarda el login). Está en evaluación extraerlo a un `apiClient` común.
 - `components/<feature>/<entity>Types.ts` — modelos de UI (distintos de los DTOs de la API), el `<Entity>FormState` del formulario, el tipo del outlet context y los `Record` de labels (`ROLE_LABELS`, `STATUS_LABELS`, ...).
 - `components/<feature>/<entity>Validation.ts` — `validate<Entity>Form()` + el tipo `FormErrors`.
 - `components/<feature>/<Entity>List.tsx` y `<Entity>Form.tsx` — presentación pura, todo por props.
@@ -91,7 +91,7 @@ Snapshot al 2026-09-08. Los contratos de abajo son los que el front consume hoy 
 - `GET` de lista devuelve `404` cuando no hay registros — los `handleGetAll*` lo traducen a `[]` en vez de tirar error. Mantener ese manejo al agregar features.
 
 **NO implementado todavía (no bloquear el front asumiendo que existen):**
-- Auth: no hay login/JWT. Se planea JWT + hashing vía ASP.NET Identity, pero hoy el password se guarda tal cual se manda. Como no hay sesión, el front no filtra por usuario: todas las pantallas son de administración.
+- Auth: ya hay login con JWT (el token se guarda en `localStorage` bajo `token` y los services lo mandan como `Bearer`; logout en curso en la rama `feat/logout-and-token-in-requests`). Lo que falta: el front todavía no filtra por usuario ni rol, así que todas las pantallas siguen siendo de administración.
 - Administración de veterinarios: `Admin`/`Veterinarian` existen como roles, pero sin endpoints propios ni filtro por rol en la API. El front pide **todos** los usuarios con `handleGetAllUser()` y filtra en cliente por `roleName` dentro de la página (`=== 'Veterinarian'` en las de consultas, `=== 'Client'` en las de mascotas); los componentes `VeterinarianSelect`/`OwnerSelect` reciben la lista ya filtrada por props. Si el backend agrega un filtro por rol, el cambio va en las páginas, no en los selects.
 - Horarios/agenda: `Consultation` tiene `date` (día, sin hora) pero no hay slots ni disponibilidad.
 - Cirugías/internaciones: sin decidir cómo se modelan (¿campo `Type` en `Consultation` o entidades separadas?).

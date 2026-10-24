@@ -4,7 +4,8 @@ export const handleAddConsultation = async (newConsultation: ICreateConsultation
     const response = await fetch('https://localhost:7140/api/Consultation', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(newConsultation)
     });
@@ -19,6 +20,9 @@ export const handleAddConsultation = async (newConsultation: ICreateConsultation
 export const handleDeleteConsultation = async (id: string): Promise<string> => {
     const response = await fetch(`https://localhost:7140/api/Consultation/${id}`, {
         method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
     });
 
     if (!response.ok) {
@@ -32,7 +36,8 @@ export const handleUpdateConsultation = async (id: string, updatedConsultation: 
     const response = await fetch(`https://localhost:7140/api/Consultation/${id}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(updatedConsultation)
     });
@@ -46,7 +51,10 @@ export const handleUpdateConsultation = async (id: string, updatedConsultation: 
 
 export const handleGetByIdConsultation = async (id: string): Promise<IConsultationResponse> => {
     const response = await fetch(`https://localhost:7140/api/Consultation/${id}`, {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
     });
 
     if (!response.ok) {
@@ -58,7 +66,10 @@ export const handleGetByIdConsultation = async (id: string): Promise<IConsultati
 
 export const handleGetAllConsultations = async (): Promise<IConsultationResponse[]> => {
     const response = await fetch('https://localhost:7140/api/Consultation', {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
     });
 
     if (response.status === 404) {

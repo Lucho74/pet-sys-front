@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
-import { ChevronLeft, House } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ChevronLeft, House, LogOut } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthenticationContext';
 
 interface ScreenShellProps {
   eyebrow: string;
@@ -11,6 +12,27 @@ interface ScreenShellProps {
   homeTo?: string;
   action?: ReactNode;
   children: ReactNode;
+}
+
+function LogoutButton() {
+  const { handleUserLogout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    handleUserLogout();
+    navigate('/login', { replace: true });
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleLogout}
+      className="flex shrink-0 items-center gap-2 rounded-[8px] px-3 py-2 text-[14px] font-medium text-[#DDE6ED] transition-colors hover:bg-[#526D82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDE6ED]"
+    >
+      <LogOut size={17} strokeWidth={2} aria-hidden="true" />
+      <span>Cerrar sesión</span>
+    </button>
+  );
 }
 
 export function ScreenShell({
@@ -46,15 +68,21 @@ export function ScreenShell({
             <span />
           )}
 
-          {homeTo ? (
-            <Link
-              to={homeTo}
-              aria-label="Volver al panel"
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-[8px] text-[#9DB2BF] transition-colors hover:bg-[#526D82] hover:text-[#DDE6ED] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDE6ED] lg:hidden"
-            >
-              <House size={17} strokeWidth={2} />
-            </Link>
-          ) : null}
+          <div className="flex items-center gap-1">
+            {homeTo ? (
+              <Link
+                to={homeTo}
+                aria-label="Volver al panel"
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-[8px] text-[#9DB2BF] transition-colors hover:bg-[#526D82] hover:text-[#DDE6ED] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDE6ED] lg:hidden"
+              >
+                <House size={17} strokeWidth={2} />
+              </Link>
+            ) : null}
+
+            <div className="lg:hidden">
+              <LogoutButton />
+            </div>
+          </div>
         </div>
 
         <div
@@ -71,7 +99,10 @@ export function ScreenShell({
             </h1>
           </div>
 
-          {action ? <div className="hidden shrink-0 lg:block">{action}</div> : null}
+          <div className="hidden shrink-0 items-center gap-2 lg:flex">
+            <LogoutButton />
+            {action}
+          </div>
         </div>
       </header>
 

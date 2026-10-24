@@ -1,6 +1,6 @@
 import { TOKEN_KEY } from '../utils/auth';
 
-const API_URL = 'https://localhost:7140/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:7140/api';
 
 export const apiFetch = (path: string, options: RequestInit = {}): Promise<Response> => {
     const headers = new Headers(options.headers);

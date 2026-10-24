@@ -4,7 +4,8 @@ export const handleAddPet = async (newPet: IPetRequest): Promise<IPetResponse> =
     const response = await fetch('https://localhost:7140/api/Pet', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(newPet)
     });
@@ -19,6 +20,9 @@ export const handleAddPet = async (newPet: IPetRequest): Promise<IPetResponse> =
 export const handleDeletePet = async (id: string): Promise<string> => {
     const response = await fetch(`https://localhost:7140/api/Pet/${id}`, {
         method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
     });
 
     if (!response.ok) {
@@ -32,7 +36,8 @@ export const handleUpdatePet = async (id: string, updatedPet: IPetRequest): Prom
     const response = await fetch(`https://localhost:7140/api/Pet/${id}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(updatedPet)
     });
@@ -46,7 +51,10 @@ export const handleUpdatePet = async (id: string, updatedPet: IPetRequest): Prom
 
 export const handleGetByIdPet = async (id: string): Promise<IPetResponse> => {
     const response = await fetch(`https://localhost:7140/api/Pet/${id}`, {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
     });
 
     if (!response.ok) {
@@ -58,7 +66,10 @@ export const handleGetByIdPet = async (id: string): Promise<IPetResponse> => {
 
 export const handleGetAllPet = async (): Promise<IPetResponse[]> => {
     const response = await fetch('https://localhost:7140/api/Pet', {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
     });
 
     if (response.status === 404) {

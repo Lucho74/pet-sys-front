@@ -4,7 +4,8 @@ export const handleAddUser = async (newUser: ICreateUserRequest): Promise<IUserR
     const response = await fetch('https://localhost:7140/api/User', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(newUser)
     });
@@ -19,6 +20,9 @@ export const handleAddUser = async (newUser: ICreateUserRequest): Promise<IUserR
 export const handleDeleteUser = async (id: string): Promise<string> => {
     const response = await fetch(`https://localhost:7140/api/User/${id}`, {
         method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
     });
 
     if (!response.ok) {
@@ -32,7 +36,8 @@ export const handleUpdateUser = async (id: string, updatedUser: IUpdateUserReque
     const response = await fetch(`https://localhost:7140/api/User/${id}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(updatedUser)
     });
@@ -46,7 +51,10 @@ export const handleUpdateUser = async (id: string, updatedUser: IUpdateUserReque
 
 export const handleGetByIdUser = async (id: string): Promise<IUserResponse> => {
     const response = await fetch(`https://localhost:7140/api/User/${id}`, {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
     });
 
     if (!response.ok) {
@@ -58,7 +66,10 @@ export const handleGetByIdUser = async (id: string): Promise<IUserResponse> => {
 
 export const handleGetAllUser = async (): Promise<IUserResponse[]> => {
     const response = await fetch('https://localhost:7140/api/User', {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
     });
 
     if (response.status === 404) {

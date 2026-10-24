@@ -1,0 +1,49 @@
+name: Deploy Frontend to Azure Storage
+
+on:
+  push:
+    branches: [main, prod]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'prod' && 'prod' || 'dev' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+        env:
+          VITE_API_URL: ${{ vars.API_URL }}
+
+      - name: Azure login (OIDC / managed identity)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Upload build to $web
+        run: |
+          az storage blob upload-batch \
+            --account-name "${{ vars.STORAGE_ACCOUNT }}" \
+            --destination '$web' \
+            --source ./dist \
+            --overwrite \
+            --auth-mode login

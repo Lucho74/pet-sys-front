@@ -44,6 +44,7 @@ const AuthenticationContextProvider = ({ children }: Props) => {
 
   const HandleUserLogout = () => {
     setToken(null);
+    setRole(null);
     localStorage.removeItem(TOKEN_KEY);
   };
 

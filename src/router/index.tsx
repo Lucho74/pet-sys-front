@@ -22,6 +22,8 @@ import { ConsultationListPage } from '../pages/consultations/ConsultationListPag
 import { LoginPage } from '../pages/auth/LoginPage';
 import Protected from './Protected';
 import PublicOnly from './PublicOnly';
+import RoleRoute from './RoleRoute';
+import { ADMIN_ROLES } from '../utils/roles';
 
 const routes: RouteObject[] = [
   {
@@ -38,44 +40,47 @@ const routes: RouteObject[] = [
       {
         element: <Protected />,
         children: [
-          
+
           { index: true, element: <Home /> },
 
           {
-            path: 'users',
-            element: <UsersListPage />,
+            element: <RoleRoute allowedRoles={ADMIN_ROLES} />,
             children: [
-              { path: ':id', element: <UserActionsPage /> },
-              { path: ':id/delete', element: <UserDeletePage /> },
-            ],
-          },
-          { path: 'users/new', element: <UserCreatePage /> },
-          { path: 'users/:id/edit', element: <UserEditPage /> },
 
-          {
-            path: 'pets',
-            element: <PetsListPage />,
-            children: [
-              { path: ':id', element: <PetActionsPage /> },
-              { path: ':id/delete', element: <PetDeletePage /> },
-            ],
-          },
-          { path: 'pets/new', element: <PetCreatePage /> },
-          { path: 'pets/:id/edit', element: <PetEditPage /> },
+              {
+                path: 'users',
+                element: <UsersListPage />,
+                children: [
+                  { path: ':id', element: <UserActionsPage /> },
+                  { path: ':id/delete', element: <UserDeletePage /> },
+                ],
+              },
+              { path: 'users/new', element: <UserCreatePage /> },
+              { path: 'users/:id/edit', element: <UserEditPage /> },
 
-          {
-            path: 'consultations',
-            element: <ConsultationListPage />,
-            children: [
-              { path: ':id', element: <ConsultationActionsPage /> },
-              { path: ':id/delete', element: <ConsultationDeletePage /> },
-            ],
-          },
-          { path: 'consultations/new', element: <ConsultationCreatePage /> },
-          { path: 'consultations/:id/edit', element: <ConsultationEditPage /> },
+              {
+                path: 'pets',
+                element: <PetsListPage />,
+                children: [
+                  { path: ':id', element: <PetActionsPage /> },
+                  { path: ':id/delete', element: <PetDeletePage /> },
+                ],
+              },
+              { path: 'pets/new', element: <PetCreatePage /> },
+              { path: 'pets/:id/edit', element: <PetEditPage /> },
 
-          { path: 'pets/new', element: <PetCreatePage /> },
-          { path: 'pets/:id/edit', element: <PetEditPage /> },
+              {
+                path: 'consultations',
+                element: <ConsultationListPage />,
+                children: [
+                  { path: ':id', element: <ConsultationActionsPage /> },
+                  { path: ':id/delete', element: <ConsultationDeletePage /> },
+                ],
+              },
+              { path: 'consultations/new', element: <ConsultationCreatePage /> },
+              { path: 'consultations/:id/edit', element: <ConsultationEditPage /> },
+            ]
+          },
         ]
       },
 

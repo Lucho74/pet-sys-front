@@ -4,6 +4,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   Client: 'Cliente',
   Veterinarian: 'Veterinario',
   Admin: 'Administrador',
+  SysAdmin: 'Sysadmin',
 };
 
 export interface User {

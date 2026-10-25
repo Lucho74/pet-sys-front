@@ -62,3 +62,13 @@ export const handleGetAllConsultations = async (): Promise<IConsultationResponse
 
     return response.json();
 };
+
+export const handleGetConsultationsByPet = async (petId: number): Promise<IConsultationResponse[]> => {
+    const response = await apiFetch(`/Consultation/pet/${petId}`);
+
+    if (!response.ok) {
+        throw new Error('Error getting consultations of the pet');
+    }
+
+    return response.json();
+};

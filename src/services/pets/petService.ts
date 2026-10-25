@@ -61,4 +61,15 @@ export const handleGetAllPet = async (): Promise<IPetResponse[]> => {
     }
 
     return response.json();
+    
+};
+
+export const handleGetMyPets = async (): Promise<IPetResponse[]> => {
+    const response = await apiFetch('/Pet/me');
+
+    if (!response.ok) {
+        throw new Error('Error getting my pets');
+    }
+
+    return response.json();
 };

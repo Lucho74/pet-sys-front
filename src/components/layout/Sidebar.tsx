@@ -1,8 +1,14 @@
 import { NavLink } from 'react-router-dom';
 import { PawPrint } from 'lucide-react';
-import { NAV_ITEMS } from './navigation';
+import { getVisibleNavItems } from './navigation';
+import { useAuth } from '../../contexts/AuthenticationContext';
+import { ROLE_LABELS } from '../users/userTypes';
 
 export function Sidebar() {
+  const { role } = useAuth();
+
+  const visibleItems = getVisibleNavItems(role);
+
   return (
     <aside className="sticky top-0 hidden h-screen w-[240px] shrink-0 flex-col border-r border-[#27374D]/15 bg-[#27374D] px-4 py-7 lg:flex">
       <div className="mb-8 flex items-center gap-2.5 px-2">
@@ -12,13 +18,13 @@ export function Sidebar() {
         <div className="min-w-0">
           <div className="truncate text-[15px] font-bold tracking-[-0.2px] text-[#DDE6ED]">Pet System</div>
           <div className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9DB2BF]">
-            Sysadmin
+            {role ? ROLE_LABELS[role] : ''}
           </div>
         </div>
       </div>
 
       <nav aria-label="Navegación principal" className="flex flex-col gap-1">
-        {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+        {visibleItems.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}

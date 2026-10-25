@@ -1,5 +1,7 @@
 import { LayoutDashboard, PawPrint, Stethoscope, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import type { UserRole } from '../../services/users/IUser';
+import { ADMIN_ROLES } from '../../utils/roles';
 
 export interface NavItem {
   to: string;
@@ -7,6 +9,7 @@ export interface NavItem {
   description: string;
   icon: LucideIcon;
   end?: boolean;
+  roles?: UserRole[]; // si no se define, lo ve cualquier usuario logueado
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -15,24 +18,31 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'Panel',
     description: 'Resumen de la gestión',
     icon: LayoutDashboard,
-    end: true,
+    end: true
   },
   {
     to: '/users',
     label: 'Usuarios',
     description: 'Alta, edición y baja de usuarios',
     icon: Users,
+    roles: ADMIN_ROLES
   },
   {
     to: '/pets',
     label: 'Mascotas',
     description: 'Alta, edición y baja de mascotas',
     icon: PawPrint,
+    roles: ADMIN_ROLES
   },
   {
     to: '/consultations',
     label: 'Consultas',
     description: 'Alta, edición y baja de consultas',
     icon: Stethoscope,
+    roles: ADMIN_ROLES
   },
 ];
+
+export function getVisibleNavItems(role: UserRole | null): NavItem[] {
+  return NAV_ITEMS.filter((item) => !item.roles || (role !== null && item.roles.includes(role)));
+}

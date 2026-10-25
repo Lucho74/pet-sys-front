@@ -16,7 +16,7 @@ const AuthenticationContextProvider = ({ children }: Props) => {
   const [role, setRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
-    if(!token || !isTokenValid(token)) return;
+    if (!token || !isTokenValid(token)) return;
 
     let canceled = false;
 
@@ -25,12 +25,16 @@ const AuthenticationContextProvider = ({ children }: Props) => {
         if (!canceled) setRole(user.roleName as UserRole);
       })
       .catch(() => {
-        if (!canceled) setRole(null);
+        if (!canceled) {
+          setRole(null);
+          setToken(null);
+          localStorage.removeItem(TOKEN_KEY);
+        }
       });
-      
-      return () => {
-        canceled = true;
-      };
+
+    return () => {
+      canceled = true;
+    };
   }, [token]);
 
   const HandleUserLogin = (newToken: string): boolean => {

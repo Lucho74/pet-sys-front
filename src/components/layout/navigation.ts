@@ -1,7 +1,7 @@
 import { LayoutDashboard, PawPrint, Stethoscope, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { UserRole } from '../../services/users/IUser';
-import { ADMIN_ROLES } from '../../utils/roles';
+import { CLINICAL_ROLES } from '../../utils/roles';
 
 export interface NavItem {
   to: string;
@@ -25,21 +25,21 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'Usuarios',
     description: 'Alta, edición y baja de usuarios',
     icon: Users,
-    roles: ADMIN_ROLES
+    roles: CLINICAL_ROLES
   },
   {
     to: '/pets',
     label: 'Mascotas',
     description: 'Alta, edición y baja de mascotas',
     icon: PawPrint,
-    roles: ADMIN_ROLES
+    roles: CLINICAL_ROLES
   },
   {
     to: '/consultations',
     label: 'Consultas',
     description: 'Alta, edición y baja de consultas',
     icon: Stethoscope,
-    roles: ADMIN_ROLES
+    roles: CLINICAL_ROLES
   },
 ];
 

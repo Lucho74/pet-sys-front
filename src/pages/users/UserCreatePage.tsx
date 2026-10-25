@@ -8,9 +8,12 @@ import type { AssignableRole } from '../../services/users/IUser';
 import type { UserFormState } from '../../components/users/userTypes';
 import { validateUserForm } from '../../components/users/userValidation';
 import type { FormErrors } from '../../components/users/userValidation';
+import { getManageableRoles } from '../../utils/roles';
+import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserCreatePage() {
   const navigate = useNavigate();
+  const { role } = useAuth();
 
   const [form, setForm] = useState<UserFormState>({
     fullName: '',
@@ -71,6 +74,7 @@ export function UserCreatePage() {
         onCancel={() => navigate('/users')}
         onSave={handleSave}
         saveLabel="Crear usuario"
+        roleOptions={getManageableRoles(role)}
       />
     </ScreenShell>
   );

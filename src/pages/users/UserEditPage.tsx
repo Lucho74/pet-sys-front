@@ -8,10 +8,14 @@ import type { AssignableRole } from '../../services/users/IUser';
 import type { UserFormState } from '../../components/users/userTypes';
 import { validateUserForm } from '../../components/users/userValidation';
 import type { FormErrors } from '../../components/users/userValidation';
+import { getManageableRoles } from '../../utils/roles';
+import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserEditPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
+  const { role } = useAuth();
+  
 
   const [form, setForm] = useState<UserFormState>({
     fullName: '',
@@ -28,7 +32,12 @@ export function UserEditPage() {
 
   useEffect(() => {
     handleGetByIdUser(id)
-      .then((user) =>
+      .then((user) => {
+        if (!getManageableRoles(role).includes(user.roleName as AssignableRole)) {
+          toast.error('No tenés permiso para editar este usuario.');
+          navigate('/users', { replace: true });
+          return;
+        }
         setForm({
           fullName: user.fullName?.trim() || '',
           email: user.email?.trim() || '',
@@ -36,14 +45,14 @@ export function UserEditPage() {
           password: user.password?.trim() || '',
           roleName: user.roleName || 'Client',
           dni: user.dni?.trim() || '',
-        }),
-      )
+        });
+      })
       .catch(() => {
         setFormError('No se pudo cargar el usuario.');
         toast.error('No se pudo cargar el usuario.');
       })
-      .finally(() => setIsLoading(false));
-  }, [id]);
+      .finally(() => setIsLoading(false)); 
+  }, [id, role, navigate]);
 
   const handleChange = (field: keyof UserFormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -94,6 +103,7 @@ export function UserEditPage() {
         onCancel={() => navigate('/users')}
         onSave={handleSave}
         saveLabel="Guardar cambios"
+        roleOptions={getManageableRoles(role)}
       />
     </ScreenShell>
   );

@@ -4,10 +4,7 @@ import { SelectField } from '../common/SelectField';
 import { ROLE_LABELS } from './userTypes';
 import type { UserFormState } from './userTypes';
 import type { FormErrors } from './userValidation';
-
-const ROLE_OPTIONS = Object.entries(ROLE_LABELS)
-  .filter(([value]) => value !== 'SysAdmin')
-  .map(([value, label]) => ({ value, label }));
+import type { AssignableRole } from '../../services/users/IUser';
 
 interface UserFormProps {
   form: UserFormState;
@@ -20,6 +17,7 @@ interface UserFormProps {
   onCancel: () => void;
   onSave: () => void;
   saveLabel: string;
+  roleOptions: AssignableRole[];
 }
 
 export function UserForm({
@@ -33,6 +31,7 @@ export function UserForm({
   onCancel,
   onSave,
   saveLabel,
+  roleOptions,
 }: UserFormProps) {
   return (
     <FormShell
@@ -48,7 +47,7 @@ export function UserForm({
         label="Rol"
         value={form.roleName}
         onChange={(value) => onChange('roleName', value)}
-        options={ROLE_OPTIONS}
+        options={roleOptions.map((role) => ({ value: role, label: ROLE_LABELS[role] }))}
         error={fieldErrors.roleName}
         hint={canChangeRole ? undefined : 'El rol no se puede cambiar después de crear el usuario.'}
         disabled={isSaving || !canChangeRole}

@@ -23,7 +23,7 @@ import { LoginPage } from '../pages/auth/LoginPage';
 import Protected from './Protected';
 import PublicOnly from './PublicOnly';
 import RoleRoute from './RoleRoute';
-import { ADMIN_ROLES } from '../utils/roles';
+import { CLINICAL_ROLES } from '../utils/roles';
 
 const routes: RouteObject[] = [
   {
@@ -44,7 +44,7 @@ const routes: RouteObject[] = [
           { index: true, element: <Home /> },
 
           {
-            element: <RoleRoute allowedRoles={ADMIN_ROLES} />,
+            element: <RoleRoute allowedRoles={CLINICAL_ROLES} />,
             children: [
 
               {

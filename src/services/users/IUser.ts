@@ -1,4 +1,5 @@
-export type UserRole = 'Client' | 'Veterinarian' | 'Admin';
+export type UserRole = 'Client' | 'Veterinarian' | 'Admin' | 'SysAdmin';
+export type AssignableRole = Exclude<UserRole, 'SysAdmin'>;
 
 export interface IUserResponse {
     id: number;
@@ -16,7 +17,7 @@ export interface ICreateUserRequest {
     email: string | null;
     phone: string | null;
     password: string | null;
-    userType: UserRole;
+    userType: AssignableRole;
     dni: string | null;
 }
 
@@ -25,6 +26,6 @@ export interface IUpdateUserRequest {
     email: string | null;
     phone: string | null;
     password: string | null;
-    roleName: UserRole;
+    roleName: AssignableRole;
     dni: string | null;
 }

@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { UserForm } from '../../components/users/UserForm';
 import { handleAddUser } from '../../services/users/userService';
-import type { UserRole } from '../../services/users/IUser';
+import type { AssignableRole } from '../../services/users/IUser';
 import type { UserFormState } from '../../components/users/userTypes';
 import { validateUserForm } from '../../components/users/userValidation';
 import type { FormErrors } from '../../components/users/userValidation';
@@ -47,7 +47,7 @@ export function UserCreatePage() {
         email: form.email,
         phone: form.phone,
         password: form.password,
-        userType: form.roleName as UserRole,
+        userType: form.roleName as AssignableRole,
         dni: form.roleName === 'Client' ? form.dni : null,
       });
 

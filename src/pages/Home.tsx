@@ -1,13 +1,16 @@
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { ScreenShell } from '../components/layout/ScreenShell';
-import { NAV_ITEMS } from '../components/layout/navigation';
-
-const sections = NAV_ITEMS.filter((item) => item.to !== '/');
+import { getVisibleNavItems } from '../components/layout/navigation';
+import { useAuth } from '../contexts/AuthenticationContext';
+import { ROLE_LABELS } from '../components/users/userTypes';
 
 export function Home() {
+  const { role } = useAuth();
+  const sections = getVisibleNavItems(role).filter((item) => item.to !== '/');
+  
   return (
-    <ScreenShell eyebrow="Sysadmin" title="Panel">
+    <ScreenShell eyebrow={role ? ROLE_LABELS[role] : ''} title="Panel">
       <div className="flex-1 overflow-auto px-4 pb-6 pt-4 lg:px-10 lg:pb-12 lg:pt-8">
         <div className="w-full">
           <h2 className="mb-3 text-[12px] font-semibold uppercase tracking-[0.05em] text-[#526D82]">

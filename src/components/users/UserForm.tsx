@@ -5,7 +5,9 @@ import { ROLE_LABELS } from './userTypes';
 import type { UserFormState } from './userTypes';
 import type { FormErrors } from './userValidation';
 
-const ROLE_OPTIONS = Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }));
+const ROLE_OPTIONS = Object.entries(ROLE_LABELS)
+  .filter(([value]) => value !== 'SysAdmin')
+  .map(([value, label]) => ({ value, label }));
 
 interface UserFormProps {
   form: UserFormState;

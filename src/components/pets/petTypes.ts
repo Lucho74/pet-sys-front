@@ -4,6 +4,8 @@ export interface Pet {
   specie: string;
   breed: string;
   birthDate: string;
+  clientId: number;
+  isDeleted: boolean;
 }
 
 export interface PetFormState {

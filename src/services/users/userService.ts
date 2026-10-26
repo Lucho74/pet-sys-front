@@ -26,7 +26,17 @@ export const handleDeleteUser = async (id: string): Promise<string> => {
     return response.text();
 };
 
-export const handleUpdateUser = async (id: string, updatedUser: IUpdateUserRequest): Promise<IUserResponse> => {
+export const handleReactivateUser = async (id: string): Promise<void> => {
+    const response = await apiFetch(`/User/${id}/reactivate`, {
+        method: 'POST'
+    });
+
+    if (!response.ok) {
+        throw new Error('Error reactivating user');
+    }
+};
+
+export const handleUpdateUser =async (id: string, updatedUser: IUpdateUserRequest): Promise<IUserResponse> => {
     const response = await apiFetch(`/User/${id}`, {
         method: 'PUT',
         body: JSON.stringify(updatedUser)

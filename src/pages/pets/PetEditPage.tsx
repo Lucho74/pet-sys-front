@@ -31,21 +31,26 @@ export function PetEditPage() {
 
   useEffect(() => {
     handleGetByIdPet(id)
-      .then((pet) =>
+      .then((pet) => {
+        if (pet.isDeleted) {
+          toast.error('La mascota está suspendida y no se puede editar.');
+          navigate('/pets', { replace: true });
+          return;
+        }
         setForm({
           name: pet.name?.trim() || '',
           specie: pet.specie?.trim() || '',
           breed: pet.breed?.trim() || '',
           birthDate: pet.birthDate?.slice(0, 10) || '',
           clientId: String(pet.clientId),
-        }),
-      )
+        });
+      })
       .catch(() => {
         setFormError('No se pudo cargar la mascota.');
         toast.error('No se pudo cargar la mascota.');
       })
       .finally(() => setIsLoading(false));
-  }, [id]);
+  }, [id, navigate]);
 
   useEffect(() => {
     handleGetAllUser()

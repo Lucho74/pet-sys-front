@@ -28,6 +28,7 @@ export function UsersListPage() {
             roleName:
               user.roleName === 'Admin' || user.roleName === 'Veterinarian' ? user.roleName : 'Client',
             dni: user.dni?.trim() || '',
+            isDeleted: user.isDeleted,
           })),
         ),
       )
@@ -38,8 +39,8 @@ export function UsersListPage() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const removeUser = (userId: number) => {
-    setUsers((current) => current.filter((user) => user.id !== userId));
+  const setUserDeleted = (userId: number, isDeleted: boolean) => {
+    setUsers((current) => current.map((user) => (user.id === userId ? { ...user, isDeleted } : user)));
   };
 
   return (
@@ -58,7 +59,7 @@ export function UsersListPage() {
         itemTo={(userId) => `/users/${userId}`}
       />
 
-      <Outlet context={{ users, removeUser }} />
+      <Outlet context={{ users, setUserDeleted }} />
     </ScreenShell>
   );
 }

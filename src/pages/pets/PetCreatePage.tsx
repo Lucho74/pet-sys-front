@@ -70,7 +70,7 @@ export function PetCreatePage() {
   };
 
   return (
-    <ScreenShell eyebrow="Nueva" title="Nueva mascota" backTo="/pets">
+    <ScreenShell title="Nueva mascota" backTo="/pets">
       <PetForm
         form={form}
         formError={formError}

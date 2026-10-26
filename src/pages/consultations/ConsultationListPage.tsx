@@ -64,7 +64,6 @@ export function ConsultationListPage() {
 
     return (
         <ScreenShell
-            eyebrow="Sysadmin"
             title="Consultas"
             icon={Stethoscope}
             homeTo="/"

@@ -3,8 +3,6 @@ import { useParams } from 'react-router-dom';
 import { Stethoscope } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { useAuth } from '../../contexts/AuthenticationContext';
-import { ROLE_LABELS } from '../../components/users/userTypes';
 import { handleGetConsultationsByPet } from '../../services/consultation/consultationService';
 import { handleGetMyPets } from '../../services/pets/petService';
 import { hasDateTime } from '../../utils/datetime';
@@ -12,7 +10,6 @@ import { ClientConsultationList } from '../../components/consultations/ClientCon
 
 export function MyPetConsultationsPage() {
 	const { petId } = useParams();
-	const { role } = useAuth();
 	const [petName, setPetName] = useState('');
 	const [consultations, setConsultations] = useState<{ id: number; description: string; date: string }[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +39,6 @@ export function MyPetConsultationsPage() {
 
 	return (
 		<ScreenShell
-			eyebrow={role ? ROLE_LABELS[role] : ''}
 			title={petName ? `Consultas de ${petName}` : 'Consultas'}
 			icon={Stethoscope}
 			backTo="/my-pets"

@@ -91,7 +91,7 @@ export function UserEditPage() {
   };
 
   return (
-    <ScreenShell eyebrow="Editar" title="Editar usuario" backTo="/users">
+    <ScreenShell title="Editar usuario" backTo="/users">
       <UserForm
         form={form}
         formError={formError}

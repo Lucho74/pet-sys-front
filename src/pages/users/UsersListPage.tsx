@@ -44,7 +44,6 @@ export function UsersListPage() {
 
   return (
     <ScreenShell
-      eyebrow="Sysadmin"
       title="Usuarios"
       icon={UserIcon}
       homeTo="/"

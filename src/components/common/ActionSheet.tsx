@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react';
+import { useId } from 'react';
 import { X } from 'lucide-react';
 import { initials } from '../../utils/initials';
 import { useEscapeKey } from '../../hooks/useEscapeKey';
@@ -39,13 +39,8 @@ export function ActionSheet({
   onDelete,
 }: ActionSheetProps) {
   const titleId = useId();
-  const editButtonRef = useRef<HTMLButtonElement>(null);
 
   useEscapeKey(onClose);
-
-  useEffect(() => {
-    editButtonRef.current?.focus();
-  }, []);
 
   return (
     <>
@@ -98,7 +93,7 @@ export function ActionSheet({
         </div>
 
         <div className="flex flex-col gap-2.5">
-          <button ref={editButtonRef} type="button" onClick={onEdit} className={`w-full ${PRIMARY_BUTTON_CLASSES}`}>
+          <button autoFocus type="button" onClick={onEdit} className={`w-full ${PRIMARY_BUTTON_CLASSES}`}>
             {editLabel}
           </button>
           {extraActions.map((action) => (

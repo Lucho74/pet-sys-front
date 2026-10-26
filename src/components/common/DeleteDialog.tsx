@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react';
+import { useId } from 'react';
 import { useEscapeKey } from '../../hooks/useEscapeKey';
 import { PRIMARY_BUTTON_CLASSES, SECONDARY_BUTTON_CLASSES } from './buttonStyles';
 
@@ -13,13 +13,8 @@ interface DeleteDialogProps {
 export function DeleteDialog({ title, name, isDeleting = false, onCancel, onConfirm }: DeleteDialogProps) {
   const titleId = useId();
   const descriptionId = `${titleId}-description`;
-  const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
   useEscapeKey(onCancel);
-
-  useEffect(() => {
-    cancelButtonRef.current?.focus();
-  }, []);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#27374D]/50 p-7">
@@ -38,7 +33,7 @@ export function DeleteDialog({ title, name, isDeleting = false, onCancel, onConf
         </p>
         <div className="flex gap-2.5 sm:justify-end">
           <button
-            ref={cancelButtonRef}
+            autoFocus
             type="button"
             onClick={onCancel}
             disabled={isDeleting}

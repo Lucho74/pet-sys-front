@@ -32,17 +32,18 @@ export function MyPetConsultationsPage({ backTo }: MyPetConsultationsPageProps) 
 			: handleGetByIdPet(String(id)).then((pet) => pet.name);
 
 		// El nombre de la mascota solo adorna el título: si falla, la lista se muestra igual.
-		Promise.all([handleGetConsultationsByPet(id), petNameRequest.catch(() => '')])
-			.then(([response, name]) => {
-				setPetName(name?.trim() || '');
+		petNameRequest.then((name) => setPetName(name?.trim() || '')).catch(() => {});
+
+		handleGetConsultationsByPet(id)
+			.then((response) =>
 				setConsultations(
 					response.map((consultation) => ({
 						id: consultation.id,
 						description: consultation.description?.trim() || 'Sin descripción',
 						date: hasDateTime(consultation.date) ? consultation.date.trim() : '',
 					})),
-				);
-			})
+				),
+			)
 			.catch(() => {
 				setError('No se pudieron cargar las consultas. Intenta nuevamente.');
 				toast.error('No se pudieron cargar las consultas.');

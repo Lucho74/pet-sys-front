@@ -33,7 +33,7 @@ No hay suite de tests configurada todavía en este repo.
 - `components/layout/` — `ScreenShell` (header + layout de pantalla; el texto chico sobre el título es el rol del usuario logueado, que calcula solo con `useAuth` + `ROLE_LABELS`, así que las páginas no lo pasan), `Sidebar` y `navigation.ts` (`NAV_ITEMS`).
 - `services/<feature>/` — llamadas `fetch` a la API del backend y tipos de DTO.
 - `router/` — definición de rutas (`createBrowserRouter`).
-- `hooks/` — hooks genéricos compartidos (hoy solo `useEscapeKey`, que usan `ActionSheet` y `DeleteDialog` para cerrarse con Esc).
+- `hooks/` — hooks genéricos compartidos (hoy solo `useEscapeKey`, que usan `ActionSheet` y `DeleteDialog` para cerrarse con Esc). El foco inicial de esos overlays va con `autoFocus` en el botón, no con `useEffect` + `ref`.
 - `utils/` — helpers puros compartidos (`datetime`, `initials`, `search`).
 
 Hay tres features implementadas con el mismo patrón — `users`, `pets` y `consultations` — y es el que hay que replicar al agregar una nueva:

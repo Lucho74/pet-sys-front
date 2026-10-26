@@ -4,8 +4,7 @@ import { ActionSheet } from '../../components/common/ActionSheet';
 import { ROLE_LABELS } from '../../components/users/userTypes';
 import type { UsersOutletContext } from '../../components/users/userTypes';
 import { handleReactivateUser } from '../../services/users/userService';
-import type { AssignableRole } from '../../services/users/IUser';
-import { getManageableRoles } from '../../utils/roles';
+import { canManage } from '../../utils/roles';
 import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserActionsPage() {
@@ -16,9 +15,9 @@ export function UserActionsPage() {
 
   const selected = users.find((user) => String(user.id) === id);
 
-  if (!selected) return null;
+  // El back responde 403 al editar, suspender o reactivar un rol que no está por debajo del propio.
+  if (!selected || !canManage(role, selected.roleName)) return null;
 
-  const canSuspend = getManageableRoles(role).includes(selected.roleName as AssignableRole);
   const subtitle = `${ROLE_LABELS[selected.roleName]} · ${selected.email}`;
 
   if (selected.isDeleted) {
@@ -54,7 +53,7 @@ export function UserActionsPage() {
       deleteLabel="Eliminar usuario"
       onClose={() => navigate('/users')}
       onEdit={() => navigate(`/users/${selected.id}/edit`)}
-      onDelete={canSuspend ? () => navigate(`/users/${selected.id}/delete`) : undefined}
+      onDelete={() => navigate(`/users/${selected.id}/delete`)}
     />
   );
 }

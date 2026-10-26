@@ -4,11 +4,11 @@ import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { UserForm } from '../../components/users/UserForm';
 import { handleGetByIdUser, handleUpdateUser } from '../../services/users/userService';
-import type { AssignableRole } from '../../services/users/IUser';
+import type { UserRole } from '../../services/users/IUser';
 import type { UserFormState } from '../../components/users/userTypes';
 import { validateUserForm } from '../../components/users/userValidation';
 import type { FormErrors } from '../../components/users/userValidation';
-import { getManageableRoles } from '../../utils/roles';
+import { canManage, getManageableRoles } from '../../utils/roles';
 import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserEditPage() {
@@ -38,7 +38,7 @@ export function UserEditPage() {
           navigate('/users', { replace: true });
           return;
         }
-        if (!getManageableRoles(role).includes(user.roleName as AssignableRole)) {
+        if (!canManage(role, user.roleName as UserRole)) {
           toast.error('No tenés permiso para editar este usuario.');
           navigate('/users', { replace: true });
           return;

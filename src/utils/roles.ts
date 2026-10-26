@@ -10,3 +10,6 @@ export function getManageableRoles(role: UserRole | null): AssignableRole[] {
   if (role === 'Veterinarian') return ['Client'];
   return [];
 }
+
+export const canManage = (role: UserRole | null, targetRole: UserRole) =>
+  (getManageableRoles(role) as UserRole[]).includes(targetRole);

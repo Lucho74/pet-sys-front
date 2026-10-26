@@ -4,8 +4,7 @@ import { toast } from 'react-toastify';
 import { DeleteDialog } from '../../components/common/DeleteDialog';
 import { handleDeleteUser } from '../../services/users/userService';
 import type { UsersOutletContext } from '../../components/users/userTypes';
-import type { AssignableRole } from '../../services/users/IUser';
-import { getManageableRoles } from '../../utils/roles';
+import { canManage } from '../../utils/roles';
 import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserDeletePage() {
@@ -17,7 +16,7 @@ export function UserDeletePage() {
 
   const selected = users.find((user) => String(user.id) === id);
 
-  if (!selected || !getManageableRoles(role).includes(selected.roleName as AssignableRole)) return null;
+  if (!selected || !canManage(role, selected.roleName)) return null;
 
   const handleConfirm = async () => {
     setIsDeleting(true);

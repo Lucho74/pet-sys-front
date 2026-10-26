@@ -12,7 +12,7 @@ interface UserListProps {
   error: string;
   createTo: string;
   createLabel: string;
-  itemTo: (userId: number) => string;
+  itemTo: (user: User) => string | null;
 }
 
 export function UserList({ users, isLoading, error, createTo, createLabel, itemTo }: UserListProps) {
@@ -24,9 +24,11 @@ export function UserList({ users, isLoading, error, createTo, createLabel, itemT
         <div className="flex h-full w-full flex-col">
           {hasUsers ? (
             <ul className={GRID_CLASSES}>
-              {activeFirst(users).map((user) => (
-                <li key={user.id} className="flex">
-                  <Link to={itemTo(user.id)} className={user.isDeleted ? DELETED_CARD_CLASSES : CARD_CLASSES}>
+              {activeFirst(users).map((user) => {
+                const to = itemTo(user);
+                const className = user.isDeleted ? DELETED_CARD_CLASSES : CARD_CLASSES;
+                const content = (
+                  <>
                     <div className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] ${user.isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'}`}>
                       <span className={`text-[15px] font-semibold ${user.isDeleted ? 'text-[#27374D]' : 'text-white'}`}>{initials(user.fullName)}</span>
                     </div>
@@ -46,9 +48,20 @@ export function UserList({ users, isLoading, error, createTo, createLabel, itemT
                         <div className="truncate text-[12px] text-[#526D82]">{user.phone}</div>
                       ) : null}
                     </div>
-                  </Link>
-                </li>
-              ))}
+                  </>
+                );
+
+                // Sin destino la fila es solo lectura: un div no recibe foco y pointer-events-none apaga el hover de la tarjeta.
+                return (
+                  <li key={user.id} className="flex">
+                    {to ? (
+                      <Link to={to} className={className}>{content}</Link>
+                    ) : (
+                      <div className={`${className} pointer-events-none`}>{content}</div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <ListState

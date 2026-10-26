@@ -23,7 +23,9 @@ import { LoginPage } from '../pages/auth/LoginPage';
 import Protected from './Protected';
 import PublicOnly from './PublicOnly';
 import RoleRoute from './RoleRoute';
-import { CLINICAL_ROLES } from '../utils/roles';
+import { CLINICAL_ROLES, CLIENT_ROLES } from '../utils/roles';
+import { MyPetConsultationsPage } from '../pages/consultations/MyPetConsultationsPage';
+import { MyPetsPage } from '../pages/pets/MyPetsPage';
 
 const routes: RouteObject[] = [
   {
@@ -80,6 +82,13 @@ const routes: RouteObject[] = [
               { path: 'consultations/new', element: <ConsultationCreatePage /> },
               { path: 'consultations/:id/edit', element: <ConsultationEditPage /> },
             ]
+          },
+          {
+            element: <RoleRoute allowedRoles={CLIENT_ROLES} />,
+            children: [
+              { path: 'my-pets', element: <MyPetsPage /> },
+              { path: 'my-pets/:petId/consultations', element: <MyPetConsultationsPage /> },
+            ],
           },
         ]
       },

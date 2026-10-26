@@ -78,7 +78,7 @@ Vistas del cliente (solo lectura, bajo un `RoleRoute` con `CLIENT_ROLES`, fuera 
 
 ### Estilado
 
-Tailwind CSS 4 vía `@tailwindcss/vite`, con clases inline y una paleta de colores fija ya usada en toda la UI: `#27374D` (oscuro principal), `#526D82`, `#9DB2BF`, `#DDE6ED` (fondo claro). Mantener esta paleta al agregar pantallas nuevas para consistencia visual.
+Tailwind CSS 4 vía `@tailwindcss/vite`, con clases inline y una paleta de colores fija ya usada en toda la UI: `#27374D` (oscuro principal), `#526D82`, `#9DB2BF`, `#DDE6ED` (fondo claro). Mantener esta paleta al agregar pantallas nuevas para consistencia visual. Ojo con el contraste: `#526D82` como texto chico pasa AA sobre blanco (5.43:1) pero no sobre `#DDE6ED` (4.30:1); sobre ese fondo el texto va en `#27374D`.
 
 Las combinaciones de clases que se repiten están extraídas en `components/common/*Styles.ts` (`PRIMARY_BUTTON_CLASSES`, `CARD_CLASSES`, `GRID_CLASSES`, `FIELD_LABEL_CLASSES`, ...) — usar esas constantes en vez de recopiar los strings de Tailwind.
 

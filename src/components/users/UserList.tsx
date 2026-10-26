@@ -36,7 +36,7 @@ export function UserList({ users, isLoading, error, createTo, createLabel, itemT
                     <div className="min-w-0 flex-1 text-left">
                       <div className="flex items-center gap-2">
                         <span className={`truncate text-[15px] font-semibold ${user.isDeleted ? 'text-[#526D82]' : 'text-[#27374D]'}`}>{user.fullName}</span>
-                        <span className="shrink-0 rounded-full bg-[#DDE6ED] px-2 py-0.5 text-[11px] font-semibold text-[#526D82]">
+                        <span className="shrink-0 rounded-full bg-[#DDE6ED] px-2 py-0.5 text-[11px] font-semibold text-[#27374D]">
                           {ROLE_LABELS[user.roleName]}
                         </span>
                         {user.isDeleted ? <span className={DELETED_BADGE_CLASSES}>Suspendido</span> : null}

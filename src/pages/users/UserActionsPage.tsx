@@ -4,15 +4,19 @@ import { ActionSheet } from '../../components/common/ActionSheet';
 import { ROLE_LABELS } from '../../components/users/userTypes';
 import type { UsersOutletContext } from '../../components/users/userTypes';
 import { handleReactivateUser } from '../../services/users/userService';
+import { canManage } from '../../utils/roles';
+import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserActionsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { users, setUserDeleted } = useOutletContext<UsersOutletContext>();
+  const { role } = useAuth();
 
   const selected = users.find((user) => String(user.id) === id);
 
-  if (!selected) return null;
+  // El back responde 403 al editar, suspender o reactivar un rol que no está por debajo del propio.
+  if (!selected || !canManage(role, selected.roleName)) return null;
 
   const subtitle = `${ROLE_LABELS[selected.roleName]} · ${selected.email}`;
 

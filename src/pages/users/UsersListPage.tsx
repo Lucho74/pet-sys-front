@@ -7,6 +7,8 @@ import { CreateButton } from '../../components/common/CreateButton';
 import { UserList } from '../../components/users/UserList';
 import { handleGetAllUser } from '../../services/users/userService';
 import type { User } from '../../components/users/userTypes';
+import { useAuth } from '../../contexts/AuthenticationContext';
+import { canManage } from '../../utils/roles';
 
 const CREATE_TO = '/users/new';
 const CREATE_LABEL = 'Nuevo usuario';
@@ -15,6 +17,7 @@ export function UsersListPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const { role } = useAuth();
 
   useEffect(() => {
     handleGetAllUser()
@@ -26,7 +29,9 @@ export function UsersListPage() {
             email: user.email?.trim() || '',
             phone: user.phone?.trim() || '',
             roleName:
-              user.roleName === 'Admin' || user.roleName === 'Veterinarian' ? user.roleName : 'Client',
+              user.roleName === 'SysAdmin' || user.roleName === 'Admin' || user.roleName === 'Veterinarian'
+                ? user.roleName
+                : 'Client',
             dni: user.dni?.trim() || '',
             isDeleted: user.isDeleted,
           })),
@@ -56,7 +61,7 @@ export function UsersListPage() {
         error={error}
         createTo={CREATE_TO}
         createLabel={CREATE_LABEL}
-        itemTo={(userId) => `/users/${userId}`}
+        itemTo={(user) => (canManage(role, user.roleName) ? `/users/${user.id}` : null)}
       />
 
       <Outlet context={{ users, setUserDeleted }} />

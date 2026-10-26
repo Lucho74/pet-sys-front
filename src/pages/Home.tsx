@@ -12,7 +12,7 @@ export function Home() {
     <ScreenShell title="Panel">
       <div className="flex-1 overflow-auto px-4 pb-6 pt-4 lg:px-10 lg:pb-12 lg:pt-8">
         <div className="w-full">
-          <h2 className="mb-3 text-[12px] font-semibold uppercase tracking-[0.05em] text-[#526D82]">
+          <h2 className="mb-3 text-[12px] font-semibold uppercase tracking-[0.05em] text-[#27374D]">
             Gestión
           </h2>
 

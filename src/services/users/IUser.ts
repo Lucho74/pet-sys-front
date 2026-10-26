@@ -6,7 +6,6 @@ export interface IUserResponse {
     fullName: string | null;
     email: string | null;
     phone: string | null;
-    password: string | null;
     isDeleted: boolean;
     roleName: string | null;
     dni: string | null;
@@ -26,6 +25,5 @@ export interface IUpdateUserRequest {
     email: string | null;
     phone: string | null;
     password: string | null;
-    roleName: AssignableRole;
     dni: string | null;
 }

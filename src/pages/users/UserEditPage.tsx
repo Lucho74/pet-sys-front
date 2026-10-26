@@ -4,11 +4,11 @@ import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { UserForm } from '../../components/users/UserForm';
 import { handleGetByIdUser, handleUpdateUser } from '../../services/users/userService';
-import type { AssignableRole } from '../../services/users/IUser';
+import type { UserRole } from '../../services/users/IUser';
 import type { UserFormState } from '../../components/users/userTypes';
 import { validateUserForm } from '../../components/users/userValidation';
 import type { FormErrors } from '../../components/users/userValidation';
-import { getManageableRoles } from '../../utils/roles';
+import { canManage, getManageableRoles } from '../../utils/roles';
 import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserEditPage() {
@@ -38,7 +38,7 @@ export function UserEditPage() {
           navigate('/users', { replace: true });
           return;
         }
-        if (!getManageableRoles(role).includes(user.roleName as AssignableRole)) {
+        if (!canManage(role, user.roleName as UserRole)) {
           toast.error('No tenés permiso para editar este usuario.');
           navigate('/users', { replace: true });
           return;
@@ -47,7 +47,7 @@ export function UserEditPage() {
           fullName: user.fullName?.trim() || '',
           email: user.email?.trim() || '',
           phone: user.phone?.trim() || '',
-          password: user.password?.trim() || '',
+          password: '',
           roleName: user.roleName || 'Client',
           dni: user.dni?.trim() || '',
         });
@@ -65,7 +65,7 @@ export function UserEditPage() {
   };
 
   const handleSave = async () => {
-    const errors = validateUserForm(form);
+    const errors = validateUserForm(form, true);
     setFieldErrors(errors);
 
     if (Object.keys(errors).length > 0) {
@@ -81,8 +81,8 @@ export function UserEditPage() {
         fullName: form.fullName,
         email: form.email,
         phone: form.phone,
-        password: form.password,
-        roleName: form.roleName as AssignableRole,
+        // El back conserva la contraseña con null; con '' responde 400 por el mínimo de 6.
+        password: form.password || null,
         dni: form.roleName === 'Client' ? form.dni : null,
       });
 
@@ -102,6 +102,7 @@ export function UserEditPage() {
         formError={formError}
         fieldErrors={fieldErrors}
         canChangeRole={false}
+        isPasswordOptional
         isLoading={isLoading}
         isSaving={isSaving}
         onChange={handleChange}

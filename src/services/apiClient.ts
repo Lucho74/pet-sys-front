@@ -14,5 +14,12 @@ export const apiFetch = (path: string, options: RequestInit = {}): Promise<Respo
         headers.set('Content-Type', 'application/json');
     }
 
-    return fetch(`${API_URL}${path}`, { ...options, headers });
+    return fetch(`${API_URL}${path}`, { ...options, headers }).then((response) => {
+        // El back rechaza con 401 el token de un usuario suspendido aunque no haya vencido.
+        if (response.status === 401 && token) {
+            localStorage.removeItem(TOKEN_KEY);
+            window.location.assign('/login');
+        }
+        return response;
+    });
 };

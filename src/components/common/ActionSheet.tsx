@@ -92,7 +92,8 @@ export function ActionSheet({
               </div>
               {isDeleted ? <span className={DELETED_BADGE_CLASSES}>Suspendido</span> : null}
             </div>
-            <div className="truncate text-[13px] text-[#526D82]">{subtitle}</div>
+            {/* #526D82 solo pasa AA sobre el fondo blanco/50 del suspendido; sobre #DDE6ED da 4.30:1. */}
+            <div className={`truncate text-[13px] ${isDeleted ? 'text-[#526D82]' : 'text-[#27374D]'}`}>{subtitle}</div>
           </div>
         </div>
 

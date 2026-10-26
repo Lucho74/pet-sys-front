@@ -8,11 +8,17 @@ import {
   SECONDARY_BUTTON_CLASSES,
 } from './buttonStyles';
 
+interface ActionSheetAction {
+  label: string;
+  onClick: () => void;
+}
+
 interface ActionSheetProps {
   title: string;
   subtitle: string;
   editLabel: string;
   deleteLabel: string;
+  extraActions?: ActionSheetAction[];
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -23,6 +29,7 @@ export function ActionSheet({
   subtitle,
   editLabel,
   deleteLabel,
+  extraActions = [],
   onClose,
   onEdit,
   onDelete,
@@ -73,6 +80,11 @@ export function ActionSheet({
           <button ref={editButtonRef} type="button" onClick={onEdit} className={`w-full ${PRIMARY_BUTTON_CLASSES}`}>
             {editLabel}
           </button>
+          {extraActions.map((action) => (
+            <button key={action.label} type="button" onClick={action.onClick} className={`w-full ${SECONDARY_BUTTON_CLASSES}`}>
+              {action.label}
+            </button>
+          ))}
           <button type="button" onClick={onDelete} className={`w-full ${SECONDARY_BUTTON_CLASSES}`}>
             {deleteLabel}
           </button>

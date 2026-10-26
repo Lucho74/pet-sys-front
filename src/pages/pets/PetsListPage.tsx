@@ -42,7 +42,6 @@ export function PetsListPage() {
 
   return (
     <ScreenShell
-      eyebrow="Sysadmin"
       title="Mascotas"
       icon={PawPrint}
       homeTo="/"

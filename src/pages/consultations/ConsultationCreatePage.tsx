@@ -79,7 +79,7 @@ export function ConsultationCreatePage() {
     };
 
     return (
-        <ScreenShell eyebrow="Nueva" title="Nueva consulta" backTo="/consultations">
+        <ScreenShell title="Nueva consulta" backTo="/consultations">
             <ConsultationForm
                 form={form}
                 formError={formError}

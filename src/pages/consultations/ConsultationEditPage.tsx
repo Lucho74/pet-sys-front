@@ -101,7 +101,7 @@ export function ConsultationEditPage() {
     };
 
     return (
-        <ScreenShell eyebrow="Editar" title="Editar consulta" backTo="/consultations">
+        <ScreenShell title="Editar consulta" backTo="/consultations">
             <ConsultationForm
                 form={form}
                 formError={formError}

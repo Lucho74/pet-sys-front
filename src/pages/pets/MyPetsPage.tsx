@@ -3,13 +3,10 @@ import { PawPrint } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { PetList } from '../../components/pets/PetList';
-import { useAuth } from '../../contexts/AuthenticationContext';
-import { ROLE_LABELS } from '../../components/users/userTypes';
 import { handleGetMyPets } from '../../services/pets/petService';
 import type { Pet } from '../../components/pets/petTypes';
 
 export function MyPetsPage() {
-	const { role } = useAuth();
 	const [pets, setPets] = useState<Pet[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState('');
@@ -36,7 +33,6 @@ export function MyPetsPage() {
 
 	return (
 		<ScreenShell
-			eyebrow={role ? ROLE_LABELS[role] : ''}
 			title="Mis mascotas"
 			icon={PawPrint}
 			homeTo="/"

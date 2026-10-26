@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, House, LogOut } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthenticationContext';
+import { ROLE_LABELS } from '../users/userTypes';
 
 interface ScreenShellProps {
-  eyebrow: string;
   title: string;
   icon?: LucideIcon;
   backTo?: string;
@@ -36,7 +36,6 @@ function LogoutButton() {
 }
 
 export function ScreenShell({
-  eyebrow,
   title,
   icon: Icon,
   backTo,
@@ -44,6 +43,7 @@ export function ScreenShell({
   action,
   children,
 }: ScreenShellProps) {
+  const { role } = useAuth();
   const keepTopRowOnDesktop = Boolean(backTo);
 
   return (
@@ -92,7 +92,7 @@ export function ScreenShell({
         >
           <div className="flex flex-col gap-0.5">
             <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#9DB2BF]">
-              {eyebrow}
+              {role ? ROLE_LABELS[role] : ''}
             </div>
             <h1 className="text-[26px] font-bold tracking-[-0.3px] text-[#DDE6ED] lg:text-[30px]">
               {title}

@@ -64,7 +64,7 @@ export function UserCreatePage() {
   };
 
   return (
-    <ScreenShell eyebrow="Nuevo" title="Nuevo usuario" backTo="/users">
+    <ScreenShell title="Nuevo usuario" backTo="/users">
       <UserForm
         form={form}
         formError={formError}

@@ -52,10 +52,6 @@ export const handleGetByIdUser = async (id: string): Promise<IUserResponse> => {
 export const handleGetAllUser = async (): Promise<IUserResponse[]> => {
     const response = await apiFetch('/User');
 
-    if (response.status === 404) {
-        return [];
-    }
-
     if (!response.ok) {
         throw new Error('Error getting users');
     }

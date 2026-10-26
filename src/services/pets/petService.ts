@@ -52,10 +52,6 @@ export const handleGetByIdPet = async (id: string): Promise<IPetResponse> => {
 export const handleGetAllPet = async (): Promise<IPetResponse[]> => {
     const response = await apiFetch('/Pet');
 
-    if (response.status === 404) {
-        return [];
-    }
-
     if (!response.ok) {
         throw new Error('Error getting pets');
     }

@@ -37,7 +37,6 @@ export function ConsultationListPage() {
                         id: consultation.id,
                         description: consultation.description?.trim() || 'Sin descripción',
                         date: hasDateTime(consultation.date) ? consultation.date.trim() : '',
-                        status: consultation.status,
                         petId: String(consultation.petId),
                         petName:
                             consultation.petId === null

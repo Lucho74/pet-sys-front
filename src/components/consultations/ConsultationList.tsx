@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { STATUS_BADGE_CLASSES, STATUS_LABELS } from './consultationTypes';
 import type { Consultation } from './consultationTypes';
 import { formatDate } from '../../utils/datetime';
 import { CreateButton } from '../common/CreateButton';
@@ -39,17 +38,8 @@ export function ConsultationList({
                     </div>
 
                     <div className="min-w-0 flex-1 text-left">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate text-[15px] font-semibold text-[#27374D]">
-                          {consultation.description}
-                        </span>
-                        <span
-                          className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                            STATUS_BADGE_CLASSES[consultation.status]
-                          }`}
-                        >
-                          {STATUS_LABELS[consultation.status]}
-                        </span>
+                      <div className="truncate text-[15px] font-semibold text-[#27374D]">
+                        {consultation.description}
                       </div>
                       <div className="truncate text-[13px] text-[#526D82]">
                         {consultation.date ? formatDate(consultation.date) : 'Sin fecha asignada'}

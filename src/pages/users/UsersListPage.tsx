@@ -26,7 +26,9 @@ export function UsersListPage() {
             email: user.email?.trim() || '',
             phone: user.phone?.trim() || '',
             roleName:
-              user.roleName === 'Admin' || user.roleName === 'Veterinarian' ? user.roleName : 'Client',
+              user.roleName === 'SysAdmin' || user.roleName === 'Admin' || user.roleName === 'Veterinarian'
+                ? user.roleName
+                : 'Client',
             dni: user.dni?.trim() || '',
             isDeleted: user.isDeleted,
           })),

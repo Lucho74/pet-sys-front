@@ -11,6 +11,7 @@ interface UserFormProps {
   formError: string;
   fieldErrors: FormErrors;
   canChangeRole?: boolean;
+  isPasswordOptional?: boolean;
   isLoading?: boolean;
   isSaving?: boolean;
   onChange: (field: keyof UserFormState, value: string) => void;
@@ -25,6 +26,7 @@ export function UserForm({
   formError,
   fieldErrors,
   canChangeRole = true,
+  isPasswordOptional = false,
   isLoading = false,
   isSaving = false,
   onChange,
@@ -104,7 +106,7 @@ export function UserForm({
         value={form.password}
         onChange={(value) => onChange('password', value)}
         error={fieldErrors.password}
-        placeholder="Mínimo 6 caracteres"
+        placeholder={isPasswordOptional ? 'Dejala vacía para no cambiarla' : 'Mínimo 6 caracteres'}
         maxLength={100}
         autoComplete="new-password"
         disabled={isSaving}

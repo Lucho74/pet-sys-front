@@ -6,7 +6,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+()\s-]+$/;
 const VALID_ROLES = ['Client', 'Veterinarian', 'Admin'];
 
-export function validateUserForm(form: UserFormState): FormErrors {
+export function validateUserForm(form: UserFormState, isPasswordOptional = false): FormErrors {
   const errors: FormErrors = {};
 
   const fullName = form.fullName.trim();
@@ -33,7 +33,7 @@ export function validateUserForm(form: UserFormState): FormErrors {
   }
 
   if (!form.password) {
-    errors.password = 'La contraseña es obligatoria.';
+    if (!isPasswordOptional) errors.password = 'La contraseña es obligatoria.';
   } else if (form.password.length < 6) {
     errors.password = 'La contraseña debe tener al menos 6 caracteres.';
   } else if (form.password.length > 100) {

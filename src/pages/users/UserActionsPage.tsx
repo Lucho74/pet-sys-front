@@ -4,16 +4,21 @@ import { ActionSheet } from '../../components/common/ActionSheet';
 import { ROLE_LABELS } from '../../components/users/userTypes';
 import type { UsersOutletContext } from '../../components/users/userTypes';
 import { handleReactivateUser } from '../../services/users/userService';
+import type { AssignableRole } from '../../services/users/IUser';
+import { getManageableRoles } from '../../utils/roles';
+import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserActionsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { users, setUserDeleted } = useOutletContext<UsersOutletContext>();
+  const { role } = useAuth();
 
   const selected = users.find((user) => String(user.id) === id);
 
   if (!selected) return null;
 
+  const canSuspend = getManageableRoles(role).includes(selected.roleName as AssignableRole);
   const subtitle = `${ROLE_LABELS[selected.roleName]} · ${selected.email}`;
 
   if (selected.isDeleted) {
@@ -49,7 +54,7 @@ export function UserActionsPage() {
       deleteLabel="Eliminar usuario"
       onClose={() => navigate('/users')}
       onEdit={() => navigate(`/users/${selected.id}/edit`)}
-      onDelete={() => navigate(`/users/${selected.id}/delete`)}
+      onDelete={canSuspend ? () => navigate(`/users/${selected.id}/delete`) : undefined}
     />
   );
 }

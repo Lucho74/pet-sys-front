@@ -9,8 +9,8 @@ interface PetListProps {
   pets: Pet[];
   isLoading: boolean;
   error: string;
-  createTo: string;
-  createLabel: string;
+  createTo?: string;
+  createLabel?: string;
   itemTo: (petId: number) => string;
 }
 
@@ -53,9 +53,11 @@ export function PetList({ pets, isLoading, error, createTo, createLabel, itemTo 
         </div>
       </div>
 
-      <div className="absolute inset-x-4 bottom-7 lg:hidden">
-        <CreateButton to={createTo} label={createLabel} />
-      </div>
+      {createTo && createLabel ? (
+        <div className="absolute inset-x-4 bottom-7 lg:hidden">
+          <CreateButton to={createTo} label={createLabel} />
+        </div>
+      ) : null}
     </>
   );
 }

@@ -20,7 +20,6 @@ export function ConsultationEditPage() {
     const [form, setForm] = useState<ConsultationFormState>({
         description: '',
         date: '',
-        status: 'Pending',
         petId: '',
         veterinarianId: '',
     });
@@ -45,7 +44,6 @@ export function ConsultationEditPage() {
                 setForm({
                     description: consultation.description?.trim() || '',
                     date,
-                    status: consultation.status,
                     petId: String(consultation.petId),
                     veterinarianId: String(consultation.veterinarianId),
                 });
@@ -89,7 +87,6 @@ export function ConsultationEditPage() {
             await handleUpdateConsultation(id, {
                 description: form.description,
                 date: toApiDate(form.date),
-                status: form.status,
                 petId: Number(form.petId),
                 veterinarianId: Number(form.veterinarianId),
             });

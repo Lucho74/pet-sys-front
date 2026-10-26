@@ -52,10 +52,6 @@ export const handleGetByIdConsultation = async (id: string): Promise<IConsultati
 export const handleGetAllConsultations = async (): Promise<IConsultationResponse[]> => {
     const response = await apiFetch('/Consultation');
 
-    if (response.status === 404) {
-        return [];
-    }
-
     if (!response.ok) {
         throw new Error('Error getting consultations');
     }

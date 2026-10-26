@@ -19,7 +19,6 @@ export function ConsultationCreatePage() {
     const [form, setForm] = useState<ConsultationFormState>({
         description: '',
         date: '',
-        status: 'Pending',
         petId: '',
         veterinarianId: '',
     });
@@ -91,7 +90,6 @@ export function ConsultationCreatePage() {
                 pets={pets}
                 isLoadingPets={isLoadingPets}
                 petsError={petsError}
-                canChangeStatus={false}
                 isSaving={isSaving}
                 onChange={handleChange}
                 onCancel={() => navigate('/consultations')}

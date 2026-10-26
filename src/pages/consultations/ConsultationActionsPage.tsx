@@ -1,6 +1,5 @@
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ActionSheet } from '../../components/common/ActionSheet';
-import { STATUS_LABELS } from '../../components/consultations/consultationTypes';
 import type { ConsultationsOutletContext } from '../../components/consultations/consultationTypes';
 import { formatDate } from '../../utils/datetime';
 
@@ -17,7 +16,7 @@ export function ConsultationActionsPage() {
     return (
         <ActionSheet
             title={"Consulta #" + selected.id}
-            subtitle={`${selected.description} · ${selected.date ? formatDate(selected.date) : 'Sin fecha asignada'} · ${STATUS_LABELS[selected.status]}`}
+            subtitle={`${selected.description} · ${selected.date ? formatDate(selected.date) : 'Sin fecha asignada'}`}
             editLabel="Editar consulta"
             deleteLabel="Eliminar consulta"
             onClose={() => navigate('/consultations')}

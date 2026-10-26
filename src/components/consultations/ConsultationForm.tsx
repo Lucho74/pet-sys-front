@@ -1,16 +1,12 @@
 import { FormField } from '../common/FormField';
 import { FormShell } from '../common/FormShell';
-import { SelectField } from '../common/SelectField';
 import { PetSelect } from './PetSelect';
 import { VeterinarianSelect } from './VeterinarianSelect';
-import { STATUS_LABELS } from './consultationTypes';
 import type { IUserResponse } from '../../services/users/IUser';
 import type { ConsultationFormState } from './consultationTypes';
 import type { FormErrors } from './consultationValidation';
 import type { IPetResponse } from '../../services/pets/IPet';
 import { todayDate } from '../../utils/datetime';
-
-const STATUS_OPTIONS = Object.entries(STATUS_LABELS).map(([value, label]) => ({ value, label }));
 
 interface ConsultationFormProps {
   form: ConsultationFormState;
@@ -22,7 +18,6 @@ interface ConsultationFormProps {
   pets: IPetResponse[];
   isLoadingPets?: boolean;
   petsError?: string;
-  canChangeStatus?: boolean;
   isLoading?: boolean;
   isSaving?: boolean;
   onChange: (field: keyof ConsultationFormState, value: string) => void;
@@ -41,7 +36,6 @@ export function ConsultationForm({
   pets,
   isLoadingPets = false,
   petsError = '',
-  canChangeStatus = true,
   isLoading = false,
   isSaving = false,
   onChange,
@@ -79,16 +73,6 @@ export function ConsultationForm({
         error={fieldErrors.date}
         min={todayDate()}
         disabled={isSaving}
-      />
-
-      <SelectField
-        label="Estado de la consulta"
-        value={form.status}
-        onChange={(value) => onChange('status', value)}
-        options={STATUS_OPTIONS}
-        error={fieldErrors.status}
-        hint={canChangeStatus ? undefined : 'Las consultas nuevas se crean como Pendiente.'}
-        disabled={isSaving || !canChangeStatus}
       />
 
       <VeterinarianSelect

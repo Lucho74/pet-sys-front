@@ -1,8 +1,5 @@
-import { STATUS_LABELS } from './consultationTypes';
 import type { ConsultationFormState } from './consultationTypes';
 import { todayDate } from '../../utils/datetime';
-
-const VALID_STATUSES = Object.keys(STATUS_LABELS);
 
 export type FormErrors = Partial<Record<keyof ConsultationFormState, string>>;
 
@@ -27,13 +24,6 @@ export function validateConsultationForm(
     errors.date = 'El día de la consulta es obligatorio.';
   } else if (form.date !== initialDate && form.date < todayDate()) {
     errors.date = 'No se puede agendar una consulta en el pasado.';
-  }
-
-  const status = form.status;
-  if (!status) {
-    errors.status = 'El estado es obligatorio.';
-  } else if (!VALID_STATUSES.includes(status)) {
-    errors.status = 'Selecciona un estado válido.';
   }
 
   const petId = form.petId;

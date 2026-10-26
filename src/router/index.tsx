@@ -70,6 +70,7 @@ const routes: RouteObject[] = [
               },
               { path: 'pets/new', element: <PetCreatePage /> },
               { path: 'pets/:id/edit', element: <PetEditPage /> },
+              { path: 'pets/:petId/consultations', element: <MyPetConsultationsPage backTo="/pets" /> },
 
               {
                 path: 'consultations',
@@ -87,7 +88,7 @@ const routes: RouteObject[] = [
             element: <RoleRoute allowedRoles={CLIENT_ROLES} />,
             children: [
               { path: 'my-pets', element: <MyPetsPage /> },
-              { path: 'my-pets/:petId/consultations', element: <MyPetConsultationsPage /> },
+              { path: 'my-pets/:petId/consultations', element: <MyPetConsultationsPage backTo="/my-pets" /> },
             ],
           },
         ]

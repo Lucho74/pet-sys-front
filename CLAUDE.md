@@ -74,7 +74,7 @@ Vistas del cliente (solo lectura, bajo un `RoleRoute` con `CLIENT_ROLES`, fuera 
 
 `MyPetsPage` reusa `PetList` pasándole `itemTo` para que cada ítem navegue a las consultas en vez de abrir el ActionSheet; `MyPetConsultationsPage` usa `ClientConsultationList`, una lista propia sin acciones.
 
-`MyPetConsultationsPage` también se monta para los roles clínicos en `/pets/:petId/consultations` (pantalla completa, fuera del padre `pets`), a la que se llega con el botón "Ver consultas" del ActionSheet de mascotas. La página recibe `backTo` por prop desde el router (`/my-pets` o `/pets`) y, para el nombre del título, usa `handleGetMyPets` si el rol es cliente y `handleGetByIdPet` si no. `ActionSheet` acepta `extraActions?: { label, onClick }[]`, botones secundarios opcionales entre editar y eliminar.
+`MyPetConsultationsPage` también se monta para los roles clínicos en `/pets/:petId/consultations` (pantalla completa, fuera del padre `pets`), a la que se llega con el botón "Ver consultas" del ActionSheet de mascotas. La página recibe `backTo` por prop desde el router (`/my-pets` o `/pets`) y, para el nombre del título, usa `handleGetMyPets` si el rol es cliente y `handleGetByIdPet` si no, en un pedido aparte del de las consultas (sin `Promise.all`): si falla, el título queda en "Consultas" y la lista se muestra igual. `ActionSheet` acepta `extraActions?: { label, onClick }[]`, botones secundarios opcionales entre editar y eliminar.
 
 ### Estilado
 

@@ -5,7 +5,8 @@ export const CLINICAL_ROLES: UserRole[] = [...ADMIN_ROLES, 'Veterinarian'];
 export const CLIENT_ROLES: UserRole[] = ['Client'];
 
 export function getManageableRoles(role: UserRole | null): AssignableRole[] {
-  if (role !== null && ADMIN_ROLES.includes(role)) return ['Client', 'Veterinarian', 'Admin'];
+  if (role === 'SysAdmin') return ['Client', 'Veterinarian', 'Admin'];
+  if (role === 'Admin') return ['Client', 'Veterinarian'];
   if (role === 'Veterinarian') return ['Client'];
   return [];
 }

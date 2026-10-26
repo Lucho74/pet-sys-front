@@ -12,9 +12,10 @@ interface PetListProps {
   createTo?: string;
   createLabel?: string;
   itemTo: (petId: number) => string;
+  emptyLabel?: string;
 }
 
-export function PetList({ pets, isLoading, error, createTo, createLabel, itemTo }: PetListProps) {
+export function PetList({ pets, isLoading, error, createTo, createLabel, itemTo, emptyLabel = 'No hay mascotas cargadas.' }: PetListProps) {
   const hasPets = !isLoading && !error && pets.length > 0;
 
   return (
@@ -50,7 +51,7 @@ export function PetList({ pets, isLoading, error, createTo, createLabel, itemTo 
               error={error}
               isEmpty={pets.length === 0}
               loadingLabel="Cargando mascotas..."
-              emptyLabel="No hay mascotas cargadas."
+              emptyLabel={emptyLabel}
             />
           )}
         </div>

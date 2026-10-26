@@ -8,6 +8,7 @@ export interface Consultation {
   veterinarianName: string;
   // Dueño de la mascota: a donde lleva el action sheet cuando la consulta está suspendida.
   clientId: number | null;
+  clientName: string;
   isDeleted: boolean;
 }
 

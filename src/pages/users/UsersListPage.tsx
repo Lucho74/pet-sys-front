@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { CreateButton } from '../../components/common/CreateButton';
 import { UserList } from '../../components/users/UserList';
+import { SearchBar } from '../../components/common/SearchBar';
+import { matchesSearch } from '../../utils/search';
 import { handleGetAllUser } from '../../services/users/userService';
 import type { User } from '../../components/users/userTypes';
 import { useAuth } from '../../contexts/AuthenticationContext';
@@ -17,6 +19,7 @@ export function UsersListPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
   const { role } = useAuth();
 
   useEffect(() => {
@@ -48,6 +51,10 @@ export function UsersListPage() {
     setUsers((current) => current.map((user) => (user.id === userId ? { ...user, isDeleted } : user)));
   };
 
+  const filteredUsers = users.filter((user) =>
+    matchesSearch(`${user.fullName} ${user.email} ${user.dni} ${user.phone}`, search.trim()),
+  );
+
   return (
     <ScreenShell
       title="Usuarios"
@@ -55,13 +62,16 @@ export function UsersListPage() {
       homeTo="/"
       action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
     >
+      <SearchBar value={search} onChange={setSearch} placeholder="Buscar por nombre, email, DNI o teléfono" />
+
       <UserList
-        users={users}
+        users={filteredUsers}
         isLoading={isLoading}
         error={error}
         createTo={CREATE_TO}
         createLabel={CREATE_LABEL}
         itemTo={(user) => (canManage(role, user.roleName) ? `/users/${user.id}` : null)}
+        emptyLabel={users.length > 0 ? 'Ningún usuario coincide con la búsqueda.' : undefined}
       />
 
       <Outlet context={{ users, setUserDeleted }} />

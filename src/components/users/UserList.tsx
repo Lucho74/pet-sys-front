@@ -13,9 +13,10 @@ interface UserListProps {
   createTo: string;
   createLabel: string;
   itemTo: (user: User) => string | null;
+  emptyLabel?: string;
 }
 
-export function UserList({ users, isLoading, error, createTo, createLabel, itemTo }: UserListProps) {
+export function UserList({ users, isLoading, error, createTo, createLabel, itemTo, emptyLabel = 'No hay usuarios cargados.' }: UserListProps) {
   const hasUsers = !isLoading && !error && users.length > 0;
 
   return (
@@ -69,7 +70,7 @@ export function UserList({ users, isLoading, error, createTo, createLabel, itemT
               error={error}
               isEmpty={users.length === 0}
               loadingLabel="Cargando usuarios..."
-              emptyLabel="No hay usuarios cargados."
+              emptyLabel={emptyLabel}
             />
           )}
         </div>

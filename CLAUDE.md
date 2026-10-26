@@ -29,7 +29,7 @@ No hay suite de tests configurada todavía en este repo.
 `src/` se organiza así:
 - `pages/<feature>/` — una página por pantalla, montada por el router. Acá vive el estado, el fetch y el mapeo DTO↔UI.
 - `components/<feature>/` — componentes de presentación de la feature (ej. `components/users/`), sin fetch propio.
-- `components/common/` — piezas reutilizadas por todas las features: `FormShell`, `FormField` (con `type="password"` agrega solo el botón de ojo para mostrar/ocultar), `SelectField`, `SearchSelect`, `ListState`, `CreateButton`, `ActionSheet`, `DeleteDialog`, más los módulos de clases Tailwind compartidas (`buttonStyles.ts`, `fieldStyles.ts`, `listStyles.ts`).
+- `components/common/` — piezas reutilizadas por todas las features: `FormShell`, `FormField` (con `type="password"` agrega solo el botón de ojo para mostrar/ocultar), `SelectField`, `SearchSelect`, `ListState`, `CreateButton`, `ActionSheet`, `DeleteDialog`, más `SearchBar`, más los módulos de clases Tailwind compartidas (`buttonStyles.ts`, `fieldStyles.ts`, `listStyles.ts`).
 - `components/layout/` — `ScreenShell` (header + layout de pantalla; el texto chico sobre el título es el rol del usuario logueado, que calcula solo con `useAuth` + `ROLE_LABELS`, así que las páginas no lo pasan), `Sidebar` y `navigation.ts` (`NAV_ITEMS`).
 - `services/<feature>/` — llamadas `fetch` a la API del backend y tipos de DTO.
 - `router/` — definición de rutas (`createBrowserRouter`).
@@ -64,6 +64,8 @@ Para elegir una entidad relacionada dentro de un form (dueño de una mascota, ve
 **Suspendidos (`isDeleted: true`)**: las tres listas los ordenan al final con `activeFirst()` y los pintan con `DELETED_CARD_CLASSES` + badge "Suspendido" (`DELETED_BADGE_CLASSES`), todo en `listStyles.ts`. Son de solo lectura: el `ActionSheet` (con `onDelete` opcional y `isDeleted` para repetir el encabezado gris de la tarjeta) muestra un único botón: "Reactivar usuario" para usuarios y "Ver dueño" (`/users/:clientId`) para mascotas y consultas. Las páginas de edit redirigen a la lista si lo cargado está suspendido.
 
 Las páginas de create/edit quedan **fuera** de la ruta padre a propósito: son pantalla completa, no overlay.
+
+**Búsqueda**: las tres listas tienen arriba un `SearchBar` (`common/`) que filtra en cliente, sobre lo ya cargado, con `matchesSearch` de `utils/search` sobre los campos del ítem concatenados (ignora mayúsculas y acentos). La página guarda el texto, le pasa al `<Entity>List` la lista filtrada y un `emptyLabel` de "sin coincidencias", pero al `<Outlet context>` le sigue pasando la lista completa. Campos: usuarios por nombre/email/DNI/teléfono, mascotas por nombre, consultas por nombre de la mascota o del cliente (dueño).
 
 Vistas del cliente (solo lectura, bajo un `RoleRoute` con `CLIENT_ROLES`, fuera del patrón CRUD):
 

@@ -12,6 +12,7 @@ interface ConsultationListProps {
   createTo: string;
   createLabel: string;
   itemTo: (consultationId: number) => string;
+  emptyLabel?: string;
 }
 
 export function ConsultationList({
@@ -21,6 +22,7 @@ export function ConsultationList({
   createTo,
   createLabel,
   itemTo,
+  emptyLabel = 'No hay consultas cargadas.',
 }: ConsultationListProps) {
   const hasConsultations = !isLoading && !error && consultations.length > 0;
 
@@ -45,7 +47,7 @@ export function ConsultationList({
                         {consultation.isDeleted ? <span className={DELETED_BADGE_CLASSES}>Suspendido</span> : null}
                       </div>
                       <div className="truncate text-[13px] text-[#526D82]">
-                        {consultation.date ? formatDate(consultation.date) : 'Sin fecha asignada'}
+                        {consultation.date ? formatDate(consultation.date) : 'Sin fecha asignada'} · Cliente: {consultation.clientName}
                       </div>
                       <div className="truncate text-[12px] text-[#526D82]">
                         Mascota: {consultation.petName} · Veterinario: {consultation.veterinarianName}
@@ -61,7 +63,7 @@ export function ConsultationList({
               error={error}
               isEmpty={consultations.length === 0}
               loadingLabel="Cargando consultas..."
-              emptyLabel="No hay consultas cargadas."
+              emptyLabel={emptyLabel}
             />
           )}
         </div>

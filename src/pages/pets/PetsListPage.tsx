@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { CreateButton } from '../../components/common/CreateButton';
 import { PetList } from '../../components/pets/PetList';
+import { SearchBar } from '../../components/common/SearchBar';
+import { matchesSearch } from '../../utils/search';
 import { handleGetAllPet } from '../../services/pets/petService';
 import type { Pet } from '../../components/pets/petTypes';
 
@@ -15,6 +17,7 @@ export function PetsListPage() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     handleGetAllPet()
@@ -42,6 +45,8 @@ export function PetsListPage() {
     setPets((current) => current.filter((pet) => pet.id !== petId));
   };
 
+  const filteredPets = pets.filter((pet) => matchesSearch(pet.name, search.trim()));
+
   return (
     <ScreenShell
       title="Mascotas"
@@ -49,13 +54,16 @@ export function PetsListPage() {
       homeTo="/"
       action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
     >
+      <SearchBar value={search} onChange={setSearch} placeholder="Buscar por nombre de la mascota" />
+
       <PetList
-        pets={pets}
+        pets={filteredPets}
         isLoading={isLoading}
         error={error}
         createTo={CREATE_TO}
         createLabel={CREATE_LABEL}
         itemTo={(petId) => `/pets/${petId}`}
+        emptyLabel={pets.length > 0 ? 'Ninguna mascota coincide con la búsqueda.' : undefined}
       />
 
       <Outlet context={{ pets, removePet }} />

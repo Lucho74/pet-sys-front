@@ -33,6 +33,11 @@ export function UserEditPage() {
   useEffect(() => {
     handleGetByIdUser(id)
       .then((user) => {
+        if (user.isDeleted) {
+          toast.error('El usuario está suspendido. Reactivalo para editarlo.');
+          navigate('/users', { replace: true });
+          return;
+        }
         if (!getManageableRoles(role).includes(user.roleName as AssignableRole)) {
           toast.error('No tenés permiso para editar este usuario.');
           navigate('/users', { replace: true });

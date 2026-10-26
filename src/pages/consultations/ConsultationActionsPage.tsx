@@ -13,6 +13,21 @@ export function ConsultationActionsPage() {
 
     if (!selected) return null;
 
+    if (selected.isDeleted) {
+        const { clientId } = selected;
+
+        return (
+            <ActionSheet
+                title={"Consulta #" + selected.id}
+                subtitle={`Suspendida junto con el dueño de ${selected.petName}`}
+                isDeleted
+                editLabel="Ver dueño"
+                onClose={() => navigate('/consultations')}
+                onEdit={() => (clientId === null ? navigate('/users') : navigate(`/users/${clientId}`))}
+            />
+        );
+    }
+
     return (
         <ActionSheet
             title={"Consulta #" + selected.id}

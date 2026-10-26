@@ -11,6 +11,19 @@ export function PetActionsPage() {
 
   if (!selected) return null;
 
+  if (selected.isDeleted) {
+    return (
+      <ActionSheet
+        title={selected.name}
+        subtitle="Suspendida junto con su dueño"
+        isDeleted
+        editLabel="Ver dueño"
+        onClose={() => navigate('/pets')}
+        onEdit={() => navigate(`/users/${selected.clientId}`)}
+      />
+    );
+  }
+
   return (
     <ActionSheet
       title={selected.name}

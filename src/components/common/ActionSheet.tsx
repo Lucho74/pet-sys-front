@@ -7,6 +7,7 @@ import {
   PRIMARY_BUTTON_CLASSES,
   SECONDARY_BUTTON_CLASSES,
 } from './buttonStyles';
+import { DELETED_BADGE_CLASSES } from './listStyles';
 
 interface ActionSheetAction {
   label: string;
@@ -17,11 +18,13 @@ interface ActionSheetProps {
   title: string;
   subtitle: string;
   editLabel: string;
-  deleteLabel: string;
+  deleteLabel?: string;
   extraActions?: ActionSheetAction[];
+  // Pinta el encabezado como la tarjeta suspendida del listado.
+  isDeleted?: boolean;
   onClose: () => void;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
 }
 
 export function ActionSheet({
@@ -30,6 +33,7 @@ export function ActionSheet({
   editLabel,
   deleteLabel,
   extraActions = [],
+  isDeleted = false,
   onClose,
   onEdit,
   onDelete,
@@ -64,13 +68,29 @@ export function ActionSheet({
           <X size={17} strokeWidth={2.5} />
         </button>
 
-        <div className="mb-4 flex items-center gap-3 sm:pr-8">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#27374D]">
-            <span className="text-[16px] font-semibold text-white">{initials(title)}</span>
+        <div
+          className={`mb-4 flex items-center gap-3 sm:mr-8 ${
+            isDeleted ? 'rounded-[14px] border border-dashed border-[#9DB2BF] bg-white/50 p-3' : ''
+          }`}
+        >
+          <div
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
+              isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'
+            }`}
+          >
+            <span className={`text-[16px] font-semibold ${isDeleted ? 'text-[#27374D]' : 'text-white'}`}>
+              {initials(title)}
+            </span>
           </div>
           <div className="min-w-0 flex-1">
-            <div id={titleId} className="truncate text-[15px] font-semibold text-[#27374D]">
-              {title}
+            <div className="flex items-center gap-2">
+              <div
+                id={titleId}
+                className={`truncate text-[15px] font-semibold ${isDeleted ? 'text-[#526D82]' : 'text-[#27374D]'}`}
+              >
+                {title}
+              </div>
+              {isDeleted ? <span className={DELETED_BADGE_CLASSES}>Suspendido</span> : null}
             </div>
             <div className="truncate text-[13px] text-[#526D82]">{subtitle}</div>
           </div>
@@ -85,9 +105,11 @@ export function ActionSheet({
               {action.label}
             </button>
           ))}
-          <button type="button" onClick={onDelete} className={`w-full ${SECONDARY_BUTTON_CLASSES}`}>
-            {deleteLabel}
-          </button>
+          {onDelete ? (
+            <button type="button" onClick={onDelete} className={`w-full ${SECONDARY_BUTTON_CLASSES}`}>
+              {deleteLabel}
+            </button>
+          ) : null}
           <button type="button" onClick={onClose} className={`w-full sm:hidden ${GHOST_BUTTON_CLASSES}`}>
             Cancelar
           </button>

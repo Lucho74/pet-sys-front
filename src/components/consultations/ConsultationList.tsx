@@ -3,7 +3,7 @@ import type { Consultation } from './consultationTypes';
 import { formatDate } from '../../utils/datetime';
 import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';
-import { CARD_CLASSES, WIDE_GRID_CLASSES } from '../common/listStyles';
+import { activeFirst, CARD_CLASSES, DELETED_BADGE_CLASSES, DELETED_CARD_CLASSES, WIDE_GRID_CLASSES } from '../common/listStyles';
 
 interface ConsultationListProps {
   consultations: Consultation[];
@@ -30,16 +30,19 @@ export function ConsultationList({
         <div className="flex h-full w-full flex-col">
           {hasConsultations ? (
             <ul className={WIDE_GRID_CLASSES}>
-              {consultations.map((consultation) => (
+              {activeFirst(consultations).map((consultation) => (
                 <li key={consultation.id} className="flex">
-                  <Link to={itemTo(consultation.id)} className={CARD_CLASSES}>
-                    <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] bg-[#27374D]">
-                      <span className="text-[15px] font-semibold text-white">{consultation.id}</span>
+                  <Link to={itemTo(consultation.id)} className={consultation.isDeleted ? DELETED_CARD_CLASSES : CARD_CLASSES}>
+                    <div className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] ${consultation.isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'}`}>
+                      <span className={`text-[15px] font-semibold ${consultation.isDeleted ? 'text-[#27374D]' : 'text-white'}`}>{consultation.id}</span>
                     </div>
 
                     <div className="min-w-0 flex-1 text-left">
-                      <div className="truncate text-[15px] font-semibold text-[#27374D]">
-                        {consultation.description}
+                      <div className="flex items-center gap-2">
+                        <span className={`truncate text-[15px] font-semibold ${consultation.isDeleted ? 'text-[#526D82]' : 'text-[#27374D]'}`}>
+                          {consultation.description}
+                        </span>
+                        {consultation.isDeleted ? <span className={DELETED_BADGE_CLASSES}>Suspendido</span> : null}
                       </div>
                       <div className="truncate text-[13px] text-[#526D82]">
                         {consultation.date ? formatDate(consultation.date) : 'Sin fecha asignada'}

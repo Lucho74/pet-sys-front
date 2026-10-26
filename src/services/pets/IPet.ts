@@ -5,6 +5,7 @@ export interface IPetResponse {
     breed: string | null;
     birthDate: string | null;
     clientId: number;
+    isDeleted: boolean;
 }
 
 export interface IPetRequest {

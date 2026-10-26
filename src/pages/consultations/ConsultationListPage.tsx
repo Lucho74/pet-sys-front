@@ -28,6 +28,7 @@ export function ConsultationListPage() {
         ])
             .then(([response, pets, users]) => {
                 const petNames = new Map(pets.map((pet) => [pet.id, pet.name?.trim() || 'Sin nombre']));
+                const petOwners = new Map(pets.map((pet) => [pet.id, pet.clientId]));
                 const veterinarianNames = new Map(
                     users.map((user) => [user.id, user.fullName?.trim() || 'Sin nombre']),
                 );
@@ -48,6 +49,8 @@ export function ConsultationListPage() {
                                 ? 'sin asignar'
                                 : veterinarianNames.get(consultation.veterinarianId) ||
                                   `Veterinario #${consultation.veterinarianId}`,
+                        clientId: consultation.petId === null ? null : petOwners.get(consultation.petId) ?? null,
+                        isDeleted: consultation.isDeleted,
                     })),
                 );
             })

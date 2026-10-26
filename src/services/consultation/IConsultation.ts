@@ -4,6 +4,7 @@ export interface IConsultationResponse {
     date: string | null;
     petId: number | null;
     veterinarianId: number | null;
+    isDeleted: boolean;
 }
 
 export interface ICreateConsultationRequest {

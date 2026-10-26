@@ -38,6 +38,11 @@ export function ConsultationEditPage() {
     useEffect(() => {
         handleGetByIdConsultation(id)
             .then((consultation) => {
+                if (consultation.isDeleted) {
+                    toast.error('La consulta está suspendida y no se puede editar.');
+                    navigate('/consultations', { replace: true });
+                    return;
+                }
                 const date = hasDateTime(consultation.date) ? toInputDate(consultation.date.trim()) : '';
 
                 setInitialDate(date);
@@ -53,7 +58,7 @@ export function ConsultationEditPage() {
                 toast.error('No se pudo cargar la consulta.');
             })
             .finally(() => setIsLoading(false));
-    }, [id]);
+    }, [id, navigate]);
 
     useEffect(() => {
         handleGetAllUser()

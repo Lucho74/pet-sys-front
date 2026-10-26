@@ -8,7 +8,7 @@ import type { UsersOutletContext } from '../../components/users/userTypes';
 export function UserDeletePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { users, removeUser } = useOutletContext<UsersOutletContext>();
+  const { users, setUserDeleted } = useOutletContext<UsersOutletContext>();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const selected = users.find((user) => String(user.id) === id);
@@ -20,7 +20,7 @@ export function UserDeletePage() {
 
     try {
       await handleDeleteUser(String(selected.id));
-      removeUser(selected.id);
+      setUserDeleted(selected.id, true);
       toast.success('Usuario eliminado correctamente.');
     } catch {
       toast.error('No se pudo eliminar el usuario.');

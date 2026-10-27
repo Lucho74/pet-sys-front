@@ -8,9 +8,6 @@ export const HandleLogin = async (loginRequest: ILoginRequest) => {
         method: 'POST',
         body: JSON.stringify(loginRequest)
     });
-    if(!response.ok){
-        throw new Error('Login failed');
-    }
 
     const token = (await response.text()).trim();
 
@@ -23,8 +20,5 @@ export const HandleLogin = async (loginRequest: ILoginRequest) => {
 
 export const handleGetCurrentUser = async (): Promise<IUserResponse> => {
     const response = await apiFetch('/User/me');
-    if (!response.ok) {
-        throw new Error('Failed to fetch current user');
-    }
     return response.json();
 }

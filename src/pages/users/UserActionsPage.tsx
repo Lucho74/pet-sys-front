@@ -5,6 +5,7 @@ import { ROLE_LABELS } from '../../components/users/userTypes';
 import type { UsersOutletContext } from '../../components/users/userTypes';
 import { handleReactivateUser } from '../../services/users/userService';
 import { canManage } from '../../utils/roles';
+import { errorMessage } from '../../utils/errors';
 import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserActionsPage() {
@@ -26,8 +27,8 @@ export function UserActionsPage() {
         await handleReactivateUser(String(selected.id));
         setUserDeleted(selected.id, false);
         toast.success('Usuario reactivado correctamente.');
-      } catch {
-        toast.error('No se pudo reactivar el usuario.');
+      } catch (error) {
+        toast.error(errorMessage(error, 'No se pudo reactivar el usuario.'));
       }
 
       navigate('/users');

@@ -9,6 +9,7 @@ import type { UserFormState } from '../../components/users/userTypes';
 import { validateUserForm } from '../../components/users/userValidation';
 import type { FormErrors } from '../../components/users/userValidation';
 import { getManageableRoles } from '../../utils/roles';
+import { errorMessage } from '../../utils/errors';
 import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserCreatePage() {
@@ -56,9 +57,10 @@ export function UserCreatePage() {
 
       toast.success('Usuario creado correctamente.');
       navigate('/users');
-    } catch {
-      setFormError('No se pudo guardar el usuario.');
-      toast.error('No se pudo guardar el usuario.');
+    } catch (error) {
+      const message = errorMessage(error, 'No se pudo guardar el usuario.');
+      setFormError(message);
+      toast.error(message);
       setIsSaving(false);
     }
   };

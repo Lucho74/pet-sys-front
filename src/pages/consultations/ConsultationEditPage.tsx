@@ -12,6 +12,7 @@ import { handleGetByIdConsultation, handleUpdateConsultation } from '../../servi
 import { validateConsultationForm } from '../../components/consultations/consultationValidation';
 import type { IPetResponse } from '../../services/pets/IPet';
 import { hasDateTime, toApiDate, toInputDate } from '../../utils/datetime';
+import { errorMessage } from '../../utils/errors';
 
 export function ConsultationEditPage() {
     const { id = '' } = useParams();
@@ -53,9 +54,10 @@ export function ConsultationEditPage() {
                     veterinarianId: String(consultation.veterinarianId),
                 });
             })
-            .catch(() => {
-                setFormError('No se pudo cargar la consulta.');
-                toast.error('No se pudo cargar la consulta.');
+            .catch((error) => {
+                const message = errorMessage(error, 'No se pudo cargar la consulta.');
+                setFormError(message);
+                toast.error(message);
             })
             .finally(() => setIsLoading(false));
     }, [id, navigate]);
@@ -98,9 +100,10 @@ export function ConsultationEditPage() {
 
             toast.success('Consulta actualizada correctamente.');
             navigate('/consultations');
-        } catch {
-            setFormError('No se pudo guardar la consulta.');
-            toast.error('No se pudo guardar la consulta.');
+        } catch (error) {
+            const message = errorMessage(error, 'No se pudo guardar la consulta.');
+            setFormError(message);
+            toast.error(message);
             setIsSaving(false);
         }
     };

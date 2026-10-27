@@ -7,10 +7,6 @@ export const handleAddUser = async (newUser: ICreateUserRequest): Promise<IUserR
         body: JSON.stringify(newUser)
     });
 
-    if (!response.ok) {
-        throw new Error('Error creating user');
-    }
-
     return response.json();
 };
 
@@ -19,21 +15,13 @@ export const handleDeleteUser = async (id: string): Promise<string> => {
         method: 'DELETE' 
     });
 
-    if (!response.ok) {
-        throw new Error('Error deleting user');
-    }
-
     return response.text();
 };
 
 export const handleReactivateUser = async (id: string): Promise<void> => {
-    const response = await apiFetch(`/User/${id}/reactivate`, {
+    await apiFetch(`/User/${id}/reactivate`, {
         method: 'POST'
     });
-
-    if (!response.ok) {
-        throw new Error('Error reactivating user');
-    }
 };
 
 export const handleUpdateUser =async (id: string, updatedUser: IUpdateUserRequest): Promise<IUserResponse> => {
@@ -42,29 +30,17 @@ export const handleUpdateUser =async (id: string, updatedUser: IUpdateUserReques
         body: JSON.stringify(updatedUser)
     });
 
-    if (!response.ok) {
-        throw new Error('Error updating user');
-    }
-
     return response.json();
 };
 
 export const handleGetByIdUser = async (id: string): Promise<IUserResponse> => {
     const response = await apiFetch(`/User/${id}`);
 
-    if (!response.ok) {
-        throw new Error('Error getting user');
-    }
-
     return response.json();
 };
 
 export const handleGetAllUser = async (): Promise<IUserResponse[]> => {
     const response = await apiFetch('/User');
-
-    if (!response.ok) {
-        throw new Error('Error getting users');
-    }
 
     return response.json();
 };

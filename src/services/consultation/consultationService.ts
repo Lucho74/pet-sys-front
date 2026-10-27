@@ -10,14 +10,6 @@ export const handleAddConsultation = async (newConsultation: ICreateConsultation
     return response.json();
 };
 
-export const handleDeleteConsultation = async (id: string): Promise<string> => {
-    const response = await apiFetch(`/Consultation/${id}`, { 
-        method: 'DELETE' 
-    });
-
-    return response.text();
-};
-
 export const handleUpdateConsultation = async (id: string, updatedConsultation: IUpdateConsultationRequest): Promise<IConsultationResponse> => {
     const response = await apiFetch(`/Consultation/${id}`, {
         method: 'PUT',

@@ -61,10 +61,6 @@ export function ConsultationListPage() {
             .finally(() => setIsLoading(false));
     }, []);
 
-    const removeConsultation = (consultationId: number) => {
-        setConsultations((current) => current.filter((consultation) => consultation.id !== consultationId));
-    };
-
     return (
         <ScreenShell
             title="Consultas"
@@ -81,7 +77,7 @@ export function ConsultationListPage() {
                 itemTo={(consultationId) => `/consultations/${consultationId}`}
             />
 
-            <Outlet context={{ consultations, removeConsultation }} />
+            <Outlet context={{ consultations }} />
         </ScreenShell>
     );
 }

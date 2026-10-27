@@ -29,11 +29,11 @@ No hay suite de tests configurada todavía en este repo.
 `src/` se organiza así:
 - `pages/<feature>/` — una página por pantalla, montada por el router. Acá vive el estado, el fetch y el mapeo DTO↔UI.
 - `components/<feature>/` — componentes de presentación de la feature (ej. `components/users/`), sin fetch propio.
-- `components/common/` — piezas reutilizadas por todas las features: `FormShell`, `FormField` (con `type="password"` agrega solo el botón de ojo para mostrar/ocultar), `SelectField`, `SearchSelect`, `ListState`, `CreateButton`, `ActionSheet`, `DeleteDialog`, más los módulos de clases Tailwind compartidas (`buttonStyles.ts`, `fieldStyles.ts`, `listStyles.ts`).
+- `components/common/` — piezas reutilizadas por todas las features: `FormShell`, `FormField` (con `type="password"` agrega solo el botón de ojo para mostrar/ocultar), `SelectField`, `SearchSelect`, `ListState`, `CreateButton`, `ActionSheet`, `SuspendDialog`, más los módulos de clases Tailwind compartidas (`buttonStyles.ts`, `fieldStyles.ts`, `listStyles.ts`).
 - `components/layout/` — `ScreenShell` (header + layout de pantalla; el texto chico sobre el título es el rol del usuario logueado, que calcula solo con `useAuth` + `ROLE_LABELS`, así que las páginas no lo pasan), `Sidebar` y `navigation.ts` (`NAV_ITEMS`).
 - `services/<feature>/` — llamadas `fetch` a la API del backend y tipos de DTO.
 - `router/` — definición de rutas (`createBrowserRouter`).
-- `hooks/` — hooks genéricos compartidos (hoy solo `useEscapeKey`, que usan `ActionSheet` y `DeleteDialog` para cerrarse con Esc). El foco inicial de esos overlays va con `autoFocus` en el botón, no con `useEffect` + `ref`.
+- `hooks/` — hooks genéricos compartidos (hoy solo `useEscapeKey`, que usan `ActionSheet` y `SuspendDialog` para cerrarse con Esc). El foco inicial de esos overlays va con `autoFocus` en el botón, no con `useEffect` + `ref`.
 - `utils/` — helpers puros compartidos (`datetime`, `initials`, `search`, `errors`).
 
 Hay tres features implementadas con el mismo patrón — `users`, `pets` y `consultations` — y es el que hay que replicar al agregar una nueva:
@@ -54,12 +54,12 @@ Para elegir una entidad relacionada dentro de un form (dueño de una mascota, ve
 ```
 /users            → UsersListPage        (padre)
   /users/:id        → UserActionsPage      (ActionSheet sobre la lista)
-  /users/:id/delete → UserDeletePage       (DeleteDialog sobre la lista)
+  /users/:id/delete → UserDeletePage       (SuspendDialog sobre la lista)
 /users/new        → UserCreatePage       (pantalla completa, fuera del padre)
 /users/:id/edit   → UserEditPage         (pantalla completa, fuera del padre)
 ```
 
-`pets` y `consultations` siguen exactamente la misma forma. La página de lista pasa los datos ya cargados y un `remove<Entity>` a los hijos vía `<Outlet context={...}>`, y los hijos lo leen con `useOutletContext<<Entity>OutletContext>()` — así el ActionSheet y el DeleteDialog no vuelven a pedir la entidad a la API. Como el hijo depende de esos datos, hace `return null` si no encuentra el id en la lista. En `users` el contexto expone `setUserDeleted(id, isDeleted)` en vez de `removeUser`, porque borrar es soft-delete y el usuario sigue en la lista.
+`pets` y `consultations` siguen la misma forma, pero **sin** la ruta `:id/delete`: el back no tiene borrado de mascotas ni de consultas (la única baja es suspender al cliente, que las suspende en cascada). La página de lista pasa los datos ya cargados a los hijos vía `<Outlet context={...}>`, y los hijos lo leen con `useOutletContext<<Entity>OutletContext>()` — así el ActionSheet y el SuspendDialog no vuelven a pedir la entidad a la API. Como el hijo depende de esos datos, hace `return null` si no encuentra el id en la lista. `PetsOutletContext`/`ConsultationsOutletContext` solo tienen la lista; el de `users` suma `setUserDeleted(id, isDeleted)`, porque suspender es soft-delete y el usuario sigue en la lista. `SuspendDialog` (solo lo usa `UserDeletePage`) tiene los textos de suspender fijos: título, aviso de la cascada y botón "Suspender".
 
 **Suspendidos (`isDeleted: true`)**: las tres listas los ordenan al final con `activeFirst()` y los pintan con `DELETED_CARD_CLASSES` + badge "Suspendido" (`DELETED_BADGE_CLASSES`), todo en `listStyles.ts`. Son de solo lectura: el `ActionSheet` (con `onDelete` opcional y `isDeleted` para repetir el encabezado gris de la tarjeta) muestra un único botón: "Reactivar usuario" para usuarios y "Ver dueño" (`/users/:clientId`) para mascotas y consultas. Las páginas de edit redirigen a la lista si lo cargado está suspendido.
 
@@ -74,7 +74,7 @@ Vistas del cliente (solo lectura, bajo un `RoleRoute` con `CLIENT_ROLES`, fuera 
 
 `MyPetsPage` reusa `PetList` pasándole `itemTo` para que cada ítem navegue a las consultas en vez de abrir el ActionSheet; `MyPetConsultationsPage` usa `ClientConsultationList`, una lista propia sin acciones.
 
-`MyPetConsultationsPage` también se monta para los roles clínicos en `/pets/:petId/consultations` (pantalla completa, fuera del padre `pets`), a la que se llega con el botón "Ver consultas" del ActionSheet de mascotas. La página recibe `backTo` por prop desde el router (`/my-pets` o `/pets`) y, para el nombre del título, usa `handleGetMyPets` si el rol es cliente y `handleGetByIdPet` si no, en un pedido aparte del de las consultas (sin `Promise.all`): si falla, el título queda en "Consultas" y la lista se muestra igual. `ActionSheet` acepta `extraActions?: { label, onClick }[]`, botones secundarios opcionales entre editar y eliminar.
+`MyPetConsultationsPage` también se monta para los roles clínicos en `/pets/:petId/consultations` (pantalla completa, fuera del padre `pets`), a la que se llega con el botón "Ver consultas" del ActionSheet de mascotas. La página recibe `backTo` por prop desde el router (`/my-pets` o `/pets`) y, para el nombre del título, usa `handleGetMyPets` si el rol es cliente y `handleGetByIdPet` si no, en un pedido aparte del de las consultas (sin `Promise.all`): si falla, el título queda en "Consultas" y la lista se muestra igual. `ActionSheet` acepta `extraActions?: { label, onClick }[]`, botones secundarios opcionales entre editar y suspender, y `avatar?` para el cuadro de la izquierda (por defecto las iniciales del título; las consultas pasan su id, como en la tarjeta).
 
 ### Estilado
 
@@ -98,7 +98,7 @@ Snapshot al 2026-09-08. Los contratos de abajo son los que el front consume hoy 
 
 **Implementado hoy** (endpoints en PascalCase: `api/User`, `api/Pet`, `api/Consultation`):
 - `api/User` — CRUD completo. `POST` recibe `{ fullName, email, phone, password, userType, dni }`; `PUT` recibe `{ fullName, email, phone, password, dni }`: **el rol nunca cambia después de crear el usuario**, por eso el update no lo manda y el form de edición pasa `canChangeRole={false}`. La respuesta trae `roleName` y ya no trae `password`. En el `PUT` la password es opcional: `null` conserva la actual y `''` da 400 por el mínimo de 6, así que `UserEditPage` arranca con el campo vacío, valida con `validateUserForm(form, true)` y manda `null` si queda vacío. `dni` solo aplica a `Client` (el form lo muestra únicamente para ese rol). `User` usa soft-delete (`isDeleted`), no hay delete físico visible al front. `POST api/User/{id}/reactivate` lo revierte (`handleReactivateUser`). Suspender un cliente marca en cascada `isDeleted` en sus mascotas y las consultas de esas mascotas (rama `feature/soft-delete-cascade-main` del back, sin mergear al 2026-10-26).
-- `api/Pet` — CRUD completo. Create y update comparten el mismo shape (`IPetRequest`): `{ name, specie, breed, birthDate, clientId }`. `birthDate` es `DateOnly` (`yyyy-MM-dd`, sin hora). La respuesta suma `isDeleted` (igual que `Consultation`); el `DELETE` de mascotas y consultas sigue siendo físico.
+- `api/Pet` — CRUD completo. Create y update comparten el mismo shape (`IPetRequest`): `{ name, specie, breed, birthDate, clientId }`. `birthDate` es `DateOnly` (`yyyy-MM-dd`, sin hora). La respuesta suma `isDeleted` (igual que `Consultation`). `DELETE api/Pet/{id}` y `DELETE api/Consultation/{id}` ya no existen (405): el front no tiene borrado de mascotas ni de consultas.
 - `api/Pet/me` — `GET` con las mascotas del cliente logueado (`handleGetMyPets`).
 - `api/Consultation` — CRUD completo. `POST` y `PUT` reciben el mismo shape: `{ description, date, petId, veterinarianId }`. Las consultas ya **no** tienen `status` (el back lo sacó). `GET api/Consultation/pet/{petId}` devuelve las consultas de una mascota (`handleGetConsultationsByPet`).
 - Auth (`services/auth/authService.ts`): `POST api/Authentication/authenticate` recibe `{ email, password }` y devuelve el JWT como texto plano, no como JSON (`HandleLogin`). `GET api/User/me` devuelve el usuario logueado como `IUserResponse`, con `roleName` incluido (`handleGetCurrentUser`).

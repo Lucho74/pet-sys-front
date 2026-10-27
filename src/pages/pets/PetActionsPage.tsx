@@ -29,13 +29,11 @@ export function PetActionsPage() {
       title={selected.name}
       subtitle={`${selected.specie} · ${selected.breed}`}
       editLabel="Editar mascota"
-      deleteLabel="Eliminar mascota"
       extraActions={[
         { label: 'Ver consultas', onClick: () => navigate(`/pets/${selected.id}/consultations`) },
       ]}
       onClose={() => navigate('/pets')}
       onEdit={() => navigate(`/pets/${selected.id}/edit`)}
-      onDelete={() => navigate(`/pets/${selected.id}/delete`)}
     />
   );
 }

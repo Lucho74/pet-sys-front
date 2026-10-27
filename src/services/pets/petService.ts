@@ -10,14 +10,6 @@ export const handleAddPet = async (newPet: IPetRequest): Promise<IPetResponse> =
     return response.json();
 };
 
-export const handleDeletePet = async (id: string): Promise<string> => {
-    const response = await apiFetch(`/Pet/${id}`, { 
-        method: 'DELETE' 
-    });
-
-    return response.text();
-};
-
 export const handleUpdatePet = async (id: string, updatedPet: IPetRequest): Promise<IPetResponse> => {
     const response = await apiFetch(`/Pet/${id}`, {
         method: 'PUT',
@@ -37,7 +29,7 @@ export const handleGetAllPet = async (): Promise<IPetResponse[]> => {
     const response = await apiFetch('/Pet');
 
     return response.json();
-    
+
 };
 
 export const handleGetMyPets = async (): Promise<IPetResponse[]> => {

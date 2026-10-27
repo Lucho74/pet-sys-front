@@ -18,5 +18,4 @@ export interface PetFormState {
 
 export interface PetsOutletContext {
   pets: Pet[];
-  removePet: (petId: number) => void;
 }

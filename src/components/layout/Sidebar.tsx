@@ -16,7 +16,7 @@ export function Sidebar() {
           <PawPrint size={19} strokeWidth={2} className="text-[#DDE6ED]" />
         </div>
         <div className="min-w-0">
-          <div className="truncate text-[15px] font-bold tracking-[-0.2px] text-[#DDE6ED]">Pet System</div>
+          <div className="truncate text-[15px] font-bold tracking-[-0.2px] text-[#DDE6ED]">4 Patas</div>
           <div className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9DB2BF]">
             {role ? ROLE_LABELS[role] : ''}
           </div>

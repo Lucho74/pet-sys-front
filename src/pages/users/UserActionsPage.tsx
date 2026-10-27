@@ -51,7 +51,7 @@ export function UserActionsPage() {
       title={selected.fullName}
       subtitle={subtitle}
       editLabel="Editar usuario"
-      deleteLabel="Eliminar usuario"
+      deleteLabel="Suspender usuario"
       onClose={() => navigate('/users')}
       onEdit={() => navigate(`/users/${selected.id}/edit`)}
       onDelete={() => navigate(`/users/${selected.id}/delete`)}

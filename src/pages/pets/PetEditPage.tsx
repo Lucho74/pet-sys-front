@@ -56,7 +56,7 @@ export function PetEditPage() {
 
   useEffect(() => {
     handleGetAllUser()
-      .then((response) => setOwners(response.filter((user) => user.roleName === 'Client')))
+      .then((response) => setOwners(response.filter((user) => user.roleName === 'Client' && !user.isDeleted)))
       .catch(() => setOwnersError('No se pudo cargar la lista de clientes.'))
       .finally(() => setIsLoadingOwners(false));
   }, []);

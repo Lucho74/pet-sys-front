@@ -12,7 +12,7 @@ Este repo es solo el **frontend**: React 19 + TypeScript + Vite + React Router 7
 
 ## Comandos
 
-Gestor de paquetes: **npm** (hay un `pnpm-lock.yaml` residual del commit inicial que ya no se usa — `node_modules` tiene layout de npm).
+Gestor de paquetes: **npm**.
 
 - `npm install`
 - `npm run dev` — levanta el dev server de Vite
@@ -29,11 +29,11 @@ No hay suite de tests configurada todavía en este repo.
 `src/` se organiza así:
 - `pages/<feature>/` — una página por pantalla, montada por el router. Acá vive el estado, el fetch y el mapeo DTO↔UI.
 - `components/<feature>/` — componentes de presentación de la feature (ej. `components/users/`), sin fetch propio.
-- `components/common/` — piezas reutilizadas por todas las features: `FormShell`, `FormField` (con `type="password"` agrega solo el botón de ojo para mostrar/ocultar), `SelectField`, `SearchSelect`, `ListState`, `CreateButton`, `ActionSheet`, `DeleteDialog`, más los módulos de clases Tailwind compartidas (`buttonStyles.ts`, `fieldStyles.ts`, `listStyles.ts`).
+- `components/common/` — piezas reutilizadas por todas las features: `FormShell`, `FormField` (con `type="password"` agrega solo el botón de ojo para mostrar/ocultar), `SelectField`, `SearchSelect`, `ListState`, `CreateButton`, `ActionSheet`, `SuspendDialog`, más los módulos de clases Tailwind compartidas (`buttonStyles.ts`, `fieldStyles.ts`, `listStyles.ts`).
 - `components/layout/` — `ScreenShell` (header + layout de pantalla; el texto chico sobre el título es el rol del usuario logueado, que calcula solo con `useAuth` + `ROLE_LABELS`, así que las páginas no lo pasan), `Sidebar` y `navigation.ts` (`NAV_ITEMS`).
 - `services/<feature>/` — llamadas `fetch` a la API del backend y tipos de DTO.
 - `router/` — definición de rutas (`createBrowserRouter`).
-- `hooks/` — hooks genéricos compartidos (hoy solo `useEscapeKey`, que usan `ActionSheet` y `DeleteDialog` para cerrarse con Esc). El foco inicial de esos overlays va con `autoFocus` en el botón, no con `useEffect` + `ref`.
+- `hooks/` — hooks genéricos compartidos (hoy solo `useEscapeKey`, que usan `ActionSheet` y `SuspendDialog` para cerrarse con Esc). El foco inicial de esos overlays va con `autoFocus` en el botón, no con `useEffect` + `ref`.
 - `utils/` — helpers puros compartidos (`datetime`, `initials`, `search`, `errors`).
 
 Hay tres features implementadas con el mismo patrón — `users`, `pets` y `consultations` — y es el que hay que replicar al agregar una nueva:
@@ -54,14 +54,16 @@ Para elegir una entidad relacionada dentro de un form (dueño de una mascota, ve
 ```
 /users            → UsersListPage        (padre)
   /users/:id        → UserActionsPage      (ActionSheet sobre la lista)
-  /users/:id/delete → UserDeletePage       (DeleteDialog sobre la lista)
+  /users/:id/delete → UserDeletePage       (SuspendDialog sobre la lista)
 /users/new        → UserCreatePage       (pantalla completa, fuera del padre)
 /users/:id/edit   → UserEditPage         (pantalla completa, fuera del padre)
 ```
 
-`pets` y `consultations` siguen exactamente la misma forma. La página de lista pasa los datos ya cargados y un `remove<Entity>` a los hijos vía `<Outlet context={...}>`, y los hijos lo leen con `useOutletContext<<Entity>OutletContext>()` — así el ActionSheet y el DeleteDialog no vuelven a pedir la entidad a la API. Como el hijo depende de esos datos, hace `return null` si no encuentra el id en la lista. En `users` el contexto expone `setUserDeleted(id, isDeleted)` en vez de `removeUser`, porque borrar es soft-delete y el usuario sigue en la lista.
+`pets` y `consultations` siguen la misma forma, pero **sin** la ruta `:id/delete`: el back no tiene borrado de mascotas ni de consultas (la única baja es suspender al cliente, que las suspende en cascada). La página de lista pasa los datos ya cargados a los hijos vía `<Outlet context={...}>`, y los hijos lo leen con `useOutletContext<<Entity>OutletContext>()` — así el ActionSheet y el SuspendDialog no vuelven a pedir la entidad a la API. Como el hijo depende de esos datos, hace `return null` si no encuentra el id en la lista. `PetsOutletContext`/`ConsultationsOutletContext` solo tienen la lista; el de `users` suma `setUserDeleted(id, isDeleted)`, porque suspender es soft-delete y el usuario sigue en la lista. `SuspendDialog` (solo lo usa `UserDeletePage`) tiene los textos de suspender fijos: título, aviso de la cascada y botón "Suspender".
 
 **Suspendidos (`isDeleted: true`)**: las tres listas los ordenan al final con `activeFirst()` y los pintan con `DELETED_CARD_CLASSES` + badge "Suspendido" (`DELETED_BADGE_CLASSES`), todo en `listStyles.ts`. Son de solo lectura: el `ActionSheet` (con `onDelete` opcional y `isDeleted` para repetir el encabezado gris de la tarjeta) muestra un único botón: "Reactivar usuario" para usuarios y "Ver dueño" (`/users/:clientId`) para mascotas y consultas. Las páginas de edit redirigen a la lista si lo cargado está suspendido.
+
+Los forms tampoco ofrecen suspendidos: las páginas de create/edit filtran con `!isDeleted` a dueños, mascotas y veterinarios antes de pasarlos a los selects. La excepción es el veterinario en `ConsultationEditPage`: guarda `initialVeterinarianId` al cargar y lo deja en la lista aunque esté suspendido, porque el back acepta guardar una consulta con un veterinario suspendido solo si no se cambia.
 
 Las páginas de create/edit quedan **fuera** de la ruta padre a propósito: son pantalla completa, no overlay.
 
@@ -74,7 +76,9 @@ Vistas del cliente (solo lectura, bajo un `RoleRoute` con `CLIENT_ROLES`, fuera 
 
 `MyPetsPage` reusa `PetList` pasándole `itemTo` para que cada ítem navegue a las consultas en vez de abrir el ActionSheet; `MyPetConsultationsPage` usa `ClientConsultationList`, una lista propia sin acciones.
 
-`MyPetConsultationsPage` también se monta para los roles clínicos en `/pets/:petId/consultations` (pantalla completa, fuera del padre `pets`), a la que se llega con el botón "Ver consultas" del ActionSheet de mascotas. La página recibe `backTo` por prop desde el router (`/my-pets` o `/pets`) y, para el nombre del título, usa `handleGetMyPets` si el rol es cliente y `handleGetByIdPet` si no, en un pedido aparte del de las consultas (sin `Promise.all`): si falla, el título queda en "Consultas" y la lista se muestra igual. `ActionSheet` acepta `extraActions?: { label, onClick }[]`, botones secundarios opcionales entre editar y eliminar.
+`MyPetConsultationsPage` también se monta para los roles clínicos en `/pets/:petId/consultations` (pantalla completa, fuera del padre `pets`), a la que se llega con el botón "Ver consultas" del ActionSheet de mascotas. La página recibe `backTo` por prop desde el router (`/my-pets` o `/pets`) y, para el nombre del título, usa `handleGetMyPets` si el rol es cliente y `handleGetByIdPet` si no, en un pedido aparte del de las consultas (sin `Promise.all`): si falla, el título queda en "Consultas" y la lista se muestra igual. `ActionSheet` acepta `extraActions?: { label, onClick }[]`, botones secundarios opcionales entre editar y suspender, y `avatar?` para el cuadro de la izquierda (por defecto las iniciales del título; las consultas pasan su id, como en la tarjeta).
+
+`ListState` muestra un botón "Reintentar" en el estado de error, que recarga la página (así ninguna lista necesita su propio refetch).
 
 ### Estilado
 
@@ -98,7 +102,7 @@ Snapshot al 2026-09-08. Los contratos de abajo son los que el front consume hoy 
 
 **Implementado hoy** (endpoints en PascalCase: `api/User`, `api/Pet`, `api/Consultation`):
 - `api/User` — CRUD completo. `POST` recibe `{ fullName, email, phone, password, userType, dni }`; `PUT` recibe `{ fullName, email, phone, password, dni }`: **el rol nunca cambia después de crear el usuario**, por eso el update no lo manda y el form de edición pasa `canChangeRole={false}`. La respuesta trae `roleName` y ya no trae `password`. En el `PUT` la password es opcional: `null` conserva la actual y `''` da 400 por el mínimo de 6, así que `UserEditPage` arranca con el campo vacío, valida con `validateUserForm(form, true)` y manda `null` si queda vacío. `dni` solo aplica a `Client` (el form lo muestra únicamente para ese rol). `User` usa soft-delete (`isDeleted`), no hay delete físico visible al front. `POST api/User/{id}/reactivate` lo revierte (`handleReactivateUser`). Suspender un cliente marca en cascada `isDeleted` en sus mascotas y las consultas de esas mascotas (rama `feature/soft-delete-cascade-main` del back, sin mergear al 2026-10-26).
-- `api/Pet` — CRUD completo. Create y update comparten el mismo shape (`IPetRequest`): `{ name, specie, breed, birthDate, clientId }`. `birthDate` es `DateOnly` (`yyyy-MM-dd`, sin hora). La respuesta suma `isDeleted` (igual que `Consultation`); el `DELETE` de mascotas y consultas sigue siendo físico.
+- `api/Pet` — CRUD completo. Create y update comparten el mismo shape (`IPetRequest`): `{ name, specie, breed, birthDate, clientId }`. `birthDate` es `DateOnly` (`yyyy-MM-dd`, sin hora). La respuesta suma `isDeleted` (igual que `Consultation`). `DELETE api/Pet/{id}` y `DELETE api/Consultation/{id}` ya no existen (405): el front no tiene borrado de mascotas ni de consultas.
 - `api/Pet/me` — `GET` con las mascotas del cliente logueado (`handleGetMyPets`).
 - `api/Consultation` — CRUD completo. `POST` y `PUT` reciben el mismo shape: `{ description, date, petId, veterinarianId }`. Las consultas ya **no** tienen `status` (el back lo sacó). `GET api/Consultation/pet/{petId}` devuelve las consultas de una mascota (`handleGetConsultationsByPet`).
 - Auth (`services/auth/authService.ts`): `POST api/Authentication/authenticate` recibe `{ email, password }` y devuelve el JWT como texto plano, no como JSON (`HandleLogin`). `GET api/User/me` devuelve el usuario logueado como `IUserResponse`, con `roleName` incluido (`handleGetCurrentUser`).
@@ -107,7 +111,7 @@ Snapshot al 2026-09-08. Los contratos de abajo son los que el front consume hoy 
 
 **NO implementado todavía (no bloquear el front asumiendo que existen):**
 - Auth: ya hay login y logout con JWT. `AuthenticationContextProvider` guarda el token en `localStorage` bajo la clave `TOKEN_KEY` (`'pet-sys-token'`, definida en `utils/auth.ts`). `apiFetch` lee el token con esa misma constante y, si una request con token responde 401, lo borra y manda a `/login` (el back rechaza los tokens de usuarios suspendidos aunque no hayan vencido). El contexto expone `role` (`UserRole | null`): el provider llama a `/me` cada vez que cambia el token y guarda `roleName`, y vale `null` sin sesión o mientras `/me` no respondió. El filtrado por rol ya está en el front: `router/RoleRoute.tsx` recibe `allowedRoles` y redirige a `/` si el rol no está incluido (o devuelve `null` mientras `role` es `null`), y cada `NavItem` de `navigation.ts` declara `roles` opcional (`getVisibleNavItems(role)` filtra el menú). Los grupos de roles viven en `utils/roles.ts` (`ADMIN_ROLES = ['SysAdmin', 'Admin']`, `CLINICAL_ROLES = [...ADMIN_ROLES, 'Veterinarian']`, `CLIENT_ROLES = ['Client']`), y tanto rutas como menú tienen que usar esas mismas constantes. `users`, `pets` y `consultations` están bajo un único `RoleRoute` con `CLINICAL_ROLES`. Qué usuarios puede gestionar cada rol lo decide `getManageableRoles(role)` (también en `utils/roles.ts`): `SysAdmin` → `Client`/`Veterinarian`/`Admin`, `Admin` → `Client`/`Veterinarian`, veterinario → solo `Client` (espeja la matriz del back, que responde 403 fuera de ella). `UserForm` recibe esas opciones por la prop obligatoria `roleOptions`, `UserEditPage` redirige a `/users` si el usuario cargado tiene un rol fuera de esa lista, y para el resto de las acciones se usa `canManage(role, targetRole)` (mismo archivo): en `UsersListPage` las filas que no se pueden gestionar no son link (`UserList` recibe `itemTo(user)` que devuelve `string | null`, y con `null` pinta la tarjeta como `div` sin hover ni foco), y `UserActionsPage`/`UserDeletePage` devuelven `null` si se entra por URL. Esto incluye la propia fila del usuario logueado: el back no deja que nadie se edite, suspenda ni reactive a sí mismo. La lista de usuarios **no** se filtra por rol en el front. En el backend el veterinario tiene los mismos permisos que el admin; el límite "solo clientes" es una decisión del front. `UserRole` incluye además `SysAdmin`, que no es asignable desde el form (`AssignableRole`).
-- Administración de veterinarios: `Admin`/`Veterinarian` existen como roles, pero sin endpoints propios ni filtro por rol en la API. El front pide **todos** los usuarios con `handleGetAllUser()` y filtra en cliente por `roleName` dentro de la página (`=== 'Veterinarian'` en las de consultas, `=== 'Client'` en las de mascotas); los componentes `VeterinarianSelect`/`OwnerSelect` reciben la lista ya filtrada por props. Si el backend agrega un filtro por rol, el cambio va en las páginas, no en los selects.
+- Administración de veterinarios: `Admin`/`Veterinarian` existen como roles, pero sin endpoints propios ni filtro por rol en la API. El front pide **todos** los usuarios con `handleGetAllUser()` y filtra en cliente por `roleName` dentro de la página (`=== 'Veterinarian'` en las de consultas, `=== 'Client'` en las de mascotas, más `!isDeleted`); los componentes `VeterinarianSelect`/`OwnerSelect` reciben la lista ya filtrada por props. Si el backend agrega un filtro por rol, el cambio va en las páginas, no en los selects.
 - Horarios/agenda: `Consultation` tiene `date` (día, sin hora) pero no hay slots ni disponibilidad.
 - Cirugías/internaciones: sin decidir cómo se modelan (¿campo `Type` en `Consultation` o entidades separadas?).
 - Historial médico como tal: hoy solo existe la lista de consultas (el cliente la ve por mascota en `/my-pets/:petId/consultations`).

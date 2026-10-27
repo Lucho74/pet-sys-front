@@ -38,10 +38,6 @@ export function PetsListPage() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const removePet = (petId: number) => {
-    setPets((current) => current.filter((pet) => pet.id !== petId));
-  };
-
   return (
     <ScreenShell
       title="Mascotas"
@@ -58,7 +54,7 @@ export function PetsListPage() {
         itemTo={(petId) => `/pets/${petId}`}
       />
 
-      <Outlet context={{ pets, removePet }} />
+      <Outlet context={{ pets }} />
     </ScreenShell>
   );
 }

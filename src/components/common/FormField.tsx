@@ -12,6 +12,7 @@ interface FormFieldProps {
   disabled?: boolean;
   maxLength?: number;
   min?: string | number;
+  max?: string | number;
   autoComplete?: string;
 }
 
@@ -25,6 +26,7 @@ export function FormField({
   disabled = false,
   maxLength,
   min,
+  max,
   autoComplete,
 }: FormFieldProps) {
   const inputId = useId();
@@ -42,6 +44,7 @@ export function FormField({
           id={inputId}
           type={isPassword && showPassword ? 'text' : type}
           min={min}
+          max={max}
           maxLength={maxLength}
           value={value}
           onChange={(event) => onChange(event.target.value)}

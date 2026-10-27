@@ -18,7 +18,8 @@ export function ConsultationActionsPage() {
 
         return (
             <ActionSheet
-                title={"Consulta #" + selected.id}
+                title={`Consulta de ${selected.petName}`}
+                avatar={String(selected.id)}
                 subtitle={`Suspendida junto con el dueño de ${selected.petName}`}
                 isDeleted
                 editLabel="Ver dueño"
@@ -30,13 +31,12 @@ export function ConsultationActionsPage() {
 
     return (
         <ActionSheet
-            title={"Consulta #" + selected.id}
+            title={`Consulta de ${selected.petName}`}
+            avatar={String(selected.id)}
             subtitle={`${selected.description} · ${selected.date ? formatDate(selected.date) : 'Sin fecha asignada'}`}
             editLabel="Editar consulta"
-            deleteLabel="Eliminar consulta"
             onClose={() => navigate('/consultations')}
             onEdit={() => navigate(`/consultations/${selected.id}/edit`)}
-            onDelete={() => navigate(`/consultations/${selected.id}/delete`)}
         />
     );
 }

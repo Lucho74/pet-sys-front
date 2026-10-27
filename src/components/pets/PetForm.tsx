@@ -4,6 +4,7 @@ import { OwnerSelect } from './OwnerSelect';
 import type { IUserResponse } from '../../services/users/IUser';
 import type { PetFormState } from './petTypes';
 import type { FormErrors } from './petValidation';
+import { todayDate } from '../../utils/datetime';
 
 interface PetFormProps {
   form: PetFormState;
@@ -80,6 +81,7 @@ export function PetForm({
         value={form.birthDate}
         onChange={(value) => onChange('birthDate', value)}
         error={fieldErrors.birthDate}
+        max={todayDate()}
         disabled={isSaving}
       />
 

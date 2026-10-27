@@ -30,3 +30,11 @@ export interface UsersOutletContext {
   users: User[];
   setUserDeleted: (userId: number, isDeleted: boolean) => void;
 }
+
+// Orden y títulos de las secciones del listado de usuarios.
+export const ROLE_SECTIONS: { role: UserRole; title: string }[] = [
+  { role: 'SysAdmin', title: 'Sysadmins' },
+  { role: 'Admin', title: 'Administradores' },
+  { role: 'Veterinarian', title: 'Veterinarios' },
+  { role: 'Client', title: 'Clientes' },
+];

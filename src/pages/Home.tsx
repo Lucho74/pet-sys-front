@@ -72,7 +72,7 @@ export function Home() {
                 </h2>
                 <Link
                   to="/consultations"
-                  className="rounded-md text-[15px] font-bold text-[#27374D] underline underline-offset-4 hover:text-[#526D82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D]"
+                  className="inline-flex min-h-11 items-center rounded-md text-[15px] font-bold text-[#27374D] underline underline-offset-4 hover:text-[#526D82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D]"
                 >
                   Ver todas
                 </Link>

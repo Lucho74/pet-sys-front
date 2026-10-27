@@ -15,7 +15,7 @@ interface ScreenShellProps {
 }
 
 const TOP_LINK_CLASSES =
-  'flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-[14px] font-bold text-[#526D82] transition-colors hover:bg-[#DDE6ED] hover:text-[#27374D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D]';
+  'flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-xl px-2.5 py-2 text-[14px] font-bold text-[#526D82] transition-colors hover:bg-[#DDE6ED] hover:text-[#27374D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D]';
 
 function LogoutButton() {
   const { handleUserLogout } = useAuth();

@@ -54,19 +54,19 @@ export function FormShell({
           </div>
         ) : null}
 
-        <div className="mt-7 flex gap-2.5 border-t border-[#E3E9EE] pt-5 sm:justify-end">
+        <div className="mt-7 flex flex-col-reverse gap-2.5 border-t border-[#E3E9EE] pt-5 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onCancel}
             disabled={isSaving}
-            className={`flex-1 sm:min-w-[150px] sm:flex-none ${SECONDARY_BUTTON_CLASSES}`}
+            className={`w-full sm:w-auto sm:min-w-[150px] ${SECONDARY_BUTTON_CLASSES}`}
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={isSaving || isLoading}
-            className={`flex-1 sm:min-w-[150px] sm:flex-none ${PRIMARY_BUTTON_CLASSES}`}
+            className={`w-full sm:w-auto sm:min-w-[150px] ${PRIMARY_BUTTON_CLASSES}`}
           >
             {isSaving ? 'Guardando...' : saveLabel}
           </button>

@@ -20,5 +20,4 @@ export interface ConsultationFormState {
 
 export interface ConsultationsOutletContext {
   consultations: Consultation[];
-  removeConsultation: (consultationId: number) => void;
 }

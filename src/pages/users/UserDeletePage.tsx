@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { DeleteDialog } from '../../components/common/DeleteDialog';
+import { SuspendDialog } from '../../components/common/SuspendDialog';
 import { handleDeleteUser } from '../../services/users/userService';
 import type { UsersOutletContext } from '../../components/users/userTypes';
 import { canManage } from '../../utils/roles';
@@ -25,17 +25,16 @@ export function UserDeletePage() {
     try {
       await handleDeleteUser(String(selected.id));
       setUserDeleted(selected.id, true);
-      toast.success('Usuario eliminado correctamente.');
+      toast.success('Usuario suspendido correctamente.');
     } catch (error) {
-      toast.error(errorMessage(error, 'No se pudo eliminar el usuario.'));
+      toast.error(errorMessage(error, 'No se pudo suspender el usuario.'));
     }
 
     navigate('/users');
   };
 
   return (
-    <DeleteDialog
-      title="Eliminar usuario"
+    <SuspendDialog
       name={selected.fullName}
       isDeleting={isDeleting}
       onCancel={() => navigate(`/users/${selected.id}`)}

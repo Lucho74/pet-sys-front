@@ -16,6 +16,7 @@ interface ActionSheetAction {
 
 interface ActionSheetProps {
   title: string;
+  avatar?: string;
   subtitle: string;
   editLabel: string;
   deleteLabel?: string;
@@ -29,6 +30,7 @@ interface ActionSheetProps {
 
 export function ActionSheet({
   title,
+  avatar = initials(title),
   subtitle,
   editLabel,
   deleteLabel,
@@ -74,7 +76,7 @@ export function ActionSheet({
             }`}
           >
             <span className={`text-[16px] font-semibold ${isDeleted ? 'text-[#27374D]' : 'text-white'}`}>
-              {initials(title)}
+              {avatar}
             </span>
           </div>
           <div className="min-w-0 flex-1">

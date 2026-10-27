@@ -26,13 +26,11 @@ export function validateConsultationForm(
     errors.date = 'No se puede agendar una consulta en el pasado.';
   }
 
-  const petId = form.petId;
-  if (petId === null) {
+  if (!form.petId) {
     errors.petId = 'La mascota es obligatoria.';
   }
 
-  const veterinarianId = form.veterinarianId;
-  if (veterinarianId === null) {
+  if (!form.veterinarianId) {
     errors.veterinarianId = 'El veterinario es obligatorio.';
   }
 

@@ -1,4 +1,5 @@
 import type { PetFormState } from './petTypes';
+import { todayDate } from '../../utils/datetime';
 
 export type FormErrors = Partial<Record<keyof PetFormState, string>>;
 
@@ -28,14 +29,9 @@ export function validatePetForm(form: PetFormState): FormErrors {
 
   if (!form.birthDate) {
     errors.birthDate = 'La fecha de nacimiento es obligatoria.';
-  } else {
-    const birthDate = new Date(form.birthDate);
-
-    if (Number.isNaN(birthDate.getTime())) {
-      errors.birthDate = 'La fecha de nacimiento no es válida.';
-    } else if (birthDate > new Date()) {
-      errors.birthDate = 'La fecha de nacimiento no puede ser futura.';
-    }
+  } else if (form.birthDate > todayDate()) {
+    // Comparar strings YYYY-MM-DD evita el corrimiento de new Date(), que las toma en UTC.
+    errors.birthDate = 'La fecha de nacimiento no puede ser futura.';
   }
 
   const clientId = Number(form.clientId);

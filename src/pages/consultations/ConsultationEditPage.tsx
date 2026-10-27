@@ -31,6 +31,7 @@ export function ConsultationEditPage() {
     const [isLoadingPets, setIsLoadingPets] = useState(true);
     const [petsError, setPetsError] = useState('');
     const [initialDate, setInitialDate] = useState('');
+    const [initialVeterinarianId, setInitialVeterinarianId] = useState('');
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
     const [formError, setFormError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -46,12 +47,15 @@ export function ConsultationEditPage() {
                 }
                 const date = hasDateTime(consultation.date) ? toInputDate(consultation.date.trim()) : '';
 
+                const veterinarianId = consultation.veterinarianId === null ? '' : String(consultation.veterinarianId);
+
                 setInitialDate(date);
+                setInitialVeterinarianId(veterinarianId);
                 setForm({
                     description: consultation.description?.trim() || '',
                     date,
-                    petId: String(consultation.petId),
-                    veterinarianId: String(consultation.veterinarianId),
+                    petId: consultation.petId === null ? '' : String(consultation.petId),
+                    veterinarianId,
                 });
             })
             .catch((error) => {
@@ -68,7 +72,7 @@ export function ConsultationEditPage() {
             .catch(() => setVeterinariansError('No se pudo cargar la lista de veterinarios.'))
             .finally(() => setIsLoadingVeterinarians(false));
         handleGetAllPet()
-            .then((response) => setPets(response))
+            .then((response) => setPets(response.filter((pet) => !pet.isDeleted)))
             .catch(() => setPetsError('No se pudo cargar la lista de mascotas.'))
             .finally(() => setIsLoadingPets(false));
     }, []);
@@ -114,7 +118,8 @@ export function ConsultationEditPage() {
                 form={form}
                 formError={formError}
                 fieldErrors={fieldErrors}
-                veterinarians={veterinarians}
+                // El back acepta guardar con un veterinario suspendido solo si es el que ya tenía la consulta.
+                veterinarians={veterinarians.filter((v) => !v.isDeleted || String(v.id) === initialVeterinarianId)}
                 isLoadingVeterinarians={isLoadingVeterinarians}
                 veterinariansError={veterinariansError}
                 pets={pets}

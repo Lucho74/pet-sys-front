@@ -9,6 +9,7 @@ import type { IUserResponse } from '../../services/users/IUser';
 import type { PetFormState } from '../../components/pets/petTypes';
 import { validatePetForm } from '../../components/pets/petValidation';
 import type { FormErrors } from '../../components/pets/petValidation';
+import { errorMessage } from '../../utils/errors';
 
 export function PetEditPage() {
   const { id = '' } = useParams();
@@ -45,9 +46,10 @@ export function PetEditPage() {
           clientId: String(pet.clientId),
         });
       })
-      .catch(() => {
-        setFormError('No se pudo cargar la mascota.');
-        toast.error('No se pudo cargar la mascota.');
+      .catch((error) => {
+        const message = errorMessage(error, 'No se pudo cargar la mascota.');
+        setFormError(message);
+        toast.error(message);
       })
       .finally(() => setIsLoading(false));
   }, [id, navigate]);
@@ -87,9 +89,10 @@ export function PetEditPage() {
 
       toast.success('Mascota actualizada correctamente.');
       navigate('/pets');
-    } catch {
-      setFormError('No se pudo guardar la mascota.');
-      toast.error('No se pudo guardar la mascota.');
+    } catch (error) {
+      const message = errorMessage(error, 'No se pudo guardar la mascota.');
+      setFormError(message);
+      toast.error(message);
       setIsSaving(false);
     }
   };

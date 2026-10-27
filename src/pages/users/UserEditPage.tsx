@@ -9,6 +9,7 @@ import type { UserFormState } from '../../components/users/userTypes';
 import { validateUserForm } from '../../components/users/userValidation';
 import type { FormErrors } from '../../components/users/userValidation';
 import { canManage, getManageableRoles } from '../../utils/roles';
+import { errorMessage } from '../../utils/errors';
 import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserEditPage() {
@@ -52,9 +53,10 @@ export function UserEditPage() {
           dni: user.dni?.trim() || '',
         });
       })
-      .catch(() => {
-        setFormError('No se pudo cargar el usuario.');
-        toast.error('No se pudo cargar el usuario.');
+      .catch((error) => {
+        const message = errorMessage(error, 'No se pudo cargar el usuario.');
+        setFormError(message);
+        toast.error(message);
       })
       .finally(() => setIsLoading(false)); 
   }, [id, role, navigate]);
@@ -88,9 +90,10 @@ export function UserEditPage() {
 
       toast.success('Usuario actualizado correctamente.');
       navigate('/users');
-    } catch {
-      setFormError('No se pudo guardar el usuario.');
-      toast.error('No se pudo guardar el usuario.');
+    } catch (error) {
+      const message = errorMessage(error, 'No se pudo guardar el usuario.');
+      setFormError(message);
+      toast.error(message);
       setIsSaving(false);
     }
   };

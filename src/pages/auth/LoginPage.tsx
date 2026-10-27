@@ -8,6 +8,7 @@ import { AuthLayout } from "../../components/layout/AuthLayout";
 import { LoginForm } from "../../components/auth/LoginForm";
 import type { ILoginResponse } from "../../services/auth/IAuth";
 import { useAuth } from "../../contexts/AuthenticationContext";
+import { errorMessage } from "../../utils/errors";
 
 
 export function LoginPage() {
@@ -53,9 +54,10 @@ export function LoginPage() {
 
             toast.success('Inicio de sesión exitoso.');
             navigate('/');
-        } catch {
-            setFormError('No se pudo iniciar sesión. Verifica tus credenciales.');
-            toast.error('No se pudo iniciar sesión. Verifica tus credenciales.');
+        } catch (error) {
+            const message = errorMessage(error, 'No se pudo iniciar sesión. Verifica tus credenciales.');
+            setFormError(message);
+            toast.error(message);
         } finally {
             setIsLoggingIn(false);
         }

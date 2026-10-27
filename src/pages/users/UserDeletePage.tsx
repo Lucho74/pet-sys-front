@@ -5,6 +5,7 @@ import { DeleteDialog } from '../../components/common/DeleteDialog';
 import { handleDeleteUser } from '../../services/users/userService';
 import type { UsersOutletContext } from '../../components/users/userTypes';
 import { canManage } from '../../utils/roles';
+import { errorMessage } from '../../utils/errors';
 import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserDeletePage() {
@@ -25,8 +26,8 @@ export function UserDeletePage() {
       await handleDeleteUser(String(selected.id));
       setUserDeleted(selected.id, true);
       toast.success('Usuario eliminado correctamente.');
-    } catch {
-      toast.error('No se pudo eliminar el usuario.');
+    } catch (error) {
+      toast.error(errorMessage(error, 'No se pudo eliminar el usuario.'));
     }
 
     navigate('/users');

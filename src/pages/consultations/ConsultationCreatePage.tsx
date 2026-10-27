@@ -12,6 +12,7 @@ import type { ConsultationFormState } from '../../components/consultations/consu
 import { validateConsultationForm } from '../../components/consultations/consultationValidation';
 import type { IPetResponse } from '../../services/pets/IPet';
 import { toApiDate } from '../../utils/datetime';
+import { errorMessage } from '../../utils/errors';
 
 export function ConsultationCreatePage() {
     const navigate = useNavigate();
@@ -71,9 +72,10 @@ export function ConsultationCreatePage() {
 
             toast.success('Consulta creada correctamente.');
             navigate('/consultations');
-        } catch {
-            setFormError('No se pudo guardar la consulta.');
-            toast.error('No se pudo guardar la consulta.');
+        } catch (error) {
+            const message = errorMessage(error, 'No se pudo guardar la consulta.');
+            setFormError(message);
+            toast.error(message);
             setIsSaving(false);
         }
     };

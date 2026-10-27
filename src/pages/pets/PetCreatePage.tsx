@@ -9,6 +9,7 @@ import type { IUserResponse } from '../../services/users/IUser';
 import type { PetFormState } from '../../components/pets/petTypes';
 import { validatePetForm } from '../../components/pets/petValidation';
 import type { FormErrors } from '../../components/pets/petValidation';
+import { errorMessage } from '../../utils/errors';
 
 export function PetCreatePage() {
   const navigate = useNavigate();
@@ -62,9 +63,10 @@ export function PetCreatePage() {
 
       toast.success('Mascota creada correctamente.');
       navigate('/pets');
-    } catch {
-      setFormError('No se pudo guardar la mascota.');
-      toast.error('No se pudo guardar la mascota.');
+    } catch (error) {
+      const message = errorMessage(error, 'No se pudo guardar la mascota.');
+      setFormError(message);
+      toast.error(message);
       setIsSaving(false);
     }
   };

@@ -69,7 +69,7 @@ export function UserList({ users, isLoading, error, createTo, createLabel, itemT
               error={error}
               isEmpty={users.length === 0}
               loadingLabel="Cargando usuarios..."
-              emptyLabel="No hay usuarios cargados."
+              emptyLabel="Todavía no hay usuarios. Creá el primero con «Nuevo usuario»."
             />
           )}
         </div>

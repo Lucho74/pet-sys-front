@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { Pet } from './petTypes';
 import { initials } from '../../utils/initials';
+import { formatDate } from '../../utils/datetime';
 import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';
 import { activeFirst, CARD_CLASSES, DELETED_BADGE_CLASSES, DELETED_CARD_CLASSES, GRID_CLASSES } from '../common/listStyles';
@@ -12,9 +13,18 @@ interface PetListProps {
   createTo?: string;
   createLabel?: string;
   itemTo: (petId: number) => string;
+  emptyLabel?: string;
 }
 
-export function PetList({ pets, isLoading, error, createTo, createLabel, itemTo }: PetListProps) {
+export function PetList({
+  pets,
+  isLoading,
+  error,
+  createTo,
+  createLabel,
+  itemTo,
+  emptyLabel = 'Todavía no hay mascotas. Creá la primera con «Nueva mascota».',
+}: PetListProps) {
   const hasPets = !isLoading && !error && pets.length > 0;
 
   return (
@@ -37,7 +47,7 @@ export function PetList({ pets, isLoading, error, createTo, createLabel, itemTo 
                       </div>
                       <div className="truncate text-[13px] text-[#526D82]">{pet.specie} · {pet.breed}</div>
                       {pet.birthDate ? (
-                        <div className="truncate text-[12px] text-[#526D82]">Nacimiento: {pet.birthDate}</div>
+                        <div className="truncate text-[12px] text-[#526D82]">Nacimiento: {formatDate(pet.birthDate)}</div>
                       ) : null}
                     </div>
                   </Link>
@@ -50,7 +60,7 @@ export function PetList({ pets, isLoading, error, createTo, createLabel, itemTo 
               error={error}
               isEmpty={pets.length === 0}
               loadingLabel="Cargando mascotas..."
-              emptyLabel="No hay mascotas cargadas."
+              emptyLabel={emptyLabel}
             />
           )}
         </div>

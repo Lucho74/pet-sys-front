@@ -12,7 +12,7 @@ Este repo es solo el **frontend**: React 19 + TypeScript + Vite + React Router 7
 
 ## Comandos
 
-Gestor de paquetes: **npm** (hay un `pnpm-lock.yaml` residual del commit inicial que ya no se usa — `node_modules` tiene layout de npm).
+Gestor de paquetes: **npm**.
 
 - `npm install`
 - `npm run dev` — levanta el dev server de Vite
@@ -77,6 +77,8 @@ Vistas del cliente (solo lectura, bajo un `RoleRoute` con `CLIENT_ROLES`, fuera 
 `MyPetsPage` reusa `PetList` pasándole `itemTo` para que cada ítem navegue a las consultas en vez de abrir el ActionSheet; `MyPetConsultationsPage` usa `ClientConsultationList`, una lista propia sin acciones.
 
 `MyPetConsultationsPage` también se monta para los roles clínicos en `/pets/:petId/consultations` (pantalla completa, fuera del padre `pets`), a la que se llega con el botón "Ver consultas" del ActionSheet de mascotas. La página recibe `backTo` por prop desde el router (`/my-pets` o `/pets`) y, para el nombre del título, usa `handleGetMyPets` si el rol es cliente y `handleGetByIdPet` si no, en un pedido aparte del de las consultas (sin `Promise.all`): si falla, el título queda en "Consultas" y la lista se muestra igual. `ActionSheet` acepta `extraActions?: { label, onClick }[]`, botones secundarios opcionales entre editar y suspender, y `avatar?` para el cuadro de la izquierda (por defecto las iniciales del título; las consultas pasan su id, como en la tarjeta).
+
+`ListState` muestra un botón "Reintentar" en el estado de error, que recarga la página (así ninguna lista necesita su propio refetch).
 
 ### Estilado
 

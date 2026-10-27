@@ -1,3 +1,5 @@
+import { SECONDARY_BUTTON_CLASSES } from './buttonStyles';
+
 interface ListStateProps {
   isLoading: boolean;
   error: string;
@@ -25,7 +27,15 @@ export function ListState({ isLoading, error, isEmpty, loadingLabel, emptyLabel 
           role="alert"
           className="w-full max-w-[460px] rounded-2xl border border-[#f5c2c7] bg-[#fff5f5] p-4 text-center text-[14px] text-[#7a1d1d] shadow-sm"
         >
-          {error}
+          <p>{error}</p>
+          {/* Recargar evita un refetch propio en cada página de lista. */}
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className={`mt-3 ${SECONDARY_BUTTON_CLASSES}`}
+          >
+            Reintentar
+          </button>
         </div>
       </div>
     );

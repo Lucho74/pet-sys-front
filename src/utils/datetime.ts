@@ -31,3 +31,11 @@ export function formatDate(value: string): string {
   const [year, month, day] = date.split('-');
   return `${day}/${month}/${year}`;
 }
+
+const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+/** Día y mes abreviado (26, "oct") para el bloque de fecha de las consultas. */
+export function dayAndMonth(value: string): { day: string; month: string } {
+  const [, month, day] = toInputDate(value).split('-');
+  return { day: String(Number(day)), month: MONTHS[Number(month) - 1] ?? '' };
+}

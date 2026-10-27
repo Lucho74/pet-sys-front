@@ -6,16 +6,19 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen bg-[#DDE6ED] font-sans">
-      <header className="flex h-[90px] items-center justify-center bg-[#27374D]">
+    <div className="flex min-h-screen flex-col bg-[#F4F7F9] lg:flex-row">
+      <aside className="flex flex-col items-center justify-center gap-5 px-6 pb-2 pt-10 lg:w-[44%] lg:bg-[#27374D] lg:p-12">
         <img
           src="/4patas-logo-azul.png"
           alt="4 Patas"
-          className="h-[100px] w-auto object-contain"
+          className="h-[140px] w-[140px] rounded-[32px] bg-white object-contain p-2 shadow-[0_8px_24px_rgba(39,55,77,0.12)] lg:h-[220px] lg:w-[220px] lg:rounded-[44px]"
         />
-      </header>
+        <p className="hidden max-w-[300px] text-center text-[17px] font-semibold leading-7 text-[#DDE6ED] lg:block">
+          Las mascotas y sus consultas, en un solo lugar.
+        </p>
+      </aside>
 
-      <main className="flex min-h-[calc(100vh-90px)] items-center justify-center px-5 py-10">
+      <main className="flex flex-1 items-start justify-center px-5 py-8 lg:items-center lg:py-10">
         {children}
       </main>
     </div>

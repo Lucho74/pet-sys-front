@@ -15,11 +15,11 @@ export function CreateButton({ to, label, variant = 'bar' }: CreateButtonProps) 
       to={to}
       className={
         isHeader
-          ? 'inline-flex cursor-pointer items-center justify-center gap-2 rounded-[12px] bg-[#DDE6ED] px-4 py-2.5 text-[14px] font-semibold text-[#27374D] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDE6ED] focus-visible:ring-offset-2 focus-visible:ring-offset-[#27374D]'
-          : 'flex w-full cursor-pointer items-center justify-center gap-2 rounded-[14px] bg-[#27374D] px-4 py-[15px] text-[15px] font-semibold text-[#DDE6ED] shadow-[0_6px_16px_rgba(39,55,77,0.35)] transition-colors hover:bg-[#1d2b3d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D] focus-visible:ring-offset-2'
+          ? 'inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#536FBA] px-4 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[#435FA9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#536FBA] focus-visible:ring-offset-2'
+          : 'flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[#536FBA] px-4 py-[15px] text-[16px] font-bold text-white shadow-[0_8px_20px_rgba(83,111,186,0.35)] transition-colors hover:bg-[#435FA9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#536FBA] focus-visible:ring-offset-2'
       }
     >
-      <Plus size={isHeader ? 16 : 15} strokeWidth={2.4} aria-hidden="true" />
+      <Plus size={isHeader ? 17 : 18} strokeWidth={2.6} aria-hidden="true" />
       <span>{label}</span>
     </Link>
   );

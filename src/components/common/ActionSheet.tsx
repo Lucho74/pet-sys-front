@@ -52,7 +52,7 @@ export function ActionSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="fixed inset-x-0 bottom-0 z-50 rounded-t-[22px] bg-[#DDE6ED] px-[18px] pb-[34px] pt-5 shadow-[0_-8px_24px_rgba(39,55,77,0.25)] sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-3rem)] sm:max-w-[420px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[18px] sm:p-6 sm:shadow-[0_16px_40px_rgba(39,55,77,0.32)]"
+        className="fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-white px-[18px] pb-[34px] pt-5 shadow-[0_-8px_24px_rgba(39,55,77,0.25)] sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-3rem)] sm:max-w-[420px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[24px] sm:p-6 sm:shadow-[0_16px_40px_rgba(39,55,77,0.32)]"
       >
         <div className="mx-auto mb-4 h-1 w-9 rounded-full bg-[#9DB2BF] sm:hidden" />
 
@@ -60,7 +60,7 @@ export function ActionSheet({
           type="button"
           onClick={onClose}
           aria-label="Cerrar"
-          className="absolute right-4 top-4 hidden h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[#526D82] transition-colors hover:bg-[#27374D]/10 hover:text-[#27374D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D] sm:flex"
+          className="absolute right-4 top-4 hidden h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[#526D82] transition-colors hover:bg-[#27374D]/10 hover:text-[#27374D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#536FBA] sm:flex"
         >
           <X size={17} strokeWidth={2.5} />
         </button>
@@ -71,7 +71,7 @@ export function ActionSheet({
           }`}
         >
           <div
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${
               isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'
             }`}
           >
@@ -89,7 +89,6 @@ export function ActionSheet({
               </div>
               {isDeleted ? <span className={DELETED_BADGE_CLASSES}>Suspendido</span> : null}
             </div>
-            {/* #526D82 solo pasa AA sobre el fondo blanco/50 del suspendido; sobre #DDE6ED da 4.30:1. */}
             <div className={`truncate text-[13px] ${isDeleted ? 'text-[#526D82]' : 'text-[#27374D]'}`}>{subtitle}</div>
           </div>
         </div>

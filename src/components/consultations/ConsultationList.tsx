@@ -33,7 +33,7 @@ export function ConsultationList({
               {activeFirst(consultations).map((consultation) => (
                 <li key={consultation.id} className="flex">
                   <Link to={itemTo(consultation.id)} className={consultation.isDeleted ? DELETED_CARD_CLASSES : CARD_CLASSES}>
-                    <div className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] ${consultation.isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'}`}>
+                    <div className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full ${consultation.isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'}`}>
                       <span className={`text-[15px] font-semibold ${consultation.isDeleted ? 'text-[#27374D]' : 'text-white'}`}>{consultation.id}</span>
                     </div>
 

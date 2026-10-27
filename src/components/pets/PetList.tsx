@@ -36,7 +36,7 @@ export function PetList({
               {activeFirst(pets).map((pet) => (
                 <li key={pet.id} className="flex">
                   <Link to={itemTo(pet.id)} className={pet.isDeleted ? DELETED_CARD_CLASSES : CARD_CLASSES}>
-                    <div className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] ${pet.isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'}`}>
+                    <div className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full ${pet.isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'}`}>
                       <span className={`text-[15px] font-semibold ${pet.isDeleted ? 'text-[#27374D]' : 'text-white'}`}>{initials(pet.name)}</span>
                     </div>
 

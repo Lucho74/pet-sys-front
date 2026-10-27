@@ -29,7 +29,7 @@ export function UserList({ users, isLoading, error, createTo, createLabel, itemT
                 const className = user.isDeleted ? DELETED_CARD_CLASSES : CARD_CLASSES;
                 const content = (
                   <>
-                    <div className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] ${user.isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'}`}>
+                    <div className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full ${user.isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'}`}>
                       <span className={`text-[15px] font-semibold ${user.isDeleted ? 'text-[#27374D]' : 'text-white'}`}>{initials(user.fullName)}</span>
                     </div>
 

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, House, LogOut } from 'lucide-react';
+import { ChevronLeft, House, LogOut, PawPrint } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthenticationContext';
 import { ROLE_LABELS } from '../users/userTypes';
@@ -14,6 +14,9 @@ interface ScreenShellProps {
   children: ReactNode;
 }
 
+const TOP_LINK_CLASSES =
+  'flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-[14px] font-bold text-[#526D82] transition-colors hover:bg-[#DDE6ED] hover:text-[#27374D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#536FBA]';
+
 function LogoutButton() {
   const { handleUserLogout } = useAuth();
   const navigate = useNavigate();
@@ -24,12 +27,8 @@ function LogoutButton() {
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleLogout}
-      className="flex shrink-0 items-center gap-2 rounded-[8px] px-3 py-2 text-[14px] font-medium text-[#DDE6ED] transition-colors hover:bg-[#526D82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDE6ED]"
-    >
-      <LogOut size={17} strokeWidth={2} aria-hidden="true" />
+    <button type="button" onClick={handleLogout} className={`shrink-0 cursor-pointer ${TOP_LINK_CLASSES}`}>
+      <LogOut size={17} strokeWidth={2.2} aria-hidden="true" />
       <span>Cerrar sesión</span>
     </button>
   );
@@ -37,66 +36,52 @@ function LogoutButton() {
 
 export function ScreenShell({
   title,
-  icon: Icon,
+  icon: Icon = PawPrint,
   backTo,
   homeTo,
   action,
   children,
 }: ScreenShellProps) {
   const { role } = useAuth();
-  const keepTopRowOnDesktop = Boolean(backTo);
 
   return (
-    <div className="relative flex min-h-screen w-full flex-1 flex-col overflow-hidden bg-[#DDE6ED] font-sans">
-      <header className="flex-none bg-[#27374D] px-5 pb-4 pt-14 lg:px-10 lg:pb-7 lg:pt-8">
-        <div
-          className={`flex items-center justify-between ${keepTopRowOnDesktop ? '' : 'lg:hidden'}`}
-        >
+    <div className="relative flex min-h-screen w-full flex-1 flex-col overflow-hidden bg-[#F4F7F9]">
+      <header className="flex-none px-4 pb-2 pt-5 lg:px-10 lg:pb-4 lg:pt-9">
+        <div className={`flex items-center justify-between ${backTo ? '' : 'lg:hidden'}`}>
           {backTo ? (
-            <Link
-              to={backTo}
-              className="flex cursor-pointer items-center gap-1 rounded-[8px] text-[15px] font-medium text-[#DDE6ED] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDE6ED]"
-            >
-              <ChevronLeft size={16} strokeWidth={2.5} className="shrink-0 text-[#9DB2BF]" />
+            <Link to={backTo} className={`-ml-2.5 ${TOP_LINK_CLASSES}`}>
+              <ChevronLeft size={17} strokeWidth={2.5} aria-hidden="true" />
               Atrás
             </Link>
-          ) : Icon ? (
-            <div className="flex h-[22px] w-[22px] items-center justify-center rounded-[6px] bg-[#526D82]">
-              <Icon size={13} strokeWidth={2} className="text-[#DDE6ED]" aria-hidden="true" />
-            </div>
           ) : (
             <span />
           )}
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 lg:hidden">
             {homeTo ? (
-              <Link
-                to={homeTo}
-                aria-label="Volver al panel"
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-[8px] text-[#9DB2BF] transition-colors hover:bg-[#526D82] hover:text-[#DDE6ED] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDE6ED] lg:hidden"
-              >
-                <House size={17} strokeWidth={2} />
+              <Link to={homeTo} aria-label="Volver al panel" className={TOP_LINK_CLASSES}>
+                <House size={18} strokeWidth={2.2} />
               </Link>
             ) : null}
-
-            <div className="lg:hidden">
-              <LogoutButton />
-            </div>
+            <LogoutButton />
           </div>
         </div>
 
         <div
-          className={`mt-3.5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between lg:gap-6 ${
-            keepTopRowOnDesktop ? 'lg:mt-5' : 'lg:mt-0'
+          className={`flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6 ${
+            backTo ? 'mt-3 lg:mt-4' : 'mt-2 lg:mt-0'
           }`}
         >
-          <div className="flex flex-col gap-0.5">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#9DB2BF]">
-              {role ? ROLE_LABELS[role] : ''}
+          <div className="flex min-w-0 items-center gap-3.5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#27374D] lg:h-14 lg:w-14">
+              <Icon size={24} strokeWidth={2.2} className="text-[#DDE6ED]" aria-hidden="true" />
             </div>
-            <h1 className="text-[26px] font-bold tracking-[-0.3px] text-[#DDE6ED] lg:text-[30px]">
-              {title}
-            </h1>
+            <div className="min-w-0">
+              <div className="text-[13px] font-bold text-[#526D82]">{role ? ROLE_LABELS[role] : ''}</div>
+              <h1 className="truncate text-[26px] font-extrabold leading-tight tracking-[-0.3px] text-[#27374D] lg:text-[32px]">
+                {title}
+              </h1>
+            </div>
           </div>
 
           <div className="hidden shrink-0 items-center gap-2 lg:flex">

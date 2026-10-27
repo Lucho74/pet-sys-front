@@ -30,7 +30,7 @@ export function FormShell({
           event.preventDefault();
           onSave();
         }}
-        className="w-full max-w-[760px] rounded-[24px] border border-[#E3E9EE] bg-white p-5 shadow-[0_1px_2px_rgba(39,55,77,0.05)] lg:p-8"
+        className="w-full max-w-[760px] rounded-[20px] border border-[#E3E9EE] bg-white p-5 lg:p-8"
       >
         {isLoading ? (
           <div
@@ -38,7 +38,7 @@ export function FormShell({
             aria-live="polite"
             className="flex items-center justify-center px-4 py-6 text-[15px] font-bold text-[#27374D]"
           >
-            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-[#DDE6ED] border-t-[#536FBA]" />
+            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-[#DDE6ED] border-t-[#27374D]" />
             {loadingLabel}
           </div>
         ) : (

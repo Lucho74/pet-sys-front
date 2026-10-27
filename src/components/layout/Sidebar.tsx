@@ -30,7 +30,7 @@ export function Sidebar() {
             end={end}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-xl px-3.5 py-3 text-[15px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDE6ED] ${
-                isActive ? 'bg-[#536FBA] text-white' : 'text-[#9DB2BF] hover:bg-white/10 hover:text-white'
+                isActive ? 'bg-[#DDE6ED] text-[#27374D]' : 'text-[#9DB2BF] hover:bg-white/10 hover:text-white'
               }`
             }
           >

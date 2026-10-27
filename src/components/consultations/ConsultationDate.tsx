@@ -10,7 +10,7 @@ export function ConsultationDate({ date, isDeleted = false }: ConsultationDatePr
 
   return (
     <div
-      className={`flex h-[52px] w-[52px] shrink-0 flex-col items-center justify-center rounded-[16px] border ${
+      className={`flex h-[52px] w-[52px] shrink-0 flex-col items-center justify-center rounded-xl border ${
         isDeleted ? 'border-[#9DB2BF] bg-white text-[#526D82]' : 'border-[#27374D] bg-[#27374D] text-white'
       }`}
     >

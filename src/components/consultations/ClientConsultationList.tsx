@@ -1,6 +1,6 @@
-import { formatDate } from '../../utils/datetime';
 import { ListState } from '../common/ListState';
 import { READONLY_CARD_CLASSES, WIDE_GRID_CLASSES } from '../common/listStyles';
+import { ConsultationDate } from './ConsultationDate';
 
 interface ClientConsultationItem {
 	id: number;
@@ -25,12 +25,10 @@ export function ClientConsultationList({ consultations, isLoading, error }: Clie
 						{consultations.map((consultation) => (
 							<li key={consultation.id} className="flex">
 								<div className={READONLY_CARD_CLASSES}>
+									<ConsultationDate date={consultation.date} />
 									<div className="min-w-0 flex-1 text-left">
 										<div className="whitespace-pre-wrap break-words text-[15px] font-semibold text-[#27374D]">
 											{consultation.description}
-										</div>
-										<div className="truncate text-[13px] text-[#526D82]">
-											{consultation.date ? formatDate(consultation.date) : 'Sin fecha asignada'}
 										</div>
 									</div>
 								</div>

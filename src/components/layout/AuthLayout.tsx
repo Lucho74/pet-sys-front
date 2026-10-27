@@ -11,7 +11,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <img
           src="/4patas-logo-azul.png"
           alt="4 Patas"
-          className="h-[140px] w-[140px] rounded-[32px] bg-white object-contain p-2 shadow-[0_8px_24px_rgba(39,55,77,0.12)] lg:h-[220px] lg:w-[220px] lg:rounded-[44px]"
+          className="h-[140px] w-[140px] rounded-[32px] bg-white object-contain p-2 lg:h-[220px] lg:w-[220px] lg:rounded-[44px]"
         />
         <p className="hidden max-w-[300px] text-center text-[17px] font-semibold leading-7 text-[#DDE6ED] lg:block">
           Las mascotas y sus consultas, en un solo lugar.

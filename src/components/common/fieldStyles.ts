@@ -3,7 +3,7 @@ export const FIELD_LABEL_CLASSES = 'text-[13px] font-bold text-[#27374D]';
 const BASE_CONTROL_CLASSES =
   'w-full rounded-xl border bg-white text-[15px] text-[#27374D] outline-none transition-colors placeholder:text-slate-400 focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 lg:text-[14px]';
 
-const VALID_CLASSES = 'border-[#9DB2BF] focus:border-[#536FBA] focus:ring-[#536FBA]/20';
+const VALID_CLASSES = 'border-[#9DB2BF] focus:border-[#27374D] focus:ring-[#27374D]/15';
 
 const INVALID_CLASSES = 'border-[#c0392b] focus:border-[#c0392b] focus:ring-[#c0392b]/20';
 

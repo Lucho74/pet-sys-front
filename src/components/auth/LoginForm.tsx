@@ -21,7 +21,7 @@ export function LoginForm({
     onLogin,
 }: LoginFormProps) {
     return (
-        <section className="w-full max-w-[490px] rounded-[28px] border border-[#E3E9EE] bg-white px-7 py-8 shadow-[0_12px_40px_rgba(39,55,77,0.08)] sm:px-14">
+        <section className="w-full max-w-[490px] rounded-[20px] border border-[#E3E9EE] bg-white px-7 py-8 sm:px-14">
             <header className="mb-7 text-center">
             <h1 className="text-3xl font-extrabold text-[#27374D]">
                 Iniciar sesión

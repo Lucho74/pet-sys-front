@@ -23,21 +23,21 @@ export const NAV_ITEMS: NavItem[] = [
   {
     to: '/users',
     label: 'Usuarios',
-    description: 'Alta, edición y baja de usuarios',
+    description: 'Alta, edición y suspensión de usuarios',
     icon: Users,
     roles: CLINICAL_ROLES
   },
   {
     to: '/pets',
     label: 'Mascotas',
-    description: 'Alta, edición y baja de mascotas',
+    description: 'Alta y edición de mascotas',
     icon: PawPrint,
     roles: CLINICAL_ROLES
   },
   {
     to: '/consultations',
     label: 'Consultas',
-    description: 'Alta, edición y baja de consultas',
+    description: 'Alta y edición de consultas',
     icon: Stethoscope,
     roles: CLINICAL_ROLES
   },

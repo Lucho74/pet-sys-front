@@ -72,7 +72,7 @@ export function Home() {
                 </h2>
                 <Link
                   to="/consultations"
-                  className="rounded-md text-[15px] font-bold text-[#27374D] underline underline-offset-4 hover:text-[#536FBA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#536FBA]"
+                  className="rounded-md text-[15px] font-bold text-[#27374D] underline underline-offset-4 hover:text-[#526D82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D]"
                 >
                   Ver todas
                 </Link>
@@ -113,7 +113,7 @@ export function Home() {
                 <li key={to} className="flex">
                   <Link
                     to={to}
-                    className="group flex w-full cursor-pointer items-center gap-4 rounded-[24px] border border-[#E3E9EE] bg-white p-4 text-left shadow-[0_1px_2px_rgba(39,55,77,0.05)] transition-[border-color,box-shadow] hover:border-[#536FBA] hover:shadow-[0_10px_24px_rgba(83,111,186,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#536FBA] focus-visible:ring-offset-2 lg:flex-col lg:items-start lg:gap-5 lg:p-7"
+                    className="group flex w-full cursor-pointer items-center gap-4 rounded-[20px] border border-[#E3E9EE] bg-white p-4 text-left transition-colors hover:border-[#526D82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D] focus-visible:ring-offset-2 lg:flex-col lg:items-start lg:gap-5 lg:p-7"
                   >
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#E8EDF7] lg:h-14 lg:w-14">
                       <Icon size={24} strokeWidth={2.2} className="text-[#27374D]" aria-hidden="true" />
@@ -127,7 +127,7 @@ export function Home() {
                     <ChevronRight
                       size={20}
                       strokeWidth={2.4}
-                      className="shrink-0 text-[#9DB2BF] transition-colors group-hover:text-[#536FBA] lg:hidden"
+                      className="shrink-0 text-[#9DB2BF] transition-colors group-hover:text-[#27374D] lg:hidden"
                       aria-hidden="true"
                     />
                   </Link>

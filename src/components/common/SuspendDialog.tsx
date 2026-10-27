@@ -22,7 +22,7 @@ export function SuspendDialog({ name, isDeleting = false, onCancel, onConfirm }:
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="w-full max-w-[420px] rounded-[24px] bg-white p-[22px] shadow-[0_12px_30px_rgba(39,55,77,0.3)] sm:p-6"
+        className="w-full max-w-[420px] rounded-[20px] bg-white p-[22px] shadow-[0_12px_30px_rgba(39,55,77,0.3)] sm:p-6"
       >
         <h2 id={titleId} className="mb-1.5 text-[16px] font-bold text-[#27374D]">
           Suspender usuario

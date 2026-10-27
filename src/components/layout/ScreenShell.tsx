@@ -15,7 +15,7 @@ interface ScreenShellProps {
 }
 
 const TOP_LINK_CLASSES =
-  'flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-[14px] font-bold text-[#526D82] transition-colors hover:bg-[#DDE6ED] hover:text-[#27374D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#536FBA]';
+  'flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-[14px] font-bold text-[#526D82] transition-colors hover:bg-[#DDE6ED] hover:text-[#27374D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D]';
 
 function LogoutButton() {
   const { handleUserLogout } = useAuth();
@@ -73,7 +73,7 @@ export function ScreenShell({
           }`}
         >
           <div className="flex min-w-0 items-center gap-3.5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#27374D] lg:h-14 lg:w-14">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#27374D] lg:h-14 lg:w-14">
               <Icon size={24} strokeWidth={2.2} className="text-[#DDE6ED]" aria-hidden="true" />
             </div>
             <div className="min-w-0">

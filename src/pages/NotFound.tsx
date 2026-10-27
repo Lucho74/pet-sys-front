@@ -5,7 +5,7 @@ import { PRIMARY_BUTTON_CLASSES } from '../components/common/buttonStyles';
 export function NotFound() {
   return (
     <div className="flex min-h-screen w-full flex-1 items-center justify-center bg-[#F4F7F9] px-6">
-      <div className="w-full max-w-sm rounded-[24px] border border-[#E3E9EE] bg-white p-7 text-center">
+      <div className="w-full max-w-sm rounded-[20px] border border-[#E3E9EE] bg-white p-7 text-center">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#E8EDF7]">
           <PawPrint size={26} strokeWidth={2.2} className="text-[#27374D]" aria-hidden="true" />
         </div>

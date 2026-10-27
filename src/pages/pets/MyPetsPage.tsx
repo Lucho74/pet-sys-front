@@ -44,6 +44,7 @@ export function MyPetsPage() {
 				isLoading={isLoading}
 				error={error}
 				itemTo={(petId) => `/my-pets/${petId}/consultations`}
+				emptyLabel="Todavía no tenés mascotas registradas. Pedile a la veterinaria que las cargue."
 			/>
 		</ScreenShell>
 	);

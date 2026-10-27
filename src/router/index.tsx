@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import type { RouteObject } from 'react-router-dom';
 import App from '../App';
 import { Home } from '../pages/Home';
-import About from '../pages/About';
 import { NotFound } from '../pages/NotFound';
 import { UsersListPage } from '../pages/users/UsersListPage';
 import { UserCreatePage } from '../pages/users/UserCreatePage';
@@ -90,7 +89,6 @@ const routes: RouteObject[] = [
         ]
       },
 
-      { path: 'about', element: <About /> },
       { path: '*', element: <NotFound /> },
     ],
   },

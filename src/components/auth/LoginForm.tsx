@@ -1,4 +1,5 @@
 import { FormField } from '../common/FormField';
+import { PRIMARY_BUTTON_CLASSES } from '../common/buttonStyles';
 import type { LoginFormState } from './authTypes';
 import type { FormErrors } from './loginValidation';
 
@@ -59,7 +60,7 @@ export function LoginForm({
             />
 
             {formError ? (
-                <p role="alert" className="text-center text-sm text-red-700">
+                <p role="alert" className="text-center text-sm text-[#c0392b]">
                 {formError}
                 </p>
             ) : null}
@@ -67,7 +68,7 @@ export function LoginForm({
             <button
                 type="submit"
                 disabled={isLoggingIn}
-                className="mx-auto mt-1 min-w-[147px] rounded-[18px] bg-[#536FBA] px-8 py-2.5 text-lg text-white transition-colors hover:bg-[#435FA9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#536FBA] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                className={`w-full ${PRIMARY_BUTTON_CLASSES}`}
             >
                 {isLoggingIn ? 'Ingresando...' : 'Ingresar'}
             </button>

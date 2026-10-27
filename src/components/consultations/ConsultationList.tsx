@@ -61,7 +61,7 @@ export function ConsultationList({
               error={error}
               isEmpty={consultations.length === 0}
               loadingLabel="Cargando consultas..."
-              emptyLabel="No hay consultas cargadas."
+              emptyLabel="Todavía no hay consultas. Creá la primera con «Nueva consulta»."
             />
           )}
         </div>

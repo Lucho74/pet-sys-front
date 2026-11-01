@@ -10,4 +10,8 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
   ],
+  resolve: {
+    // Alias `@/*` → `src/*`, leído de los `paths` de tsconfig (lo usa shadcn).
+    tsconfigPaths: true,
+  },
 })

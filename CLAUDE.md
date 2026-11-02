@@ -88,6 +88,8 @@ Las combinaciones de clases que se repiten están extraídas en `components/comm
 
 El layout es mobile-first con breakpoint `lg`: en mobile el botón de crear es una barra fija abajo (`CreateButton variant="bar"`, que renderiza el propio `List`) y en desktop va en el header (`variant="header"`, que lo pasa la página vía la prop `action` de `ScreenShell`).
 
+**shadcn/ui** (CLI v4, estilo `radix-nova`, config en `components.json`): los componentes se agregan con `npx shadcn@latest add <componente>` y quedan en `components/ui/`; `cn` viene del paquete `cn` (reexportado en `lib/utils.ts`). Se importan con el alias `@/` (`paths` en `tsconfig.json`/`tsconfig.app.json` + `resolve.tsconfigPaths` en Vite). **Sin `baseUrl`**: con TypeScript 6 está deprecado y rompe `tsc -b`, aunque la guía de shadcn lo pida. Los tokens (`--primary`, `--border`, ...) de `index.css` están mapeados a la paleta de arriba, no hay modo oscuro y no se pisan los `--radius-*` (así `rounded-xl` y los demás conservan la escala de Tailwind). ESLint desactiva `react-refresh/only-export-components` solo en `components/ui/`. Los componentes propios de `common/` se van a ir migrando a shadcn de a poco; mientras tanto conviven.
+
 Íconos: `lucide-react`. Notificaciones: `react-toastify` (`toast.error(...)` en los `catch` de fetch, además del estado `error` que se muestra inline en la lista).
 
 `src/design/Sysadmin Users.dc.html` es un export/mockup de diseño, no código de la app.

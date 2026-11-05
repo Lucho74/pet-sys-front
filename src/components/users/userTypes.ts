@@ -25,8 +25,3 @@ export interface UserFormState {
   roleName: string;
   dni: string;
 }
-
-export interface UsersOutletContext {
-  users: User[];
-  setUserDeleted: (userId: number, isDeleted: boolean) => void;
-}

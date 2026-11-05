@@ -1,5 +1,6 @@
 import { type ICreateUserRequest, type IUpdateUserRequest, type IUserResponse } from "./IUser"
 import { apiFetch } from "../apiClient";
+import { fetchAllPages, PAGE_SIZE, type IPaginatedResponse } from "../IPaginated";
 
 export const handleAddUser = async (newUser: ICreateUserRequest): Promise<IUserResponse> => {
     const response = await apiFetch('/User', {
@@ -39,8 +40,10 @@ export const handleGetByIdUser = async (id: string): Promise<IUserResponse> => {
     return response.json();
 };
 
-export const handleGetAllUser = async (): Promise<IUserResponse[]> => {
-    const response = await apiFetch('/User');
+export const handleGetUsersPage = async (pageIndex: number, pageSize = PAGE_SIZE): Promise<IPaginatedResponse<IUserResponse>> => {
+    const response = await apiFetch(`/User?pageIndex=${pageIndex}&pageSize=${pageSize}`);
 
     return response.json();
 };
+
+export const handleGetAllUser = (): Promise<IUserResponse[]> => fetchAllPages(handleGetUsersPage);

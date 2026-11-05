@@ -18,3 +18,18 @@ export const activeFirst = <T extends { isDeleted: boolean }>(items: T[]) =>
 
 export const READONLY_CARD_CLASSES =
   'flex w-full items-start gap-3 rounded-[14px] border border-white bg-white px-3.5 py-3 text-left shadow-[0_1px_2px_rgba(39,55,77,0.06)] lg:px-4 lg:py-3.5';
+// Tablas de gestión (usuarios, mascotas, consultas).
+export const TABLE_CARD_CLASSES = 'overflow-hidden rounded-[14px] bg-white shadow-[0_6px_16px_rgba(39,55,77,0.10)]';
+
+export const TABLE_HEADER_ROW_CLASSES = 'bg-[#27374D] hover:bg-[#27374D]';
+
+export const TABLE_HEAD_CLASSES = 'px-4 text-[12px] font-semibold uppercase tracking-[0.05em] text-[#DDE6ED]';
+
+export const TABLE_ROW_CLASSES = 'border-[#DDE6ED] hover:bg-[#DDE6ED]/50';
+
+export const PILL_CLASSES = 'rounded-full bg-[#DDE6ED] px-2.5 py-0.5 text-[12px] font-semibold text-[#27374D]';
+
+export const AVATAR_CLASSES = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] text-[12px] font-semibold';
+
+export const avatarColors = (isDeleted: boolean) =>
+  isDeleted ? 'bg-[#9DB2BF] text-[#27374D]' : 'bg-[#27374D] text-white';

@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import type { Pet } from './petTypes';
 import { initials } from '../../utils/initials';
 import { formatDate } from '../../utils/datetime';
-import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';
 import { activeFirst, CARD_CLASSES, DELETED_BADGE_CLASSES, DELETED_CARD_CLASSES, GRID_CLASSES } from '../common/listStyles';
 
@@ -10,20 +9,16 @@ interface PetListProps {
   pets: Pet[];
   isLoading: boolean;
   error: string;
-  createTo?: string;
-  createLabel?: string;
   itemTo: (petId: number) => string;
-  emptyLabel?: string;
+  emptyLabel: string;
 }
 
 export function PetList({
   pets,
   isLoading,
   error,
-  createTo,
-  createLabel,
   itemTo,
-  emptyLabel = 'Todavía no hay mascotas. Creá la primera con «Nueva mascota».',
+  emptyLabel,
 }: PetListProps) {
   const hasPets = !isLoading && !error && pets.length > 0;
 
@@ -66,11 +61,6 @@ export function PetList({
         </div>
       </div>
 
-      {createTo && createLabel ? (
-        <div className="absolute inset-x-4 bottom-7 lg:hidden">
-          <CreateButton to={createTo} label={createLabel} />
-        </div>
-      ) : null}
     </>
   );
 }

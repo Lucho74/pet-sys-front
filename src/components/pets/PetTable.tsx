@@ -5,16 +5,14 @@ import type { Pet } from './petTypes';
 import { formatDate } from '../../utils/datetime';
 import { matchesSearch } from '../../utils/search';
 import {
-  AVATAR_CLASSES,
-  avatarColors,
-  DELETED_BADGE_CLASSES,
-  PILL_CLASSES,
   TABLE_CARD_CLASSES,
   TABLE_HEAD_CLASSES,
   TABLE_HEADER_ROW_CLASSES,
   TABLE_ROW_CLASSES,
 } from '../common/listStyles';
 import { initials } from '../../utils/initials';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -87,13 +85,15 @@ export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange,
 
   const renderCell = (pet: Pet, key: ColumnKey) => {
     if (key === 'birthDate') return pet.birthDate ? formatDate(pet.birthDate) : 'Sin fecha';
-    if (key === 'specie') return <span className={PILL_CLASSES}>{pet.specie}</span>;
+    if (key === 'specie') return <Badge variant="secondary">{pet.specie}</Badge>;
     if (key === 'name') {
       return (
         <div className="flex items-center gap-3">
-          <span className={`${AVATAR_CLASSES} ${avatarColors(pet.isDeleted)}`}>{initials(pet.name)}</span>
+          <Avatar>
+            <AvatarFallback className={pet.isDeleted ? '' : 'bg-primary text-primary-foreground'}>{initials(pet.name)}</AvatarFallback>
+          </Avatar>
           <span className="font-semibold">{pet.name}</span>
-          {pet.isDeleted && <span className={DELETED_BADGE_CLASSES}>Suspendido</span>}
+          {pet.isDeleted && <Badge variant="outline">Suspendido</Badge>}
         </div>
       );
     }

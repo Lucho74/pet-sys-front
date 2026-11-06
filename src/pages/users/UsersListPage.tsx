@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { User as UserIcon } from 'lucide-react';
+import { User as UserIcon, Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { EMPTY_PAGINATION, PAGE_SIZE, type Pagination } from '../../services/IPaginated';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { CreateButton } from '../../components/common/CreateButton';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { UserList } from '../../components/users/UserList';
 import { handleGetUsersPage } from '../../services/users/userService';
 import type { User } from '../../components/users/userTypes';
@@ -79,7 +80,13 @@ export function UsersListPage() {
       title="Usuarios"
       icon={UserIcon}
       homeTo="/"
-      action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
+      action={
+        <Button asChild variant="secondary">
+          <Link to={CREATE_TO}>
+            <Plus /> {CREATE_LABEL}
+          </Link>
+        </Button>
+      }
     >
       <UserList
         users={users}

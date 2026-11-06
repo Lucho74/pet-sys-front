@@ -1,5 +1,7 @@
 import type { User } from './userTypes';
-import { CreateButton } from '../common/CreateButton';
+import { Link } from 'react-router-dom';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { ListState } from '../common/ListState';
 import { UserTable } from './UserTable';
 import { activeFirst } from '../common/listStyles';
@@ -64,7 +66,11 @@ export function UserList({
       </div>
 
       <div className="absolute inset-x-4 bottom-7 lg:hidden">
-        <CreateButton to={createTo} label={createLabel} />
+        <Button asChild size="lg" className="h-12 w-full shadow-[0_6px_16px_rgba(39,55,77,0.35)]">
+          <Link to={createTo}>
+            <Plus /> {createLabel}
+          </Link>
+        </Button>
       </div>
     </>
   );

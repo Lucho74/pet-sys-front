@@ -1,5 +1,7 @@
 import type { Consultation } from './consultationTypes';
-import { CreateButton } from '../common/CreateButton';
+import { Link } from 'react-router-dom';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { ListState } from '../common/ListState';
 import { ConsultationTable } from './ConsultationTable';
 import { activeFirst } from '../common/listStyles';
@@ -55,7 +57,11 @@ export function ConsultationList({
       </div>
 
       <div className="absolute inset-x-4 bottom-7 lg:hidden">
-        <CreateButton to={createTo} label={createLabel} />
+        <Button asChild size="lg" className="h-12 w-full shadow-[0_6px_16px_rgba(39,55,77,0.35)]">
+          <Link to={createTo}>
+            <Plus /> {createLabel}
+          </Link>
+        </Button>
       </div>
     </>
   );

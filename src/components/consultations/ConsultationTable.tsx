@@ -4,15 +4,13 @@ import type { Consultation } from './consultationTypes';
 import { formatDate } from '../../utils/datetime';
 import { matchesSearch } from '../../utils/search';
 import {
-  AVATAR_CLASSES,
-  avatarColors,
-  DELETED_BADGE_CLASSES,
-  PILL_CLASSES,
   TABLE_CARD_CLASSES,
   TABLE_HEAD_CLASSES,
   TABLE_HEADER_ROW_CLASSES,
   TABLE_ROW_CLASSES,
 } from '../common/listStyles';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -77,13 +75,15 @@ export function ConsultationTable({ pagination, onPageChange, pageSize, onPageSi
 
   const renderCell = (consultation: Consultation, key: ColumnKey) => {
     if (key === 'date') return consultation.date ? formatDate(consultation.date) : 'Sin fecha';
-    if (key === 'id') return <span className={`${AVATAR_CLASSES} ${avatarColors(consultation.isDeleted)}`}>{consultation.id}</span>;
-    if (key === 'petName') return <span className={PILL_CLASSES}>{consultation.petName}</span>;
+    if (key === 'id') return <Avatar>
+            <AvatarFallback className={consultation.isDeleted ? '' : 'bg-primary text-primary-foreground'}>{consultation.id}</AvatarFallback>
+          </Avatar>;
+    if (key === 'petName') return <Badge variant="secondary">{consultation.petName}</Badge>;
     if (key === 'description') {
       return (
         <div className="flex items-center gap-2">
           <span className="font-semibold">{consultation.description}</span>
-          {consultation.isDeleted && <span className={DELETED_BADGE_CLASSES}>Suspendido</span>}
+          {consultation.isDeleted && <Badge variant="outline">Suspendido</Badge>}
         </div>
       );
     }

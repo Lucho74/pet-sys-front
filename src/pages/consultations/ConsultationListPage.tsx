@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Stethoscope } from 'lucide-react';
+import { Stethoscope, Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { EMPTY_PAGINATION, PAGE_SIZE, type Pagination } from '../../services/IPaginated';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { CreateButton } from '../../components/common/CreateButton';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { ConsultationList } from '../../components/consultations/ConsultationList';
 import { handleGetConsultationsPage } from '../../services/consultation/consultationService';
 import { handleGetAllPet } from '../../services/pets/petService';
@@ -72,7 +73,13 @@ export function ConsultationListPage() {
             title="Consultas"
             icon={Stethoscope}
             homeTo="/"
-            action={<CreateButton to={CREATE_TO} label={CREATE_LABEL} variant="header" />}
+            action={
+        <Button asChild variant="secondary">
+          <Link to={CREATE_TO}>
+            <Plus /> {CREATE_LABEL}
+          </Link>
+        </Button>
+      }
         >
             <ConsultationList
                 consultations={consultations}

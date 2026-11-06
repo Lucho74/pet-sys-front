@@ -5,10 +5,6 @@ import type { User } from './userTypes';
 import { ROLE_LABELS } from './userTypes';
 import { matchesSearch } from '../../utils/search';
 import {
-  AVATAR_CLASSES,
-  avatarColors,
-  DELETED_BADGE_CLASSES,
-  PILL_CLASSES,
   TABLE_CARD_CLASSES,
   TABLE_HEAD_CLASSES,
   TABLE_HEADER_ROW_CLASSES,
@@ -25,6 +21,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -93,13 +91,15 @@ export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange
   };
 
   const renderCell = (user: User, key: ColumnKey) => {
-    if (key === 'roleName') return <span className={PILL_CLASSES}>{ROLE_LABELS[user.roleName]}</span>;
+    if (key === 'roleName') return <Badge variant="secondary">{ROLE_LABELS[user.roleName]}</Badge>;
     if (key === 'fullName') {
       return (
         <div className="flex items-center gap-3">
-          <span className={`${AVATAR_CLASSES} ${avatarColors(user.isDeleted)}`}>{initials(user.fullName)}</span>
+          <Avatar>
+            <AvatarFallback className={user.isDeleted ? '' : 'bg-primary text-primary-foreground'}>{initials(user.fullName)}</AvatarFallback>
+          </Avatar>
           <span className="font-semibold">{user.fullName}</span>
-          {user.isDeleted && <span className={DELETED_BADGE_CLASSES}>Suspendido</span>}
+          {user.isDeleted && <Badge variant="outline">Suspendido</Badge>}
         </div>
       );
     }

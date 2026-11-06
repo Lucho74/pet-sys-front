@@ -29,7 +29,14 @@ No hay suite de tests configurada todavía en este repo.
 `src/` se organiza así:
 - `pages/<feature>/` — una página por pantalla, montada por el router. Acá vive el estado, el fetch y el mapeo DTO↔UI.
 - `components/<feature>/` — componentes de presentación de la feature (ej. `components/users/`), sin fetch propio.
-- `components/common/` — piezas reutilizadas por todas las features: `FormShell`, `FormField` (con `type="password"` agrega solo el botón de ojo para mostrar/ocultar), `SelectField`, `SearchSelect`, `ListState`, `CreateButton`, más los módulos de clases Tailwind compartidas (`buttonStyles.ts`, `fieldStyles.ts`, `listStyles.ts`).
+- `components/common/` — composiciones chicas hechas **solo con componentes de shadcn**, reutilizadas por todas las features:
+  - `FormShell`: `Card` + `Alert` + `Spinner` + `Button`.
+  - `FormField`: `Field` + `Input`. Con `type="password"` usa `InputGroup` y agrega el botón de ojo para mostrar u ocultar.
+  - `SearchSelect`: combobox con `Popover` + `Command`.
+  - `ListState`: `Spinner` / `Alert` / `Empty`.
+  - `listStyles.ts`: `activeFirst` y las clases del header de las tablas.
+
+  No hay más estilos propios de botones, campos ni tarjetas: se usan `Button`, `Input`, `Select`, `Card`, `Badge` y `Avatar` de `components/ui/`.
 - `components/layout/` — `ScreenShell` (header + layout de pantalla; el texto chico sobre el título es el rol del usuario logueado, que calcula solo con `useAuth` + `ROLE_LABELS`, así que las páginas no lo pasan), `Sidebar` y `navigation.ts` (`NAV_ITEMS`).
 - `services/<feature>/` — llamadas `fetch` a la API del backend y tipos de DTO.
 - `router/` — definición de rutas (`createBrowserRouter`).
@@ -42,12 +49,12 @@ Hay tres features implementadas con el mismo patrón — `users`, `pets` y `cons
 - `components/<feature>/<entity>Validation.ts` — `validate<Entity>Form()` + el tipo `FormErrors`.
 - `components/<feature>/<Entity>List.tsx`, `<Entity>Table.tsx` y `<Entity>Form.tsx` — presentación pura, todo por props.
 
-Las listas de gestión (`users`, `pets`, `consultations`) son tablas, en todos los tamaños: `UserTable`, `PetTable` y `ConsultationTable`. No hay tarjetas ni ActionSheet. `UserList`/`ConsultationList` envuelven la tabla con `ListState` y el `CreateButton` de mobile. `PetsListPage` arma ese envoltorio directo en la página, porque `PetList` (tarjetas) quedó solo para `MyPetsPage`. Las tres tablas son copias con el mismo esqueleto, sin un componente genérico, para que cada una se lea sola. Los estilos compartidos están en `listStyles.ts`:
+Las listas de gestión (`users`, `pets`, `consultations`) son tablas, en todos los tamaños: `UserTable`, `PetTable` y `ConsultationTable`. No hay tarjetas ni ActionSheet. `UserList`/`ConsultationList` envuelven la tabla con `ListState` y el botón de crear de mobile. `PetsListPage` arma ese envoltorio directo en la página, porque `PetList` (tarjetas) quedó solo para `MyPetsPage`. Las tres tablas son copias con el mismo esqueleto, sin un componente genérico, para que cada una se lea sola. Los estilos compartidos están en `listStyles.ts`:
 - Contenedor con sombra (`TABLE_CARD_CLASSES`).
 - Encabezado `#27374D` con texto claro (`TABLE_HEADER_ROW_CLASSES`, `TABLE_HEAD_CLASSES`).
 - Hover de fila (`TABLE_ROW_CLASSES`).
-- Avatar cuadrado (`AVATAR_CLASSES` + `avatarColors(isDeleted)`), con las iniciales del nombre en usuarios y mascotas y el N° en consultas.
-- Etiquetas `PILL_CLASSES` para rol, especie y mascota.
+- `Avatar` de shadcn: oscuro (`bg-primary`) si está activo y gris si está suspendido, con las iniciales del nombre en usuarios y mascotas y el N° en consultas.
+- `Badge variant="secondary"` para rol, especie y mascota.
 
 Las filas suspendidas llevan fondo `#DDE6ED/30`. En mobile la barra de arriba se acomoda en varias líneas (`flex-wrap`) y la tabla tiene scroll horizontal (el `overflow-x-auto` del `Table` de shadcn). La tabla usa solo el `Table` de shadcn (`components/ui/table.tsx`), **sin TanStack Table**, por decisión del equipo. El estado está a mano con `useState`, escrito lo más simple posible:
 - Búsqueda (`Input`) por descripción, mascota o veterinario, con `matchesSearch`.
@@ -66,7 +73,7 @@ Ya no existe "Ver dueño": llevaba a `/users/:id`, la ruta del ActionSheet de us
 
 **Convención de nombres:** el nombre del export tiene que coincidir con el del archivo (`PetForm.tsx` → `export function PetForm`, con props `PetFormProps`). Nada de exports genéricos `Form`/`List` aunque el archivo esté dentro de la carpeta de la feature.
 
-Para elegir una entidad relacionada dentro de un form (dueño de una mascota, veterinario/mascota de una consulta) el patrón es envolver el `SearchSelect` de `common/` en un componente `<Entity>Select` de la feature, que solo mapea la entidad a `{ id, primary, secondary }` y arma los textos. `SearchSelect` filtra localmente sobre `primary` a partir de `MIN_SEARCH_LENGTH` (2) caracteres, usando `matchesSearch` de `utils/search` (ignora mayúsculas y acentos), así que `primary` tiene que ser el campo por el que el usuario busca: DNI en `OwnerSelect`, nombre en `VeterinarianSelect`.
+Para elegir una entidad relacionada dentro de un form (dueño de una mascota, veterinario/mascota de una consulta) el patrón es envolver el `SearchSelect` de `common/` en un componente `<Entity>Select` de la feature, que solo mapea la entidad a `{ id, primary, secondary }` y arma los textos. `SearchSelect` usa `Command` con `shouldFilter={false}` y filtra él mismo sobre `primary` a partir de `MIN_SEARCH_LENGTH` (2) caracteres, usando `matchesSearch` de `utils/search` (ignora mayúsculas y acentos), así que `primary` tiene que ser el campo por el que el usuario busca: DNI en `OwnerSelect`, nombre en `VeterinarianSelect`.
 
 ### Ruteo
 
@@ -80,7 +87,7 @@ Para elegir una entidad relacionada dentro de un form (dueño de una mascota, ve
 
 `pets` y `consultations` siguen la misma forma. El back no tiene borrado de mascotas ni de consultas: la única baja es suspender al cliente, que las suspende en cascada.
 
-**Suspendidos (`isDeleted: true`)**: las listas los ordenan al final con `activeFirst()` y los marcan con el badge "Suspendido" (`DELETED_BADGE_CLASSES`), ambos de `listStyles.ts`. Son de solo lectura: el menú de la fila no ofrece editar. Las páginas de edit redirigen a la lista si lo cargado está suspendido.
+**Suspendidos (`isDeleted: true`)**: las listas los ordenan al final con `activeFirst()` y los marcan con un `Badge variant="outline"` "Suspendido". `activeFirst` vive en `listStyles.ts`. Son de solo lectura: el menú de la fila no ofrece editar. Las páginas de edit redirigen a la lista si lo cargado está suspendido.
 
 Los forms tampoco ofrecen suspendidos: las páginas de create/edit filtran con `!isDeleted` a dueños, mascotas y veterinarios antes de pasarlos a los selects. La excepción es el veterinario en `ConsultationEditPage`: guarda `initialVeterinarianId` al cargar y lo deja en la lista aunque esté suspendido, porque el back acepta guardar una consulta con un veterinario suspendido solo si no se cambia.
 
@@ -103,11 +110,15 @@ Vistas del cliente (solo lectura, bajo un `RoleRoute` con `CLIENT_ROLES`, fuera 
 
 Tailwind CSS 4 vía `@tailwindcss/vite`, con clases inline y una paleta de colores fija ya usada en toda la UI: `#27374D` (oscuro principal), `#526D82`, `#9DB2BF`, `#DDE6ED` (fondo claro). Mantener esta paleta al agregar pantallas nuevas para consistencia visual. Ojo con el contraste: `#526D82` como texto chico pasa AA sobre blanco (5.43:1) pero no sobre `#DDE6ED` (4.30:1); sobre ese fondo el texto va en `#27374D`.
 
-Las combinaciones de clases que se repiten están extraídas en `components/common/*Styles.ts` (`PRIMARY_BUTTON_CLASSES`, `DELETED_BADGE_CLASSES`, `FIELD_LABEL_CLASSES`, ...) — usar esas constantes en vez de recopiar los strings de Tailwind.
+Para botones, campos, etiquetas, avatares y tarjetas se usan los componentes de shadcn, con sus variantes:
+- `Button`: `default`, `secondary` en el header oscuro, `outline` y `ghost`.
+- `Badge`: `secondary` para rol, especie y mascota, `outline` para "Suspendido".
 
-El layout es mobile-first con breakpoint `lg`: en mobile el botón de crear es una barra fija abajo (`CreateButton variant="bar"`, que renderiza el propio `List`) y en desktop va en el header (`variant="header"`, que lo pasa la página vía la prop `action` de `ScreenShell`).
+No se recopian strings de Tailwind para imitarlos. Las únicas clases compartidas que quedan son las del header de las tablas en `listStyles.ts`.
 
-**shadcn/ui** (CLI v4, estilo `radix-nova`, config en `components.json`): los componentes se agregan con `npx shadcn@latest add <componente>` y quedan en `components/ui/` (hoy `button`, `table`, `input`, `dropdown-menu`, `switch`, `alert-dialog` y `select`); `cn` viene del paquete `cn` (reexportado en `lib/utils.ts`). Se importan con el alias `@/` (`paths` en `tsconfig.json`/`tsconfig.app.json` + `resolve.tsconfigPaths` en Vite). **Sin `baseUrl`**: con TypeScript 6 está deprecado y rompe `tsc -b`, aunque la guía de shadcn lo pida. Los tokens (`--primary`, `--border`, ...) de `index.css` están mapeados a la paleta de arriba, no hay modo oscuro y no se pisan los `--radius-*` (así `rounded-xl` y los demás conservan la escala de Tailwind). ESLint desactiva `react-refresh/only-export-components` solo en `components/ui/`. Los componentes propios de `common/` se van a ir migrando a shadcn de a poco; mientras tanto conviven.
+El layout es mobile-first con breakpoint `lg`: en mobile el botón de crear es una barra fija abajo (`<Button asChild size="lg"><Link>`, que renderiza el propio `List`), y en desktop va en el header (`<Button asChild variant="secondary"><Link>`, que la página pasa por la prop `action` de `ScreenShell`).
+
+**shadcn/ui** (CLI v4, estilo `radix-nova`, config en `components.json`): los componentes se agregan con `npx shadcn@latest add <componente>` y quedan en `components/ui/` (hoy `button`, `table`, `input`, `dropdown-menu`, `switch`, `alert-dialog`, `select`, `badge`, `avatar`, `label`, `card`, `alert`, `spinner`, `empty`, `field`, `input-group`, `popover` y `command`, más sus dependencias `separator`, `textarea` y `dialog`). `command` instala `cmdk`: después de agregar un componente con dependencias nuevas hay que reiniciar `npm run dev`, si no Vite no las resuelve y la app queda en blanco; `cn` viene del paquete `cn` (reexportado en `lib/utils.ts`). Se importan con el alias `@/` (`paths` en `tsconfig.json`/`tsconfig.app.json` + `resolve.tsconfigPaths` en Vite). **Sin `baseUrl`**: con TypeScript 6 está deprecado y rompe `tsc -b`, aunque la guía de shadcn lo pida. Los tokens (`--primary`, `--border`, ...) de `index.css` están mapeados a la paleta de arriba, no hay modo oscuro y no se pisan los `--radius-*` (así `rounded-xl` y los demás conservan la escala de Tailwind). ESLint desactiva `react-refresh/only-export-components` solo en `components/ui/`. `Sidebar`/`ScreenShell` siguen siendo propios: el `Sidebar` de shadcn es demasiado grande para un menú de 4 links.
 
 Íconos: `lucide-react`. Notificaciones: `react-toastify` (`toast.error(...)` en los `catch` de fetch, además del estado `error` que se muestra inline en la lista).
 

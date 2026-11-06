@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Consultation } from './consultationTypes';
 import { formatDate } from '../../utils/datetime';
-import { matchesSearch } from '../../utils/search';
 import {
   TABLE_CARD_CLASSES,
   TABLE_HEAD_CLASSES,
@@ -24,53 +23,34 @@ import { MoreHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PAGE_SIZE_OPTIONS, type Pagination } from '../../services/IPaginated';
+import { PAGE_SIZE_OPTIONS, type PageQuery, type Pagination } from '../../services/IPaginated';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface ConsultationTableProps {
+  query: PageQuery;
+  onQueryChange: (query: PageQuery) => void;
   pagination: Pagination;
-  onPageChange: (page: number) => void;
-  pageSize: number;
-  onPageSizeChange: (pageSize: number) => void;
   consultations: Consultation[];
 }
 
 type ColumnKey = 'id' | 'description' | 'date' | 'petName' | 'veterinarianName';
 
-const COLUMNS: { key: ColumnKey; label: string }[] = [
+const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
   { key: 'id', label: 'N°' },
   { key: 'description', label: 'Descripción' },
-  { key: 'date', label: 'Fecha' },
+  { key: 'date', label: 'Fecha', sortBy: 'date' },
   { key: 'petName', label: 'Mascota' },
   { key: 'veterinarianName', label: 'Veterinario' },
 ];
 
-export function ConsultationTable({ pagination, onPageChange, pageSize, onPageSizeChange, consultations }: ConsultationTableProps) {
+export function ConsultationTable({ query, onQueryChange, pagination, consultations: rows }: ConsultationTableProps) {
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
-  const [sortKey, setSortKey] = useState<ColumnKey | null>(null);
-  const [sortAsc, setSortAsc] = useState(true);
   const [hidden, setHidden] = useState<ColumnKey[]>([]);
-  const [showDeleted, setShowDeleted] = useState(true);
-
-  const filtered = consultations.filter(
-    (c) =>
-      (showDeleted || !c.isDeleted) &&
-      (matchesSearch(c.description, search) || matchesSearch(c.petName, search) || matchesSearch(c.veterinarianName, search)),
-  );
-
-  const sorted = sortKey
-    ? filtered.toSorted((a, b) => {
-        const result = String(a[sortKey]).localeCompare(String(b[sortKey]), 'es', { numeric: true });
-        return sortAsc ? result : -result;
-      })
-    : filtered;
 
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
 
-  const handleSort = (key: ColumnKey) => {
-    setSortAsc(sortKey === key ? !sortAsc : true);
-    setSortKey(key);
+  const handleSort = (sortBy: string) => {
+    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
   };
 
   const renderCell = (consultation: Consultation, key: ColumnKey) => {
@@ -94,20 +74,16 @@ export function ConsultationTable({ pagination, onPageChange, pageSize, onPageSi
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
         <Input
-          placeholder="Buscar consultas..."
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value);
-          }}
+          placeholder="Buscar por descripción..."
+          value={query.search}
+          onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
           className="h-9 bg-white sm:max-w-[420px]"
         />
 
         <label className="flex sm:ml-auto items-center gap-2 text-[14px] text-[#27374D]">
           <Switch
-            checked={showDeleted}
-            onCheckedChange={(checked) => {
-              setShowDeleted(checked);
-            }}
+            checked={query.includeDeleted}
+            onCheckedChange={(checked) => onQueryChange({ ...query, includeDeleted: checked, pageIndex: 1 })}
           />
           Mostrar suspendidas
         </label>
@@ -140,9 +116,13 @@ export function ConsultationTable({ pagination, onPageChange, pageSize, onPageSi
             <TableRow className={TABLE_HEADER_ROW_CLASSES}>
               {columns.map((column) => (
                 <TableHead key={column.key} className={TABLE_HEAD_CLASSES}>
-                  <button type="button" onClick={() => handleSort(column.key)} className="cursor-pointer uppercase hover:text-white">
-                    {column.label} {sortKey === column.key ? (sortAsc ? '↑' : '↓') : ''}
-                  </button>
+                  {column.sortBy ? (
+                    <button type="button" onClick={() => handleSort(column.sortBy!)} className="cursor-pointer uppercase hover:text-white">
+                      {column.label} {query.sortBy === column.sortBy ? (query.sortDesc ? '↓' : '↑') : ''}
+                    </button>
+                  ) : (
+                    column.label
+                  )}
                 </TableHead>
               ))}
               <TableHead />
@@ -150,7 +130,7 @@ export function ConsultationTable({ pagination, onPageChange, pageSize, onPageSi
           </TableHeader>
 
           <TableBody>
-            {sorted.map((consultation) => (
+            {rows.map((consultation) => (
               <TableRow
                 key={consultation.id}
                 className={`${TABLE_ROW_CLASSES} ${consultation.isDeleted ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
@@ -179,6 +159,13 @@ export function ConsultationTable({ pagination, onPageChange, pageSize, onPageSi
                 </TableCell>
               </TableRow>
             ))}
+            {rows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={columns.length + 1} className="h-24 text-center text-[#526D82]">
+                  No hay resultados.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
@@ -189,7 +176,7 @@ export function ConsultationTable({ pagination, onPageChange, pageSize, onPageSi
         </span>
         <div className="flex items-center gap-2">
           <span>Filas por página</span>
-          <Select value={String(pageSize)} onValueChange={(value) => onPageSizeChange(Number(value))}>
+          <Select value={String(query.pageSize)} onValueChange={(value) => onQueryChange({ ...query, pageSize: Number(value), pageIndex: 1 })}>
             <SelectTrigger size="sm" className="bg-white">
               <SelectValue />
             </SelectTrigger>
@@ -201,10 +188,10 @@ export function ConsultationTable({ pagination, onPageChange, pageSize, onPageSi
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" onClick={() => onPageChange(pagination.pageIndex - 1)} disabled={!pagination.hasPreviousPage}>
+          <Button variant="outline" size="sm" onClick={() => onQueryChange({ ...query, pageIndex: pagination.pageIndex - 1 })} disabled={!pagination.hasPreviousPage}>
             Anterior
           </Button>
-          <Button variant="outline" size="sm" onClick={() => onPageChange(pagination.pageIndex + 1)} disabled={!pagination.hasNextPage}>
+          <Button variant="outline" size="sm" onClick={() => onQueryChange({ ...query, pageIndex: pagination.pageIndex + 1 })} disabled={!pagination.hasNextPage}>
             Siguiente
           </Button>
         </div>

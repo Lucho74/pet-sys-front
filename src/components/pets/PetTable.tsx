@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 import type { Pet } from './petTypes';
+import type { PetQuery } from '../../services/pets/IPet';
 import { formatDate } from '../../utils/datetime';
-import { matchesSearch } from '../../utils/search';
 import {
   TABLE_CARD_CLASSES,
   TABLE_HEAD_CLASSES,
@@ -29,58 +29,31 @@ import { PAGE_SIZE_OPTIONS, type Pagination } from '../../services/IPaginated';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface PetTableProps {
+  query: PetQuery;
+  onQueryChange: (query: PetQuery) => void;
   pagination: Pagination;
-  onPageChange: (page: number) => void;
-  pageSize: number;
-  onPageSizeChange: (pageSize: number) => void;
   pets: Pet[];
+  species: string[];
+  breeds: string[];
 }
 
 type ColumnKey = 'name' | 'specie' | 'breed' | 'birthDate';
 
-const COLUMNS: { key: ColumnKey; label: string }[] = [
-  { key: 'name', label: 'Nombre' },
-  { key: 'specie', label: 'Especie' },
-  { key: 'breed', label: 'Raza' },
+const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
+  { key: 'name', label: 'Nombre', sortBy: 'name' },
+  { key: 'specie', label: 'Especie', sortBy: 'specie' },
+  { key: 'breed', label: 'Raza', sortBy: 'breed' },
   { key: 'birthDate', label: 'Nacimiento' },
 ];
 
-export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange, pets }: PetTableProps) {
+export function PetTable({ query, onQueryChange, pagination, pets: rows, species, breeds }: PetTableProps) {
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
-  const [sortKey, setSortKey] = useState<ColumnKey | null>(null);
-  const [sortAsc, setSortAsc] = useState(true);
   const [hidden, setHidden] = useState<ColumnKey[]>([]);
-  const [showDeleted, setShowDeleted] = useState(true);
-  const [specieFilter, setSpecieFilter] = useState('all');
-  const [breedFilter, setBreedFilter] = useState('all');
-
-  // Las opciones salen de las mascotas cargadas; las razas, solo de la especie elegida.
-  const species = [...new Set(pets.map((p) => p.specie).filter(Boolean))].sort();
-  const breeds = [
-    ...new Set(pets.filter((p) => specieFilter === 'all' || p.specie === specieFilter).map((p) => p.breed).filter(Boolean)),
-  ].sort();
-
-  const filtered = pets.filter(
-    (p) =>
-      (showDeleted || !p.isDeleted) &&
-      (specieFilter === 'all' || p.specie === specieFilter) &&
-      (breedFilter === 'all' || p.breed === breedFilter) &&
-      (matchesSearch(p.name, search) || matchesSearch(p.specie, search) || matchesSearch(p.breed, search)),
-  );
-
-  const sorted = sortKey
-    ? filtered.toSorted((a, b) => {
-        const result = String(a[sortKey]).localeCompare(String(b[sortKey]), 'es', { numeric: true });
-        return sortAsc ? result : -result;
-      })
-    : filtered;
 
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
 
-  const handleSort = (key: ColumnKey) => {
-    setSortAsc(sortKey === key ? !sortAsc : true);
-    setSortKey(key);
+  const handleSort = (sortBy: string) => {
+    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
   };
 
   const renderCell = (pet: Pet, key: ColumnKey) => {
@@ -104,20 +77,15 @@ export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange,
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
         <Input
-          placeholder="Buscar mascotas..."
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value);
-          }}
+          placeholder="Buscar por nombre..."
+          value={query.search}
+          onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
           className="h-9 bg-white sm:max-w-[420px]"
         />
 
         <Select
-          value={specieFilter}
-          onValueChange={(value) => {
-            setSpecieFilter(value);
-            setBreedFilter('all');
-          }}
+          value={query.specie || 'all'}
+          onValueChange={(value) => onQueryChange({ ...query, specie: value === 'all' ? '' : value, breed: '', pageIndex: 1 })}
         >
           <SelectTrigger className="h-9 bg-white">
             <SelectValue />
@@ -133,10 +101,9 @@ export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange,
         </Select>
 
         <Select
-          value={breedFilter}
-          onValueChange={(value) => {
-            setBreedFilter(value);
-          }}
+          disabled={!query.specie}
+          value={query.breed || 'all'}
+          onValueChange={(value) => onQueryChange({ ...query, breed: value === 'all' ? '' : value, pageIndex: 1 })}
         >
           <SelectTrigger className="h-9 bg-white">
             <SelectValue />
@@ -153,10 +120,8 @@ export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange,
 
         <label className="flex items-center gap-2 text-[14px] text-[#27374D] sm:ml-auto">
           <Switch
-            checked={showDeleted}
-            onCheckedChange={(checked) => {
-              setShowDeleted(checked);
-            }}
+            checked={query.includeDeleted}
+            onCheckedChange={(checked) => onQueryChange({ ...query, includeDeleted: checked, pageIndex: 1 })}
           />
           Mostrar suspendidas
         </label>
@@ -189,9 +154,13 @@ export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange,
             <TableRow className={TABLE_HEADER_ROW_CLASSES}>
               {columns.map((column) => (
                 <TableHead key={column.key} className={TABLE_HEAD_CLASSES}>
-                  <button type="button" onClick={() => handleSort(column.key)} className="cursor-pointer uppercase hover:text-white">
-                    {column.label} {sortKey === column.key ? (sortAsc ? '↑' : '↓') : ''}
-                  </button>
+                  {column.sortBy ? (
+                    <button type="button" onClick={() => handleSort(column.sortBy!)} className="cursor-pointer uppercase hover:text-white">
+                      {column.label} {query.sortBy === column.sortBy ? (query.sortDesc ? '↓' : '↑') : ''}
+                    </button>
+                  ) : (
+                    column.label
+                  )}
                 </TableHead>
               ))}
               <TableHead />
@@ -199,7 +168,7 @@ export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange,
           </TableHeader>
 
           <TableBody>
-            {sorted.map((pet) => (
+            {rows.map((pet) => (
               <TableRow key={pet.id} className={`${TABLE_ROW_CLASSES} ${pet.isDeleted ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}>
                 {columns.map((column) => (
                   <TableCell key={column.key} className="px-4 py-3">
@@ -226,6 +195,13 @@ export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange,
                 </TableCell>
               </TableRow>
             ))}
+            {rows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={columns.length + 1} className="h-24 text-center text-[#526D82]">
+                  No hay resultados.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
@@ -236,7 +212,7 @@ export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange,
         </span>
         <div className="flex items-center gap-2">
           <span>Filas por página</span>
-          <Select value={String(pageSize)} onValueChange={(value) => onPageSizeChange(Number(value))}>
+          <Select value={String(query.pageSize)} onValueChange={(value) => onQueryChange({ ...query, pageSize: Number(value), pageIndex: 1 })}>
             <SelectTrigger size="sm" className="bg-white">
               <SelectValue />
             </SelectTrigger>
@@ -248,10 +224,10 @@ export function PetTable({ pagination, onPageChange, pageSize, onPageSizeChange,
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" onClick={() => onPageChange(pagination.pageIndex - 1)} disabled={!pagination.hasPreviousPage}>
+          <Button variant="outline" size="sm" onClick={() => onQueryChange({ ...query, pageIndex: pagination.pageIndex - 1 })} disabled={!pagination.hasPreviousPage}>
             Anterior
           </Button>
-          <Button variant="outline" size="sm" onClick={() => onPageChange(pagination.pageIndex + 1)} disabled={!pagination.hasNextPage}>
+          <Button variant="outline" size="sm" onClick={() => onQueryChange({ ...query, pageIndex: pagination.pageIndex + 1 })} disabled={!pagination.hasNextPage}>
             Siguiente
           </Button>
         </div>

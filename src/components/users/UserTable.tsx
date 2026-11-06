@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 import type { User } from './userTypes';
+import type { AssignableRole, UserQuery } from '../../services/users/IUser';
 import { ROLE_LABELS } from './userTypes';
-import { matchesSearch } from '../../utils/search';
 import {
   TABLE_CARD_CLASSES,
   TABLE_HEAD_CLASSES,
@@ -39,10 +39,9 @@ import { PAGE_SIZE_OPTIONS, type Pagination } from '../../services/IPaginated';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface UserTableProps {
+  query: UserQuery;
+  onQueryChange: (query: UserQuery) => void;
   pagination: Pagination;
-  onPageChange: (page: number) => void;
-  pageSize: number;
-  onPageSizeChange: (pageSize: number) => void;
   users: User[];
   canManageUser: (user: User) => boolean;
   onSuspend: (user: User) => void;
@@ -51,43 +50,25 @@ interface UserTableProps {
 
 type ColumnKey = 'fullName' | 'roleName' | 'email' | 'dni' | 'phone';
 
-const COLUMNS: { key: ColumnKey; label: string }[] = [
-  { key: 'fullName', label: 'Nombre' },
+const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
+  { key: 'fullName', label: 'Nombre', sortBy: 'fullName' },
   { key: 'roleName', label: 'Rol' },
-  { key: 'email', label: 'Email' },
+  { key: 'email', label: 'Email', sortBy: 'email' },
   { key: 'dni', label: 'DNI' },
   { key: 'phone', label: 'Teléfono' },
 ];
 
-export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange, users, canManageUser, onSuspend, onReactivate }: UserTableProps) {
+const ROLE_FILTER_OPTIONS: AssignableRole[] = ['Client', 'Veterinarian', 'Admin'];
+
+export function UserTable({ query, onQueryChange, pagination, users: rows, canManageUser, onSuspend, onReactivate }: UserTableProps) {
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
-  const [sortKey, setSortKey] = useState<ColumnKey | null>(null);
-  const [sortAsc, setSortAsc] = useState(true);
   const [hidden, setHidden] = useState<ColumnKey[]>([]);
-  const [showDeleted, setShowDeleted] = useState(true);
-  const [roleFilter, setRoleFilter] = useState('all');
   const [userToSuspend, setUserToSuspend] = useState<User | null>(null);
-
-  const filtered = users.filter(
-    (u) =>
-      (showDeleted || !u.isDeleted) &&
-      (roleFilter === 'all' || u.roleName === roleFilter) &&
-      (matchesSearch(u.fullName, search) || matchesSearch(u.email, search) || matchesSearch(u.dni, search)),
-  );
-
-  const sorted = sortKey
-    ? filtered.toSorted((a, b) => {
-        const result = String(a[sortKey]).localeCompare(String(b[sortKey]), 'es', { numeric: true });
-        return sortAsc ? result : -result;
-      })
-    : filtered;
 
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
 
-  const handleSort = (key: ColumnKey) => {
-    setSortAsc(sortKey === key ? !sortAsc : true);
-    setSortKey(key);
+  const handleSort = (sortBy: string) => {
+    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
   };
 
   const renderCell = (user: User, key: ColumnKey) => {
@@ -110,28 +91,24 @@ export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
         <Input
-          placeholder="Buscar usuarios..."
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value);
-          }}
+          placeholder="Buscar por nombre o email..."
+          value={query.search}
+          onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
           className="h-9 bg-white sm:max-w-[420px]"
         />
 
         <Select
-          value={roleFilter}
-          onValueChange={(value) => {
-            setRoleFilter(value);
-          }}
+          value={query.role || 'all'}
+          onValueChange={(value) => onQueryChange({ ...query, role: value === 'all' ? '' : value, pageIndex: 1 })}
         >
           <SelectTrigger className="h-9 bg-white">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos los roles</SelectItem>
-            {Object.entries(ROLE_LABELS).map(([role, label]) => (
+            {ROLE_FILTER_OPTIONS.map((role) => (
               <SelectItem key={role} value={role}>
-                {label}
+                {ROLE_LABELS[role]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -139,10 +116,8 @@ export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange
 
         <label className="flex items-center gap-2 text-[14px] text-[#27374D] sm:ml-auto">
           <Switch
-            checked={showDeleted}
-            onCheckedChange={(checked) => {
-              setShowDeleted(checked);
-            }}
+            checked={query.includeDeleted}
+            onCheckedChange={(checked) => onQueryChange({ ...query, includeDeleted: checked, pageIndex: 1 })}
           />
           Mostrar suspendidos
         </label>
@@ -175,9 +150,13 @@ export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange
             <TableRow className={TABLE_HEADER_ROW_CLASSES}>
               {columns.map((column) => (
                 <TableHead key={column.key} className={TABLE_HEAD_CLASSES}>
-                  <button type="button" onClick={() => handleSort(column.key)} className="cursor-pointer uppercase hover:text-white">
-                    {column.label} {sortKey === column.key ? (sortAsc ? '↑' : '↓') : ''}
-                  </button>
+                  {column.sortBy ? (
+                    <button type="button" onClick={() => handleSort(column.sortBy!)} className="cursor-pointer uppercase hover:text-white">
+                      {column.label} {query.sortBy === column.sortBy ? (query.sortDesc ? '↓' : '↑') : ''}
+                    </button>
+                  ) : (
+                    column.label
+                  )}
                 </TableHead>
               ))}
               <TableHead />
@@ -185,7 +164,7 @@ export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange
           </TableHeader>
 
           <TableBody>
-            {sorted.map((user) => (
+            {rows.map((user) => (
               <TableRow key={user.id} className={`${TABLE_ROW_CLASSES} ${user.isDeleted ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}>
                 {columns.map((column) => (
                   <TableCell key={column.key} className="px-4 py-3">
@@ -193,7 +172,6 @@ export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange
                   </TableCell>
                 ))}
                 <TableCell className="px-4 text-right">
-                  {/* El back responde 403 si el rol no puede gestionar a ese usuario (incluido uno mismo). */}
                   {canManageUser(user) && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -221,6 +199,13 @@ export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange
                 </TableCell>
               </TableRow>
             ))}
+            {rows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={columns.length + 1} className="h-24 text-center text-[#526D82]">
+                  No hay resultados.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
@@ -231,7 +216,7 @@ export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange
         </span>
         <div className="flex items-center gap-2">
           <span>Filas por página</span>
-          <Select value={String(pageSize)} onValueChange={(value) => onPageSizeChange(Number(value))}>
+          <Select value={String(query.pageSize)} onValueChange={(value) => onQueryChange({ ...query, pageSize: Number(value), pageIndex: 1 })}>
             <SelectTrigger size="sm" className="bg-white">
               <SelectValue />
             </SelectTrigger>
@@ -243,10 +228,10 @@ export function UserTable({ pagination, onPageChange, pageSize, onPageSizeChange
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" onClick={() => onPageChange(pagination.pageIndex - 1)} disabled={!pagination.hasPreviousPage}>
+          <Button variant="outline" size="sm" onClick={() => onQueryChange({ ...query, pageIndex: pagination.pageIndex - 1 })} disabled={!pagination.hasPreviousPage}>
             Anterior
           </Button>
-          <Button variant="outline" size="sm" onClick={() => onPageChange(pagination.pageIndex + 1)} disabled={!pagination.hasNextPage}>
+          <Button variant="outline" size="sm" onClick={() => onQueryChange({ ...query, pageIndex: pagination.pageIndex + 1 })} disabled={!pagination.hasNextPage}>
             Siguiente
           </Button>
         </div>

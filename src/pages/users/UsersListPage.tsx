@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { User as UserIcon, Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { EMPTY_PAGINATION, PAGE_SIZE, type Pagination } from '../../services/IPaginated';
+import { DEFAULT_QUERY, EMPTY_PAGINATION, type Pagination } from '../../services/IPaginated';
+import type { UserQuery } from '../../services/users/IUser';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -20,36 +21,38 @@ export function UsersListPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState<UserQuery>({ ...DEFAULT_QUERY, role: '' });
   const [pagination, setPagination] = useState<Pagination>(EMPTY_PAGINATION);
-  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const { role } = useAuth();
 
   useEffect(() => {
-    handleGetUsersPage(page, pageSize)
-      .then((response) => {
-        setPagination(response);
-        setUsers(
-          response.items.map((user) => ({
-            id: user.id,
-            fullName: user.fullName?.trim() || 'Sin nombre',
-            email: user.email?.trim() || '',
-            phone: user.phone?.trim() || '',
-            roleName:
-              user.roleName === 'SysAdmin' || user.roleName === 'Admin' || user.roleName === 'Veterinarian'
-                ? user.roleName
-                : 'Client',
-            dni: user.dni?.trim() || '',
-            isDeleted: user.isDeleted,
-          })),
-        );
-      })
-      .catch(() => {
-        setError('No se pudo cargar la lista de usuarios. Intenta nuevamente.');
-        toast.error('No se pudo cargar la lista de usuarios.');
-      })
-      .finally(() => setIsLoading(false));
-  }, [page, pageSize]);
+    const timer = setTimeout(() => {
+      handleGetUsersPage(query)
+        .then((response) => {
+          setPagination(response);
+          setUsers(
+            response.items.map((user) => ({
+              id: user.id,
+              fullName: user.fullName?.trim() || 'Sin nombre',
+              email: user.email?.trim() || '',
+              phone: user.phone?.trim() || '',
+              roleName:
+                user.roleName === 'SysAdmin' || user.roleName === 'Admin' || user.roleName === 'Veterinarian'
+                  ? user.roleName
+                  : 'Client',
+              dni: user.dni?.trim() || '',
+              isDeleted: user.isDeleted,
+            })),
+          );
+        })
+        .catch(() => {
+          setError('No se pudo cargar la lista de usuarios. Intenta nuevamente.');
+          toast.error('No se pudo cargar la lista de usuarios.');
+        })
+        .finally(() => setIsLoading(false));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const setUserDeleted = (userId: number, isDeleted: boolean) => {
     setUsers((current) => current.map((user) => (user.id === userId ? { ...user, isDeleted } : user)));
@@ -97,13 +100,9 @@ export function UsersListPage() {
         canManageUser={(user) => canManage(role, user.roleName)}
         onSuspend={handleSuspend}
         onReactivate={handleReactivate}
+        query={query}
+        onQueryChange={setQuery}
         pagination={pagination}
-        onPageChange={setPage}
-        pageSize={pageSize}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setPage(1);
-        }}
       />
     </ScreenShell>
   );

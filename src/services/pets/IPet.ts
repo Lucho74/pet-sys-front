@@ -1,3 +1,5 @@
+import type { PageQuery } from "../IPaginated";
+
 export interface IPetResponse {
     id: number;
     name: string | null;
@@ -14,4 +16,9 @@ export interface IPetRequest {
     breed: string | null;
     birthDate: string | null;
     clientId: number;
+}
+
+export interface PetQuery extends PageQuery {
+    specie?: string;
+    breed?: string;
 }

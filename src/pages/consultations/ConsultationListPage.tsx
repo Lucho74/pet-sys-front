@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Stethoscope, Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { EMPTY_PAGINATION, PAGE_SIZE, type Pagination } from '../../services/IPaginated';
+import { DEFAULT_QUERY, EMPTY_PAGINATION, type PageQuery, type Pagination } from '../../services/IPaginated';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -22,11 +22,9 @@ export function ConsultationListPage() {
     const [veterinarianNames, setVeterinarianNames] = useState(new Map<number, string>());
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const [page, setPage] = useState(1);
+    const [query, setQuery] = useState<PageQuery>(DEFAULT_QUERY);
     const [pagination, setPagination] = useState<Pagination>(EMPTY_PAGINATION);
-    const [pageSize, setPageSize] = useState(PAGE_SIZE);
 
-    // Las mascotas y los veterinarios solo aportan los nombres: se piden una vez y, si fallan, la lista se muestra igual.
     useEffect(() => {
         handleGetAllPet()
             .then((pets) => setPetNames(new Map(pets.map((pet) => [pet.id, pet.name?.trim() || 'Sin nombre']))))
@@ -39,17 +37,20 @@ export function ConsultationListPage() {
     }, []);
 
     useEffect(() => {
-        handleGetConsultationsPage(page, pageSize)
-            .then((result) => {
-                setPagination(result);
-                setResponse(result.items);
-            })
-            .catch(() => {
-                setError('No se pudo cargar la lista de consultas. Intenta nuevamente.');
-                toast.error('No se pudo cargar la lista de consultas.');
-            })
-            .finally(() => setIsLoading(false));
-    }, [page, pageSize]);
+        const timer = setTimeout(() => {
+            handleGetConsultationsPage(query)
+                .then((result) => {
+                    setPagination(result);
+                    setResponse(result.items);
+                })
+                .catch(() => {
+                    setError('No se pudo cargar la lista de consultas. Intenta nuevamente.');
+                    toast.error('No se pudo cargar la lista de consultas.');
+                })
+                .finally(() => setIsLoading(false));
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [query]);
 
     const consultations: Consultation[] = response.map((consultation) => ({
         id: consultation.id,
@@ -87,13 +88,9 @@ export function ConsultationListPage() {
                 error={error}
                 createTo={CREATE_TO}
                 createLabel={CREATE_LABEL}
+                query={query}
+                onQueryChange={setQuery}
                 pagination={pagination}
-                onPageChange={setPage}
-                pageSize={pageSize}
-                onPageSizeChange={(size) => {
-                    setPageSize(size);
-                    setPage(1);
-                }}
             />
         </ScreenShell>
     );

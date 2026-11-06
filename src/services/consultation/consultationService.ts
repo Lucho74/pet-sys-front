@@ -1,6 +1,6 @@
 import type { IConsultationResponse, ICreateConsultationRequest, IUpdateConsultationRequest } from "./IConsultation";
 import { apiFetch } from "../apiClient";
-import { PAGE_SIZE, type IPaginatedResponse } from "../IPaginated";
+import { toQueryString, type IPaginatedResponse, type PageQuery } from "../IPaginated";
 
 export const handleAddConsultation = async (newConsultation: ICreateConsultationRequest): Promise<IConsultationResponse> => {
     const response = await apiFetch('/Consultation', {
@@ -26,8 +26,8 @@ export const handleGetByIdConsultation = async (id: string): Promise<IConsultati
     return response.json();
 };
 
-export const handleGetConsultationsPage = async (pageIndex: number, pageSize = PAGE_SIZE): Promise<IPaginatedResponse<IConsultationResponse>> => {
-    const response = await apiFetch(`/Consultation?pageIndex=${pageIndex}&pageSize=${pageSize}`);
+export const handleGetConsultationsPage = async (query: PageQuery): Promise<IPaginatedResponse<IConsultationResponse>> => {
+    const response = await apiFetch(`/Consultation?${toQueryString(query)}`);
 
     return response.json();
 };

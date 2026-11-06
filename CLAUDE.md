@@ -56,13 +56,14 @@ Las listas de gestión (`users`, `pets`, `consultations`) son tablas, en todos l
 - `Avatar` de shadcn: oscuro (`bg-primary`) si está activo y gris si está suspendido, con las iniciales del nombre en usuarios y mascotas y el N° en consultas.
 - `Badge variant="secondary"` para rol, especie y mascota.
 
-Las filas suspendidas llevan fondo `#DDE6ED/30`. En mobile la barra de arriba se acomoda en varias líneas (`flex-wrap`) y la tabla tiene scroll horizontal (el `overflow-x-auto` del `Table` de shadcn). La tabla usa solo el `Table` de shadcn (`components/ui/table.tsx`), **sin TanStack Table**, por decisión del equipo. El estado está a mano con `useState`, escrito lo más simple posible:
-- Búsqueda (`Input`) por descripción, mascota o veterinario, con `matchesSearch`.
-- Orden al hacer click en el encabezado, que alterna ascendente y descendente.
-- Filtros con `Select` de shadcn: rol en usuarios, y especie y raza en mascotas. Las opciones de mascotas salen de los datos cargados, y las razas dependen de la especie elegida.
-- `Switch` "Mostrar suspendidas/os" (prendido por defecto) para ocultar las filas con `isDeleted`.
-- Menú "Editar columnas" (`DropdownMenu`) para ocultar columnas.
-- Paginado **del servidor**, de a 10. La página guarda `page` y `pageSize` (lo que pide) y `pagination` (`pageIndex`, `totalPages`, `hasNextPage` y `hasPreviousPage` tal cual los devuelve el back). La tabla los usa para el texto "Página X de Y" y para deshabilitar "Anterior"/"Siguiente", sin calcularlos en el front. La página pide `handleGetXxxPage(page, pageSize)` cada vez que cambia alguno de los dos y se los pasa a la tabla (`pagination`, `onPageChange`, `pageSize`, `onPageSizeChange`). Al pie hay un `Select` "Filas por página" con `PAGE_SIZE_OPTIONS` (10, 20, 50: 50 es el máximo del back), y cambiarlo vuelve a la página 1. La búsqueda, los filtros y el orden son del front y actúan solo sobre los 10 de la página actual: es una decisión del equipo, hasta que el back los soporte.
+Las filas suspendidas llevan fondo `#DDE6ED/30`. En mobile la barra de arriba se acomoda en varias líneas (`flex-wrap`) y la tabla tiene scroll horizontal (el `overflow-x-auto` del `Table` de shadcn). La tabla usa solo el `Table` de shadcn (`components/ui/table.tsx`), **sin TanStack Table**, por decisión del equipo. **Todo lo hace el back**: la página guarda un único estado `query` (`PageQuery` de `services/IPaginated.ts`, más `role` en `UserQuery` y `specie`/`breed` en `PetQuery`) y la tabla lo cambia con `onQueryChange({ ...query, campo, pageIndex: 1 })`. Cada cambio de `query` pide `handleGetXxxPage(query)` tras 300 ms (`setTimeout` en el `useEffect`, para no pedir por cada tecla). El front no filtra ni ordena nada:
+- Búsqueda (`Input`) → `search`. El back busca por nombre o email en usuarios, por nombre en mascotas y por descripción en consultas.
+- Orden al hacer click en el encabezado → `sortBy` / `sortDesc`. Solo las columnas que el back acepta tienen `sortBy` en `COLUMNS`: `fullName`/`email`, `name`/`specie`/`breed` y `date`. Las demás no se pueden ordenar.
+- Filtros con `Select` de shadcn: rol en usuarios (`Client`/`Veterinarian`/`Admin`: el back no filtra por `SysAdmin`), y especie y raza en mascotas. Las opciones de especie y raza salen de `handleGetAllPet()`, pedido una vez en `PetsListPage`, y las razas dependen de la especie elegida.
+- `Switch` "Mostrar suspendidas/os" (prendido por defecto) → `includeDeleted`. El back oculta los suspendidos si no se manda `true`.
+- Menú "Editar columnas" (`DropdownMenu`) para ocultar columnas (lo único con estado propio en la tabla).
+- Paginado de a 10. `pagination` (`pageIndex`, `totalPages`, `hasNextPage` y `hasPreviousPage` tal cual los devuelve el back) se usa para el texto "Página X de Y" y para deshabilitar "Anterior"/"Siguiente", sin calcularlos en el front. Al pie hay un `Select` "Filas por página" con `PAGE_SIZE_OPTIONS` (10, 20, 50: 50 es el máximo del back), y cambiarlo vuelve a la página 1.
+- Sin filas, la tabla se sigue mostrando con una fila "No hay resultados", para poder cambiar la búsqueda o los filtros. `ListState` solo muestra la carga inicial y el error.
 
 Las acciones van en un menú `···` (`DropdownMenu`) en cada fila:
 - **Consultas:** "Editar consulta" (solo las activas).
@@ -87,7 +88,7 @@ Para elegir una entidad relacionada dentro de un form (dueño de una mascota, ve
 
 `pets` y `consultations` siguen la misma forma. El back no tiene borrado de mascotas ni de consultas: la única baja es suspender al cliente, que las suspende en cascada.
 
-**Suspendidos (`isDeleted: true`)**: las listas los ordenan al final con `activeFirst()` y los marcan con un `Badge variant="outline"` "Suspendido". `activeFirst` vive en `listStyles.ts`. Son de solo lectura: el menú de la fila no ofrece editar. Las páginas de edit redirigen a la lista si lo cargado está suspendido.
+**Suspendidos (`isDeleted: true`)**: las tablas los muestran en el orden del back y `MyPetsPage` los manda al final con `activeFirst()`. Todos los marcan con un `Badge variant="outline"` "Suspendido". `activeFirst` vive en `listStyles.ts`. Son de solo lectura: el menú de la fila no ofrece editar. Las páginas de edit redirigen a la lista si lo cargado está suspendido.
 
 Los forms tampoco ofrecen suspendidos: las páginas de create/edit filtran con `!isDeleted` a dueños, mascotas y veterinarios antes de pasarlos a los selects. La excepción es el veterinario en `ConsultationEditPage`: guarda `initialVeterinarianId` al cargar y lo deja en la lista aunque esté suspendido, porque el back acepta guardar una consulta con un veterinario suspendido solo si no se cambia.
 
@@ -139,9 +140,9 @@ Snapshot al 2026-09-08. Los contratos de abajo son los que el front consume hoy 
 - `api/Consultation` — CRUD completo. `POST` y `PUT` reciben el mismo shape: `{ description, date, petId, veterinarianId }`. Las consultas ya **no** tienen `status` (el back lo sacó). `GET api/Consultation/pet/{petId}` devuelve las consultas de una mascota (`handleGetConsultationsByPet`).
 - Auth (`services/auth/authService.ts`): `POST api/Authentication/authenticate` recibe `{ email, password }` y devuelve el JWT como texto plano, no como JSON (`HandleLogin`). `GET api/User/me` devuelve el usuario logueado como `IUserResponse`, con `roleName` incluido (`handleGetCurrentUser`).
 - IDs siempre `int`.
-- Listados paginados (PR #44 del back, 2026-11-05): `GET api/User`, `api/Pet` y `api/Consultation` reciben `?pageIndex=` (desde 1) y `&pageSize=` (máximo 50, si no da 400). Devuelven `{ items, pageIndex, totalPages, hasNextPage, hasPreviousPage }` (`IPaginatedResponse<T>` en `services/IPaginated.ts`). Ya no existe un endpoint que devuelva todo. Los services exponen:
-  - `handleGetUsersPage` / `handleGetPetsPage` / `handleGetConsultationsPage`, para las tablas.
-  - `handleGetAllUser` / `handleGetAllPet`, que recorren todas las páginas de a 50 con `fetchAllPages`. Los usan los selects de los forms y los nombres de mascota y veterinario de `ConsultationListPage`, que se piden una sola vez, aparte de la página de consultas.
+- Listados paginados (PR #44 del back, 2026-11-05): `GET api/User`, `api/Pet` y `api/Consultation` reciben `?pageIndex=` (desde 1) y `&pageSize=` (máximo 50, si no da 400). Devuelven `{ items, pageIndex, totalPages, hasNextPage, hasPreviousPage }` (`IPaginatedResponse<T>` en `services/IPaginated.ts`). Ya no existe un endpoint que devuelva todo. Desde el PR #45 (2026-11-06) también reciben `search`, `includeDeleted` (por defecto `false`: oculta los suspendidos), `sortBy` y `sortDesc`, más `role` en usuarios (`Admin`/`Client`/`Veterinarian`) y `specie`/`breed` (igualdad exacta) en mascotas. `totalPages` se calcula después de filtrar. Un `sortBy` desconocido ordena por `Id`. `toQueryString` arma la query sin los campos vacíos. Los services exponen:
+  - `handleGetUsersPage` / `handleGetPetsPage` / `handleGetConsultationsPage`, que reciben la `query` de la tabla.
+  - `handleGetAllUser` / `handleGetAllPet`, que recorren todas las páginas de a 50 con `fetchAllPages`, siempre con `includeDeleted=true`. Los usan los selects de los forms y los nombres de mascota y veterinario de `ConsultationListPage`, que se piden una sola vez, aparte de la página de consultas.
   - Sin registros, `items` viene vacío y `totalPages` en 0.
 
 **NO implementado todavía (no bloquear el front asumiendo que existen):**

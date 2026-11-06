@@ -4,8 +4,8 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ListState } from '../common/ListState';
 import { UserTable } from './UserTable';
-import { activeFirst } from '../common/listStyles';
 import type { Pagination } from '../../services/IPaginated';
+import type { UserQuery } from '../../services/users/IUser';
 
 interface UserListProps {
   users: User[];
@@ -16,10 +16,9 @@ interface UserListProps {
   canManageUser: (user: User) => boolean;
   onSuspend: (user: User) => void;
   onReactivate: (user: User) => void;
+  query: UserQuery;
+  onQueryChange: (query: UserQuery) => void;
   pagination: Pagination;
-  onPageChange: (page: number) => void;
-  pageSize: number;
-  onPageSizeChange: (pageSize: number) => void;
 }
 
 export function UserList({
@@ -31,35 +30,32 @@ export function UserList({
   canManageUser,
   onSuspend,
   onReactivate,
+  query,
+  onQueryChange,
   pagination,
-  onPageChange,
-  pageSize,
-  onPageSizeChange,
 }: UserListProps) {
-  const hasUsers = !isLoading && !error && users.length > 0;
 
   return (
     <>
       <div className="flex-1 overflow-auto px-4 pb-[100px] pt-4 lg:px-10 lg:pb-12 lg:pt-8">
         <div className="flex h-full w-full flex-col">
-          {hasUsers ? (
+          {!isLoading && !error ? (
             <UserTable
-              users={activeFirst(users)}
+              users={users}
               canManageUser={canManageUser}
               onSuspend={onSuspend}
               onReactivate={onReactivate}
+              query={query}
+              onQueryChange={onQueryChange}
               pagination={pagination}
-              onPageChange={onPageChange}
-              pageSize={pageSize}
-              onPageSizeChange={onPageSizeChange}
             />
           ) : (
             <ListState
               isLoading={isLoading}
               error={error}
-              isEmpty={users.length === 0}
+              isEmpty={false}
               loadingLabel="Cargando usuarios..."
-              emptyLabel="Todavía no hay usuarios. Creá el primero con «Nuevo usuario»."
+              emptyLabel=""
             />
           )}
         </div>

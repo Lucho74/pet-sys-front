@@ -1,6 +1,7 @@
 import { FormField } from '../common/FormField';
 import { FormShell } from '../common/FormShell';
-import { SelectField } from '../common/SelectField';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ROLE_LABELS } from './userTypes';
 import type { UserFormState } from './userTypes';
 import type { FormErrors } from './userValidation';
@@ -45,15 +46,27 @@ export function UserForm({
       onSave={onSave}
       saveLabel={saveLabel}
     >
-      <SelectField
-        label="Rol"
-        value={form.roleName}
-        onChange={(value) => onChange('roleName', value)}
-        options={roleOptions.map((role) => ({ value: role, label: ROLE_LABELS[role] }))}
-        error={fieldErrors.roleName}
-        hint={canChangeRole ? undefined : 'El rol no se puede cambiar después de crear el usuario.'}
-        disabled={isSaving || !canChangeRole}
-      />
+      <Field data-invalid={Boolean(fieldErrors.roleName)}>
+        <FieldLabel htmlFor="user-role">Rol</FieldLabel>
+        <Select
+          value={form.roleName}
+          onValueChange={(value) => onChange('roleName', value)}
+          disabled={isSaving || !canChangeRole}
+        >
+          <SelectTrigger id="user-role" className="h-10! w-full bg-white" aria-invalid={Boolean(fieldErrors.roleName)}>
+            <SelectValue placeholder="Elegí un rol" />
+          </SelectTrigger>
+          <SelectContent>
+            {roleOptions.map((role) => (
+              <SelectItem key={role} value={role}>
+                {ROLE_LABELS[role]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {fieldErrors.roleName && <FieldError>{fieldErrors.roleName}</FieldError>}
+        {!canChangeRole && <FieldDescription>El rol no se puede cambiar después de crear el usuario.</FieldDescription>}
+      </Field>
 
       <FormField
         label="Nombre completo"

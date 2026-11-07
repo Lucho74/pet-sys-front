@@ -15,7 +15,3 @@ export interface PetFormState {
   birthDate: string;
   clientId: string;
 }
-
-export interface PetsOutletContext {
-  pets: Pet[];
-}

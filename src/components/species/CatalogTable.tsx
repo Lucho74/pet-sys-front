@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface CatalogItem {
@@ -36,6 +37,7 @@ interface CatalogTableProps<T extends CatalogItem> {
   itemLabel: string;
   deleteWarning: string;
   page: IPaginatedResponse<T>;
+  isLoading: boolean;
   query: PageQuery;
   onQueryChange: (query: PageQuery) => void;
   selectedId?: number;
@@ -49,6 +51,7 @@ export function CatalogTable<T extends CatalogItem>({
   itemLabel,
   deleteWarning,
   page,
+  isLoading,
   query,
   onQueryChange,
   selectedId,
@@ -127,7 +130,16 @@ export function CatalogTable<T extends CatalogItem>({
           </TableHeader>
 
           <TableBody>
-            {page.items.map((item) => (
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={2} className="h-24 text-[#526D82]">
+                  <div className="flex items-center justify-center gap-2">
+                    <Spinner /> Cargando...
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+            {!isLoading && page.items.map((item) => (
               <TableRow
                 key={item.id}
                 onClick={() => onSelect?.(item)}
@@ -151,7 +163,7 @@ export function CatalogTable<T extends CatalogItem>({
                 </TableCell>
               </TableRow>
             ))}
-            {page.items.length === 0 && (
+            {!isLoading && page.items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={2} className="h-24 text-center text-[#526D82]">
                   No hay resultados.

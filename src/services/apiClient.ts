@@ -27,20 +27,14 @@ export const apiFetch = async (path: string, options: RequestInit = {}): Promise
 
     const response = await fetch(`${API_URL}${path}`, { ...options, headers });
 
-    // El back rechaza con 401 el token de un usuario suspendido aunque no haya vencido.
-    // En el login el 401 es "credenciales incorrectas": recargar ahí borraría el error.
     if (response.status === 401 && token && path !== LOGIN_PATH) {
         localStorage.removeItem(TOKEN_KEY);
         window.location.assign('/login');
     }
 
     if (!response.ok) {
-        let title = '';
-        try {
-            title = (await response.json()).title ?? '';
-        } catch {
-            // Body vacío o que no es JSON: queda el mensaje genérico de la página.
-        }
+        const body = await response.json().catch(() => ({}));
+        const title = body.title ?? '';
         throw new ApiError(response.status, translateApiError(title));
     }
 

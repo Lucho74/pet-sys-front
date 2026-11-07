@@ -47,7 +47,7 @@ export function PetList({
                             {pet.isSuspended && <Badge variant="outline">Suspendido</Badge>}
                           </CardTitle>
                           <CardDescription>
-                            {pet.specie} · {pet.breed}
+                            {pet.species} · {pet.breed}
                             {pet.birthDate && <> · Nacimiento: {formatDate(pet.birthDate)}</>}
                           </CardDescription>
                         </div>

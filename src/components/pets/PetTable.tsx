@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 import type { Pet } from './petTypes';
 import type { PetQuery } from '../../services/pets/IPet';
+import type { IBreed, ISpecies } from '../../services/species/ISpecies';
 import { formatDate } from '../../utils/datetime';
 import {
   TABLE_CARD_CLASSES,
@@ -33,15 +34,15 @@ interface PetTableProps {
   onQueryChange: (query: PetQuery) => void;
   pagination: Pagination;
   pets: Pet[];
-  species: string[];
-  breeds: string[];
+  species: ISpecies[];
+  breeds: IBreed[];
 }
 
-type ColumnKey = 'name' | 'specie' | 'breed' | 'birthDate';
+type ColumnKey = 'name' | 'species' | 'breed' | 'birthDate';
 
 const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
   { key: 'name', label: 'Nombre', sortBy: 'name' },
-  { key: 'specie', label: 'Especie', sortBy: 'specie' },
+  { key: 'species', label: 'Especie', sortBy: 'species' },
   { key: 'breed', label: 'Raza', sortBy: 'breed' },
   { key: 'birthDate', label: 'Nacimiento' },
 ];
@@ -58,7 +59,7 @@ export function PetTable({ query, onQueryChange, pagination, pets: rows, species
 
   const renderCell = (pet: Pet, key: ColumnKey) => {
     if (key === 'birthDate') return pet.birthDate ? formatDate(pet.birthDate) : 'Sin fecha';
-    if (key === 'specie') return <Badge variant="secondary">{pet.specie}</Badge>;
+    if (key === 'species') return <Badge variant="secondary">{pet.species}</Badge>;
     if (key === 'name') {
       return (
         <div className="flex items-center gap-3">
@@ -84,35 +85,37 @@ export function PetTable({ query, onQueryChange, pagination, pets: rows, species
         />
 
         <Select
-          value={query.specie || 'all'}
-          onValueChange={(value) => onQueryChange({ ...query, specie: value === 'all' ? '' : value, breed: '', pageIndex: 1 })}
+          value={query.speciesId ? String(query.speciesId) : 'all'}
+          onValueChange={(value) =>
+            onQueryChange({ ...query, speciesId: value === 'all' ? undefined : Number(value), breedId: undefined, pageIndex: 1 })
+          }
         >
           <SelectTrigger className="h-9 bg-white">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas las especies</SelectItem>
-            {species.map((specie) => (
-              <SelectItem key={specie} value={specie}>
-                {specie}
+            {species.map((item) => (
+              <SelectItem key={item.id} value={String(item.id)}>
+                {item.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select
-          disabled={!query.specie}
-          value={query.breed || 'all'}
-          onValueChange={(value) => onQueryChange({ ...query, breed: value === 'all' ? '' : value, pageIndex: 1 })}
+          disabled={!query.speciesId}
+          value={query.breedId ? String(query.breedId) : 'all'}
+          onValueChange={(value) => onQueryChange({ ...query, breedId: value === 'all' ? undefined : Number(value), pageIndex: 1 })}
         >
           <SelectTrigger className="h-9 bg-white">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas las razas</SelectItem>
-            {breeds.map((breed) => (
-              <SelectItem key={breed} value={breed}>
-                {breed}
+            {breeds.map((item) => (
+              <SelectItem key={item.id} value={String(item.id)}>
+                {item.name}
               </SelectItem>
             ))}
           </SelectContent>

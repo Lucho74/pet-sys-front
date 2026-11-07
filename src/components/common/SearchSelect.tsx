@@ -29,7 +29,6 @@ interface SearchSelectProps {
   disabled?: boolean;
 }
 
-// Combobox de shadcn (Popover + Command). Filtra por `primary` ignorando mayúsculas y acentos.
 export function SearchSelect({
   label,
   options,
@@ -52,7 +51,6 @@ export function SearchSelect({
   const hasSearch = search.trim().length >= MIN_SEARCH_LENGTH;
   const matches = hasSearch ? options.filter((option) => matchesSearch(option.primary, search.trim())) : [];
 
-  // Lo que se muestra cuando no hay opciones para elegir.
   const message = isLoading ? loadingLabel : loadError || (hasSearch ? notFoundLabel : searchHint);
 
   return (

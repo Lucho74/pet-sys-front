@@ -19,7 +19,6 @@ interface FormFieldProps {
   autoComplete?: string;
 }
 
-// Label + Input + error de shadcn. Con type="password" suma el botón de ojo para mostrar/ocultar.
 export function FormField({ label, error, type = 'text', onChange, ...inputProps }: FormFieldProps) {
   const id = useId();
   const [showPassword, setShowPassword] = useState(false);

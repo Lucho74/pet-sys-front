@@ -30,7 +30,7 @@ export function PetCreatePage() {
 
   useEffect(() => {
     handleGetAllUser()
-      .then((response) => setOwners(response.filter((user) => user.roleName === 'Client' && !user.isDeleted)))
+      .then((response) => setOwners(response.filter((user) => user.roleName === 'Client' && !user.isSuspended)))
       .catch(() => setOwnersError('No se pudo cargar la lista de clientes.'))
       .finally(() => setIsLoadingOwners(false));
   }, []);

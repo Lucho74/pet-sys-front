@@ -7,7 +7,7 @@ export interface IPetResponse {
     breed: string | null;
     birthDate: string | null;
     clientId: number;
-    isDeleted: boolean;
+    isSuspended: boolean;
 }
 
 export interface IPetRequest {

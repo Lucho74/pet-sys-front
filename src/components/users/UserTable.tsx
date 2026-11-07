@@ -33,7 +33,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PAGE_SIZE_OPTIONS, type Pagination } from '../../services/IPaginated';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -77,10 +76,10 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
       return (
         <div className="flex items-center gap-3">
           <Avatar>
-            <AvatarFallback className={user.isDeleted ? '' : 'bg-primary text-primary-foreground'}>{initials(user.fullName)}</AvatarFallback>
+            <AvatarFallback className={user.isSuspended ? '' : 'bg-primary text-primary-foreground'}>{initials(user.fullName)}</AvatarFallback>
           </Avatar>
           <span className="font-semibold">{user.fullName}</span>
-          {user.isDeleted && <Badge variant="outline">Suspendido</Badge>}
+          {user.isSuspended && <Badge variant="outline">Suspendido</Badge>}
         </div>
       );
     }
@@ -114,17 +113,30 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
           </SelectContent>
         </Select>
 
-        <label className="flex items-center gap-2 text-[14px] text-[#27374D] sm:ml-auto">
-          <Switch
-            checked={query.includeDeleted}
-            onCheckedChange={(checked) => onQueryChange({ ...query, includeDeleted: checked, pageIndex: 1 })}
-          />
-          Mostrar suspendidos
-        </label>
+        <Select
+          value={query.isSuspend ? 'suspended' : query.includeSuspended ? 'all' : 'active'}
+          onValueChange={(value) =>
+            onQueryChange({
+              ...query,
+              includeSuspended: value === 'all',
+              isSuspend: value === 'suspended' ? true : undefined,
+              pageIndex: 1,
+            })
+          }
+        >
+          <SelectTrigger className="h-9 bg-white">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los estados</SelectItem>
+            <SelectItem value="active">Solo activos</SelectItem>
+            <SelectItem value="suspended">Solo suspendidos</SelectItem>
+          </SelectContent>
+        </Select>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto h-9 bg-white sm:ml-0">
+            <Button variant="outline" className="ml-auto h-9 bg-white">
               Editar columnas
             </Button>
           </DropdownMenuTrigger>
@@ -165,7 +177,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
 
           <TableBody>
             {rows.map((user) => (
-              <TableRow key={user.id} className={`${TABLE_ROW_CLASSES} ${user.isDeleted ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}>
+              <TableRow key={user.id} className={`${TABLE_ROW_CLASSES} ${user.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}>
                 {columns.map((column) => (
                   <TableCell key={column.key} className="px-4 py-3">
                     {renderCell(user, column.key)}
@@ -181,7 +193,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                        {user.isDeleted ? (
+                        {user.isSuspended ? (
                           <DropdownMenuItem onClick={() => onReactivate(user)}>Reactivar usuario</DropdownMenuItem>
                         ) : (
                           <>

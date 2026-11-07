@@ -14,7 +14,7 @@ export interface User {
   phone: string;
   roleName: UserRole;
   dni: string;
-  isDeleted: boolean;
+  isSuspended: boolean;
 }
 
 export interface UserFormState {

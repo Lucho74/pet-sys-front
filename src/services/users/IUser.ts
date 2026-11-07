@@ -8,7 +8,7 @@ export interface IUserResponse {
     fullName: string | null;
     email: string | null;
     phone: string | null;
-    isDeleted: boolean;
+    isSuspended: boolean;
     roleName: string | null;
     dni: string | null;
 }
@@ -32,4 +32,5 @@ export interface IUpdateUserRequest {
 
 export interface UserQuery extends PageQuery {
     role?: string;
+    isSuspend?: boolean;
 }

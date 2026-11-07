@@ -35,11 +35,11 @@ export function ConsultationCreatePage() {
 
     useEffect(() => {
         handleGetAllUser()
-            .then((response) => setVeterinarians(response.filter((user) => user.roleName === 'Veterinarian' && !user.isDeleted)))
+            .then((response) => setVeterinarians(response.filter((user) => user.roleName === 'Veterinarian' && !user.isSuspended)))
             .catch(() => setVeterinariansError('No se pudo cargar la lista de veterinarios.'))
             .finally(() => setIsLoadingVeterinarians(false));
         handleGetAllPet()
-            .then((response) => setPets(response.filter((pet) => !pet.isDeleted)))
+            .then((response) => setPets(response.filter((pet) => !pet.isSuspended)))
             .catch(() => setPetsError('No se pudo cargar la lista de mascotas.'))
             .finally(() => setIsLoadingPets(false));
             

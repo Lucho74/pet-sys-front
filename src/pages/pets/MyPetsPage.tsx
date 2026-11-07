@@ -22,7 +22,7 @@ export function MyPetsPage() {
 						breed: pet.breed?.trim() || '',
 						birthDate: pet.birthDate?.slice(0, 10) || '',
 						clientId: pet.clientId,
-						isDeleted: pet.isDeleted,
+						isSuspended: pet.isSuspended,
 					})),
 				),
 			)

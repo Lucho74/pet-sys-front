@@ -40,7 +40,7 @@ export function ConsultationEditPage() {
     useEffect(() => {
         handleGetByIdConsultation(id)
             .then((consultation) => {
-                if (consultation.isDeleted) {
+                if (consultation.isSuspended) {
                     toast.error('La consulta está suspendida y no se puede editar.');
                     navigate('/consultations', { replace: true });
                     return;
@@ -72,7 +72,7 @@ export function ConsultationEditPage() {
             .catch(() => setVeterinariansError('No se pudo cargar la lista de veterinarios.'))
             .finally(() => setIsLoadingVeterinarians(false));
         handleGetAllPet()
-            .then((response) => setPets(response.filter((pet) => !pet.isDeleted)))
+            .then((response) => setPets(response.filter((pet) => !pet.isSuspended)))
             .catch(() => setPetsError('No se pudo cargar la lista de mascotas.'))
             .finally(() => setIsLoadingPets(false));
     }, []);
@@ -119,7 +119,7 @@ export function ConsultationEditPage() {
                 formError={formError}
                 fieldErrors={fieldErrors}
                 // El back acepta guardar con un veterinario suspendido solo si es el que ya tenía la consulta.
-                veterinarians={veterinarians.filter((v) => !v.isDeleted || String(v.id) === initialVeterinarianId)}
+                veterinarians={veterinarians.filter((v) => !v.isSuspended || String(v.id) === initialVeterinarianId)}
                 isLoadingVeterinarians={isLoadingVeterinarians}
                 veterinariansError={veterinariansError}
                 pets={pets}

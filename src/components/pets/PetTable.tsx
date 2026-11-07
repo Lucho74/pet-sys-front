@@ -63,10 +63,10 @@ export function PetTable({ query, onQueryChange, pagination, pets: rows, species
       return (
         <div className="flex items-center gap-3">
           <Avatar>
-            <AvatarFallback className={pet.isDeleted ? '' : 'bg-primary text-primary-foreground'}>{initials(pet.name)}</AvatarFallback>
+            <AvatarFallback className={pet.isSuspended ? '' : 'bg-primary text-primary-foreground'}>{initials(pet.name)}</AvatarFallback>
           </Avatar>
           <span className="font-semibold">{pet.name}</span>
-          {pet.isDeleted && <Badge variant="outline">Suspendido</Badge>}
+          {pet.isSuspended && <Badge variant="outline">Suspendido</Badge>}
         </div>
       );
     }
@@ -120,8 +120,8 @@ export function PetTable({ query, onQueryChange, pagination, pets: rows, species
 
         <label className="flex items-center gap-2 text-[14px] text-[#27374D] sm:ml-auto">
           <Switch
-            checked={query.includeDeleted}
-            onCheckedChange={(checked) => onQueryChange({ ...query, includeDeleted: checked, pageIndex: 1 })}
+            checked={query.includeSuspended}
+            onCheckedChange={(checked) => onQueryChange({ ...query, includeSuspended: checked, pageIndex: 1 })}
           />
           Mostrar suspendidas
         </label>
@@ -169,7 +169,7 @@ export function PetTable({ query, onQueryChange, pagination, pets: rows, species
 
           <TableBody>
             {rows.map((pet) => (
-              <TableRow key={pet.id} className={`${TABLE_ROW_CLASSES} ${pet.isDeleted ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}>
+              <TableRow key={pet.id} className={`${TABLE_ROW_CLASSES} ${pet.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}>
                 {columns.map((column) => (
                   <TableCell key={column.key} className="px-4 py-3">
                     {renderCell(pet, column.key)}
@@ -184,7 +184,7 @@ export function PetTable({ query, onQueryChange, pagination, pets: rows, species
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                      {!pet.isDeleted && (
+                      {!pet.isSuspended && (
                         <DropdownMenuItem onClick={() => navigate(`/pets/${pet.id}/edit`)}>Editar mascota</DropdownMenuItem>
                       )}
                       <DropdownMenuItem onClick={() => navigate(`/pets/${pet.id}/consultations`)}>

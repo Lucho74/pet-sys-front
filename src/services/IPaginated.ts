@@ -20,7 +20,7 @@ export interface PageQuery {
   pageIndex: number;
   pageSize: number;
   search: string;
-  includeDeleted: boolean;
+  includeSuspended: boolean;
   sortBy: string;
   sortDesc: boolean;
 }
@@ -29,7 +29,7 @@ export const DEFAULT_QUERY: PageQuery = {
   pageIndex: 1,
   pageSize: PAGE_SIZE,
   search: '',
-  includeDeleted: true,
+  includeSuspended: true,
   sortBy: '',
   sortDesc: false,
 };

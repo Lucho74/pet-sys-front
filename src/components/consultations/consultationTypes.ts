@@ -6,7 +6,7 @@ export interface Consultation {
   petName: string;
   veterinarianId: string;
   veterinarianName: string;
-  isDeleted: boolean;
+  isSuspended: boolean;
 }
 
 export interface ConsultationFormState {

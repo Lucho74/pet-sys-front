@@ -37,14 +37,14 @@ export function PetList({
                     <Card className="transition-shadow hover:shadow-md">
                       <CardHeader className="flex items-center gap-3">
                         <Avatar size="lg">
-                          <AvatarFallback className={pet.isDeleted ? '' : 'bg-primary text-primary-foreground'}>
+                          <AvatarFallback className={pet.isSuspended ? '' : 'bg-primary text-primary-foreground'}>
                             {initials(pet.name)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0">
                           <CardTitle className="flex items-center gap-2">
                             {pet.name}
-                            {pet.isDeleted && <Badge variant="outline">Suspendido</Badge>}
+                            {pet.isSuspended && <Badge variant="outline">Suspendido</Badge>}
                           </CardTitle>
                           <CardDescription>
                             {pet.specie} · {pet.breed}

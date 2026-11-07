@@ -56,14 +56,14 @@ export function ConsultationTable({ query, onQueryChange, pagination, consultati
   const renderCell = (consultation: Consultation, key: ColumnKey) => {
     if (key === 'date') return consultation.date ? formatDate(consultation.date) : 'Sin fecha';
     if (key === 'id') return <Avatar>
-            <AvatarFallback className={consultation.isDeleted ? '' : 'bg-primary text-primary-foreground'}>{consultation.id}</AvatarFallback>
+            <AvatarFallback className={consultation.isSuspended ? '' : 'bg-primary text-primary-foreground'}>{consultation.id}</AvatarFallback>
           </Avatar>;
     if (key === 'petName') return <Badge variant="secondary">{consultation.petName}</Badge>;
     if (key === 'description') {
       return (
         <div className="flex items-center gap-2">
           <span className="font-semibold">{consultation.description}</span>
-          {consultation.isDeleted && <Badge variant="outline">Suspendido</Badge>}
+          {consultation.isSuspended && <Badge variant="outline">Suspendido</Badge>}
         </div>
       );
     }
@@ -82,8 +82,8 @@ export function ConsultationTable({ query, onQueryChange, pagination, consultati
 
         <label className="flex sm:ml-auto items-center gap-2 text-[14px] text-[#27374D]">
           <Switch
-            checked={query.includeDeleted}
-            onCheckedChange={(checked) => onQueryChange({ ...query, includeDeleted: checked, pageIndex: 1 })}
+            checked={query.includeSuspended}
+            onCheckedChange={(checked) => onQueryChange({ ...query, includeSuspended: checked, pageIndex: 1 })}
           />
           Mostrar suspendidas
         </label>
@@ -133,7 +133,7 @@ export function ConsultationTable({ query, onQueryChange, pagination, consultati
             {rows.map((consultation) => (
               <TableRow
                 key={consultation.id}
-                className={`${TABLE_ROW_CLASSES} ${consultation.isDeleted ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
+                className={`${TABLE_ROW_CLASSES} ${consultation.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
               >
                 {columns.map((column) => (
                   <TableCell key={column.key} className="px-4 py-3">
@@ -149,7 +149,7 @@ export function ConsultationTable({ query, onQueryChange, pagination, consultati
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                      {!consultation.isDeleted && (
+                      {!consultation.isSuspended && (
                         <DropdownMenuItem onClick={() => navigate(`/consultations/${consultation.id}/edit`)}>
                           Editar consulta
                         </DropdownMenuItem>

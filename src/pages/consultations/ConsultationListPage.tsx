@@ -66,7 +66,7 @@ export function ConsultationListPage() {
             consultation.veterinarianId === null
                 ? 'sin asignar'
                 : veterinarianNames.get(consultation.veterinarianId) || `Veterinario #${consultation.veterinarianId}`,
-        isDeleted: consultation.isDeleted,
+        isSuspended: consultation.isSuspended,
     }));
 
     return (

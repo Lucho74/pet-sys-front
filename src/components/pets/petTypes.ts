@@ -5,7 +5,7 @@ export interface Pet {
   breed: string;
   birthDate: string;
   clientId: number;
-  isDeleted: boolean;
+  isSuspended: boolean;
 }
 
 export interface PetFormState {

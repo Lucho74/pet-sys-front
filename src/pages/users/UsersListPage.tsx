@@ -41,7 +41,7 @@ export function UsersListPage() {
                   ? user.roleName
                   : 'Client',
               dni: user.dni?.trim() || '',
-              isDeleted: user.isDeleted,
+              isSuspended: user.isSuspended,
             })),
           );
         })
@@ -54,14 +54,14 @@ export function UsersListPage() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const setUserDeleted = (userId: number, isDeleted: boolean) => {
-    setUsers((current) => current.map((user) => (user.id === userId ? { ...user, isDeleted } : user)));
+  const setUserSuspended = (userId: number, isSuspended: boolean) => {
+    setUsers((current) => current.map((user) => (user.id === userId ? { ...user, isSuspended } : user)));
   };
 
   const handleSuspend = async (user: User) => {
     try {
       await handleDeleteUser(String(user.id));
-      setUserDeleted(user.id, true);
+      setUserSuspended(user.id, true);
       toast.success('Usuario suspendido correctamente.');
     } catch (error) {
       toast.error(errorMessage(error, 'No se pudo suspender el usuario.'));
@@ -71,7 +71,7 @@ export function UsersListPage() {
   const handleReactivate = async (user: User) => {
     try {
       await handleReactivateUser(String(user.id));
-      setUserDeleted(user.id, false);
+      setUserSuspended(user.id, false);
       toast.success('Usuario reactivado correctamente.');
     } catch (error) {
       toast.error(errorMessage(error, 'No se pudo reactivar el usuario.'));

@@ -1,6 +1,5 @@
-import { type PetQuery, type IPetRequest, type IPetResponse } from "./IPet"
+import { type IPetRequest, type IPetResponse } from "./IPet"
 import { apiFetch } from "../apiClient";
-import { fetchAllPages, toQueryString, type IPaginatedResponse } from "../IPaginated";
 
 export const handleAddPet = async (newPet: IPetRequest): Promise<IPetResponse> => {
     const response = await apiFetch('/Pet', {
@@ -26,13 +25,12 @@ export const handleGetByIdPet = async (id: string): Promise<IPetResponse> => {
     return response.json();
 };
 
-export const handleGetPetsPage = async (query: PetQuery): Promise<IPaginatedResponse<IPetResponse>> => {
-    const response = await apiFetch(`/Pet?${toQueryString(query)}`);
+export const handleGetAllPet = async (): Promise<IPetResponse[]> => {
+    const response = await apiFetch('/Pet');
 
     return response.json();
-};
 
-export const handleGetAllPet = (): Promise<IPetResponse[]> => fetchAllPages(handleGetPetsPage);
+};
 
 export const handleGetMyPets = async (): Promise<IPetResponse[]> => {
     const response = await apiFetch('/Pet/me');

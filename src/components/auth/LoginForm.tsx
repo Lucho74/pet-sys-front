@@ -1,5 +1,5 @@
 import { FormField } from '../common/FormField';
-import { Button } from '@/components/ui/button';
+import { PRIMARY_BUTTON_CLASSES } from '../common/buttonStyles';
 import type { LoginFormState } from './authTypes';
 import type { FormErrors } from './loginValidation';
 
@@ -65,9 +65,13 @@ export function LoginForm({
                 </p>
             ) : null}
 
-            <Button type="submit" size="lg" disabled={isLoggingIn} className="h-11 w-full">
+            <button
+                type="submit"
+                disabled={isLoggingIn}
+                className={`w-full ${PRIMARY_BUTTON_CLASSES}`}
+            >
                 {isLoggingIn ? 'Ingresando...' : 'Ingresar'}
-            </Button>
+            </button>
             </form>
 
         </section>

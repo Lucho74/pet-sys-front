@@ -1,6 +1,6 @@
 import { formatDate } from '../../utils/datetime';
 import { ListState } from '../common/ListState';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { READONLY_CARD_CLASSES, WIDE_GRID_CLASSES } from '../common/listStyles';
 
 interface ClientConsultationItem {
 	id: number;
@@ -21,17 +21,19 @@ export function ClientConsultationList({ consultations, isLoading, error }: Clie
 		<div className="flex-1 overflow-auto px-4 pb-[100px] pt-4 lg:px-10 lg:pb-12 lg:pt-8">
 			<div className="flex h-full w-full flex-col">
 				{hasConsultations ? (
-					<ul className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-3">
+					<ul className={WIDE_GRID_CLASSES}>
 						{consultations.map((consultation) => (
-							<li key={consultation.id}>
-								<Card>
-									<CardHeader>
-										<CardTitle className="whitespace-pre-wrap break-words">{consultation.description}</CardTitle>
-										<CardDescription>
+							<li key={consultation.id} className="flex">
+								<div className={READONLY_CARD_CLASSES}>
+									<div className="min-w-0 flex-1 text-left">
+										<div className="whitespace-pre-wrap break-words text-[15px] font-semibold text-[#27374D]">
+											{consultation.description}
+										</div>
+										<div className="truncate text-[13px] text-[#526D82]">
 											{consultation.date ? formatDate(consultation.date) : 'Sin fecha asignada'}
-										</CardDescription>
-									</CardHeader>
-								</Card>
+										</div>
+									</div>
+								</div>
 							</li>
 						))}
 					</ul>

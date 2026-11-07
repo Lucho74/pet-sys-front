@@ -1,6 +1,8 @@
 import type { IUserResponse } from '../../services/users/IUser';
 import { MIN_SEARCH_LENGTH, SearchSelect } from '../common/SearchSelect';
 
+const MAX_NAME_LENGTH = 100;
+
 interface VeterinarianSelectProps {
   label: string;
   veterinarians: IUserResponse[];
@@ -28,6 +30,9 @@ export function VeterinarianSelect({
     secondary: veterinarian.dni ?? '',
   }));
 
+  const selected = veterinarians.find((veterinarian) => String(veterinarian.id) === value) ?? null;
+  const selectedName = selected?.fullName || 'Sin nombre';
+
   return (
     <SearchSelect
       label={label}
@@ -35,9 +40,14 @@ export function VeterinarianSelect({
       value={value}
       onChange={onChange}
       placeholder="Escribe el nombre del veterinario"
+      maxLength={MAX_NAME_LENGTH}
       searchHint={`Escribe al menos ${MIN_SEARCH_LENGTH} caracteres del nombre para buscar.`}
       loadingLabel="Cargando veterinarios..."
       notFoundLabel="No se encontraron veterinarios con ese nombre."
+      emptyPrimaryLabel="Sin nombre"
+      emptySecondaryLabel="Sin DNI"
+      selectedHint={`Veterinario: ${selectedName}`}
+      clearLabel={`Quitar a ${selectedName} como veterinario`}
       isLoading={isLoadingVeterinarians}
       loadError={veterinariansError}
       error={error}

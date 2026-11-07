@@ -1,9 +1,6 @@
 import { useId, useState } from 'react';
-import type { ChangeEvent } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
+import { controlClasses, FIELD_ERROR_CLASSES, FIELD_LABEL_CLASSES } from './fieldStyles';
 
 interface FormFieldProps {
   label: string;
@@ -19,41 +16,71 @@ interface FormFieldProps {
   autoComplete?: string;
 }
 
-// Label + Input + error de shadcn. Con type="password" suma el botón de ojo para mostrar/ocultar.
-export function FormField({ label, error, type = 'text', onChange, ...inputProps }: FormFieldProps) {
-  const id = useId();
+export function FormField({
+  label,
+  value,
+  onChange,
+  error,
+  type = 'text',
+  placeholder,
+  disabled = false,
+  maxLength,
+  min,
+  max,
+  autoComplete,
+}: FormFieldProps) {
+  const inputId = useId();
+  const errorId = `${inputId}-error`;
+  const isPassword = type === 'password';
   const [showPassword, setShowPassword] = useState(false);
 
-  const props = {
-    id,
-    ...inputProps,
-    onChange: (event: ChangeEvent<HTMLInputElement>) => onChange(event.target.value),
-    'aria-invalid': Boolean(error),
-  };
-
   return (
-    <Field data-invalid={Boolean(error)}>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
-
-      {type === 'password' ? (
-        <InputGroup className="h-10 bg-white">
-          <InputGroupInput type={showPassword ? 'text' : 'password'} {...props} />
-          <InputGroupAddon align="inline-end">
-            <InputGroupButton
-              size="icon-xs"
-              onClick={() => setShowPassword(!showPassword)}
-              disabled={inputProps.disabled}
-              aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-            >
-              {showPassword ? <EyeOff /> : <Eye />}
-            </InputGroupButton>
-          </InputGroupAddon>
-        </InputGroup>
-      ) : (
-        <Input type={type} className="h-10 bg-white" {...props} />
-      )}
-
-      {error && <FieldError>{error}</FieldError>}
-    </Field>
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={inputId} className={FIELD_LABEL_CLASSES}>
+        {label}
+      </label>
+      <div className="relative">
+        <input
+          id={inputId}
+          type={isPassword && showPassword ? 'text' : type}
+          min={min}
+          max={max}
+          maxLength={maxLength}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          autoComplete={autoComplete}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
+          className={
+            isPassword
+              ? controlClasses(Boolean(error), 'py-[13px] pl-[14px] pr-11 lg:py-[11px]')
+              : controlClasses(Boolean(error))
+          }
+        />
+        {isPassword ? (
+          <button
+            type="button"
+            onClick={() => setShowPassword((current) => !current)}
+            disabled={disabled}
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            aria-pressed={showPassword}
+            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-xl text-[#526D82] transition-colors hover:text-[#27374D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27374D]/25 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {showPassword ? (
+              <EyeOff size={18} strokeWidth={2} aria-hidden="true" />
+            ) : (
+              <Eye size={18} strokeWidth={2} aria-hidden="true" />
+            )}
+          </button>
+        ) : null}
+      </div>
+      {error ? (
+        <span id={errorId} className={FIELD_ERROR_CLASSES}>
+          {error}
+        </span>
+      ) : null}
+    </div>
   );
 }

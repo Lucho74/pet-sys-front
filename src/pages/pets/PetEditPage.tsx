@@ -17,8 +17,8 @@ export function PetEditPage() {
 
   const [form, setForm] = useState<PetFormState>({
     name: '',
-    specie: '',
-    breed: '',
+    speciesId: '',
+    breedId: '',
     birthDate: '',
     clientId: '',
   });
@@ -40,8 +40,8 @@ export function PetEditPage() {
         }
         setForm({
           name: pet.name?.trim() || '',
-          specie: pet.specie?.trim() || '',
-          breed: pet.breed?.trim() || '',
+          speciesId: String(pet.speciesId),
+          breedId: String(pet.breedId),
           birthDate: pet.birthDate?.slice(0, 10) || '',
           clientId: String(pet.clientId),
         });
@@ -81,8 +81,7 @@ export function PetEditPage() {
     try {
       await handleUpdatePet(id, {
         name: form.name,
-        specie: form.specie,
-        breed: form.breed,
+        breedId: Number(form.breedId),
         birthDate: form.birthDate,
         clientId: Number(form.clientId),
       });

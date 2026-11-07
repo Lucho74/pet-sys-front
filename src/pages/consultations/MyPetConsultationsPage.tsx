@@ -26,12 +26,10 @@ export function MyPetConsultationsPage({ backTo }: MyPetConsultationsPageProps) 
 		const id = Number(petId);
 		const isClient = role !== null && CLIENT_ROLES.includes(role);
 
-		// El cliente solo puede leer sus propias mascotas (api/Pet/me); los roles clínicos piden la mascota por id.
 		const petNameRequest = isClient
 			? handleGetMyPets().then((pets) => pets.find((pet) => pet.id === id)?.name)
 			: handleGetByIdPet(String(id)).then((pet) => pet.name);
 
-		// El nombre de la mascota solo adorna el título: si falla, la lista se muestra igual.
 		petNameRequest.then((name) => setPetName(name?.trim() || '')).catch(() => {});
 
 		handleGetConsultationsByPet(id)

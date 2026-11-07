@@ -3,10 +3,6 @@ import { todayDate } from '../../utils/datetime';
 
 export type FormErrors = Partial<Record<keyof ConsultationFormState, string>>;
 
-/**
- * `initialDate` es el día que ya tenía la consulta al abrir el formulario.
- * Si no se modifica, no se exige que sea futuro: una consulta pasada se sigue pudiendo editar.
- */
 export function validateConsultationForm(
   form: ConsultationFormState,
   initialDate?: string,

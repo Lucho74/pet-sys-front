@@ -19,6 +19,7 @@ import RoleRoute from './RoleRoute';
 import { CLINICAL_ROLES, CLIENT_ROLES } from '../utils/roles';
 import { MyPetConsultationsPage } from '../pages/consultations/MyPetConsultationsPage';
 import { MyPetsPage } from '../pages/pets/MyPetsPage';
+import { SpeciesPage } from '../pages/species/SpeciesPage';
 
 const routes: RouteObject[] = [
   {
@@ -50,6 +51,8 @@ const routes: RouteObject[] = [
               { path: 'pets/new', element: <PetCreatePage /> },
               { path: 'pets/:id/edit', element: <PetEditPage /> },
               { path: 'pets/:petId/consultations', element: <MyPetConsultationsPage backTo="/pets" /> },
+
+              { path: 'species', element: <SpeciesPage /> },
 
               { path: 'consultations', element: <ConsultationListPage /> },
               { path: 'consultations/new', element: <ConsultationCreatePage /> },

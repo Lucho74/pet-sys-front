@@ -83,7 +83,6 @@ export function UserEditPage() {
         fullName: form.fullName,
         email: form.email,
         phone: form.phone,
-        // El back conserva la contraseña con null; con '' responde 400 por el mínimo de 6.
         password: form.password || null,
         dni: form.roleName === 'Client' ? form.dni : null,
       });

@@ -13,24 +13,17 @@ export function validatePetForm(form: PetFormState): FormErrors {
     errors.name = 'El nombre no puede superar los 50 caracteres.';
   }
 
-  const specie = form.specie.trim();
-  if (!specie) {
-    errors.specie = 'La especie es obligatoria.';
-  } else if (specie.length > 50) {
-    errors.specie = 'La especie no puede superar los 50 caracteres.';
+  if (!form.speciesId) {
+    errors.speciesId = 'La especie es obligatoria.';
   }
 
-  const breed = form.breed.trim();
-  if (!breed) {
-    errors.breed = 'La raza es obligatoria.';
-  } else if (breed.length > 50) {
-    errors.breed = 'La raza no puede superar los 50 caracteres.';
+  if (!form.breedId) {
+    errors.breedId = 'La raza es obligatoria.';
   }
 
   if (!form.birthDate) {
     errors.birthDate = 'La fecha de nacimiento es obligatoria.';
   } else if (form.birthDate > todayDate()) {
-    // Comparar strings YYYY-MM-DD evita el corrimiento de new Date(), que las toma en UTC.
     errors.birthDate = 'La fecha de nacimiento no puede ser futura.';
   }
 

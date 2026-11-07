@@ -1,4 +1,3 @@
-// Títulos que devuelve el back (`Web/ExceptionHandling/AppExceptionHandler.cs`), en inglés.
 const TRANSLATIONS: [RegExp, string][] = [
     [/^Invalid email or password\.$/, 'Email o contraseña incorrectos.'],
     [/^A user with email .+ already exists\.$/, 'Ya existe un usuario con ese email.'],
@@ -15,10 +14,18 @@ const TRANSLATIONS: [RegExp, string][] = [
     [/^Veterinarian with id .+ is suspended\.$/, 'El veterinario elegido está suspendido.'],
     [/^Consultation with id .+ belongs to a suspended client\.$/, 'La consulta pertenece a un cliente suspendido.'],
     [/^Consultation with id .+ was not found\.$/, 'La consulta no existe.'],
+    [/^Species '.+' already exists\.$/, 'Ya existe una especie con ese nombre.'],
+    [/^Species with id .+ was not found\.$/, 'La especie no existe.'],
+    [/^Species with id .+ has breeds assigned to at least one pet\.$/, 'No se puede borrar: hay mascotas de esta especie.'],
+    [/^SpeciesId does not reference an existing species\.$/, 'La especie elegida no existe.'],
+    [/^Breed '.+' already exists for species with id .+\.$/, 'Ya existe una raza con ese nombre en esta especie.'],
+    [/^Breed with id .+ was not found\.$/, 'La raza no existe.'],
+    [/^Breed with id .+ is assigned to at least one pet\.$/, 'No se puede borrar: hay mascotas con esta raza.'],
+    [/^Breed with id .+ is the last breed of its species; delete the species instead\.$/, 'Es la última raza de la especie. Para sacarla, borrá la especie.'],
+    [/^BreedId does not reference an existing breed\.$/, 'La raza elegida no existe.'],
     [/^One or more validation errors occurred\.$/, 'Revisá los datos ingresados.'],
 ];
 
-/** Devuelve '' si el título no está en la tabla, para que la página use su mensaje genérico. */
 export function translateApiError(title: string): string {
     return TRANSLATIONS.find(([pattern]) => pattern.test(title))?.[1] ?? '';
 }

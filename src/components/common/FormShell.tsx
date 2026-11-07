@@ -15,7 +15,6 @@ interface FormShellProps {
   saveLabel: string;
 }
 
-// Contenedor de los formularios de crear/editar: tarjeta, error general y botones.
 export function FormShell({
   children,
   formError,

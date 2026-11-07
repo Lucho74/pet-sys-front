@@ -1,6 +1,7 @@
 import { FormField } from '../common/FormField';
 import { FormShell } from '../common/FormShell';
 import { OwnerSelect } from './OwnerSelect';
+import { SpeciesBreedSelect } from './SpeciesBreedSelect';
 import type { IUserResponse } from '../../services/users/IUser';
 import type { PetFormState } from './petTypes';
 import type { FormErrors } from './petValidation';
@@ -55,23 +56,16 @@ export function PetForm({
         disabled={isSaving}
       />
 
-      <FormField
-        label="Especie"
-        value={form.specie}
-        onChange={(value) => onChange('specie', value)}
-        error={fieldErrors.specie}
-        placeholder="Perro, gato, ..."
-        maxLength={50}
-        disabled={isSaving}
-      />
-
-      <FormField
-        label="Raza"
-        value={form.breed}
-        onChange={(value) => onChange('breed', value)}
-        error={fieldErrors.breed}
-        placeholder="Labrador, siamés, ..."
-        maxLength={50}
+      <SpeciesBreedSelect
+        speciesId={form.speciesId}
+        breedId={form.breedId}
+        onSpeciesChange={(value) => {
+          onChange('speciesId', value);
+          onChange('breedId', '');
+        }}
+        onBreedChange={(value) => onChange('breedId', value)}
+        speciesError={fieldErrors.speciesId}
+        breedError={fieldErrors.breedId}
         disabled={isSaving}
       />
 

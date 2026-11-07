@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { PetList } from '../../components/pets/PetList';
 import { handleGetMyPets } from '../../services/pets/petService';
-import type { Pet } from '../../components/pets/petTypes';
+import { toPet, type Pet } from '../../components/pets/petTypes';
 
 export function MyPetsPage() {
 	const [pets, setPets] = useState<Pet[]>([]);
@@ -13,19 +13,7 @@ export function MyPetsPage() {
 
 	useEffect(() => {
 		handleGetMyPets()
-			.then((response) =>
-				setPets(
-					response.map((pet) => ({
-						id: pet.id,
-						name: pet.name?.trim() || 'Sin nombre',
-						specie: pet.specie?.trim() || '',
-						breed: pet.breed?.trim() || '',
-						birthDate: pet.birthDate?.slice(0, 10) || '',
-						clientId: pet.clientId,
-						isSuspended: pet.isSuspended,
-					})),
-				),
-			)
+			.then((response) => setPets(response.map(toPet)))
 			.catch(() => {
 				setError('No se pudieron cargar tus mascotas. Intenta nuevamente.');
 				toast.error('No se pudieron cargar tus mascotas.');

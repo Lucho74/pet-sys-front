@@ -16,8 +16,8 @@ export function PetCreatePage() {
 
   const [form, setForm] = useState<PetFormState>({
     name: '',
-    specie: '',
-    breed: '',
+    speciesId: '',
+    breedId: '',
     birthDate: '',
     clientId: '',
   });
@@ -55,8 +55,7 @@ export function PetCreatePage() {
     try {
       await handleAddPet({
         name: form.name,
-        specie: form.specie,
-        breed: form.breed,
+        breedId: Number(form.breedId),
         birthDate: form.birthDate,
         clientId: Number(form.clientId),
       });

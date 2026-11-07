@@ -25,7 +25,7 @@ export function PetSelect({
   const options = pets.map((pet) => ({
     id: pet.id,
     primary: pet.name ?? '',
-    secondary: pet.breed ?? '',
+    secondary: pet.breedName ?? '',
   }));
 
   return (

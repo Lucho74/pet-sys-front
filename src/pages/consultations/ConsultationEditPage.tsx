@@ -118,7 +118,6 @@ export function ConsultationEditPage() {
                 form={form}
                 formError={formError}
                 fieldErrors={fieldErrors}
-                // El back acepta guardar con un veterinario suspendido solo si es el que ya tenía la consulta.
                 veterinarians={veterinarians.filter((v) => !v.isSuspended || String(v.id) === initialVeterinarianId)}
                 isLoadingVeterinarians={isLoadingVeterinarians}
                 veterinariansError={veterinariansError}

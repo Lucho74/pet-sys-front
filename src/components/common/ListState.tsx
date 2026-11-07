@@ -11,7 +11,6 @@ interface ListStateProps {
   emptyLabel: string;
 }
 
-// Lo que muestra una lista cuando no tiene filas: cargando, error o vacía.
 export function ListState({ isLoading, error, isEmpty, loadingLabel, emptyLabel }: ListStateProps) {
   if (isLoading) {
     return (
@@ -27,7 +26,6 @@ export function ListState({ isLoading, error, isEmpty, loadingLabel, emptyLabel 
         <Alert variant="destructive" className="max-w-[460px]">
           <AlertDescription className="flex flex-col items-start gap-3">
             {error}
-            {/* Recargar evita un refetch propio en cada página de lista. */}
             <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
               Reintentar
             </Button>

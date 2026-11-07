@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import { PawPrint, Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { DEFAULT_QUERY, EMPTY_PAGINATION, type Pagination } from '../../services/IPaginated';
-import type { IPetResponse, PetQuery } from '../../services/pets/IPet';
+import type { PetQuery } from '../../services/pets/IPet';
+import type { IBreed, ISpecies } from '../../services/species/ISpecies';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ListState } from '../../components/common/ListState';
 import { PetTable } from '../../components/pets/PetTable';
-import { handleGetAllPet, handleGetPetsPage } from '../../services/pets/petService';
-import type { Pet } from '../../components/pets/petTypes';
+import { handleGetPetsPage } from '../../services/pets/petService';
+import { handleGetAllSpecies, handleGetBreedsBySpecies } from '../../services/species/speciesService';
+import { toPet, type Pet } from '../../components/pets/petTypes';
 
 const CREATE_TO = '/pets/new';
 const CREATE_LABEL = 'Nueva mascota';
@@ -18,42 +20,30 @@ export function PetsListPage() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [query, setQuery] = useState<PetQuery>({ ...DEFAULT_QUERY, specie: '', breed: '' });
+  const [query, setQuery] = useState<PetQuery>(DEFAULT_QUERY);
   const [pagination, setPagination] = useState<Pagination>(EMPTY_PAGINATION);
-  const [allPets, setAllPets] = useState<IPetResponse[]>([]);
+  const [species, setSpecies] = useState<ISpecies[]>([]);
+  const [breeds, setBreeds] = useState<IBreed[]>([]);
 
   useEffect(() => {
-    handleGetAllPet()
-      .then(setAllPets)
+    handleGetAllSpecies()
+      .then((response) => setSpecies(response.toSorted((a, b) => a.name.localeCompare(b.name))))
       .catch(() => {});
   }, []);
 
-  const species = [...new Set(allPets.map((pet) => pet.specie?.trim() || '').filter(Boolean))].sort();
-  const breeds = [
-    ...new Set(
-      allPets
-        .filter((pet) => !query.specie || pet.specie?.trim() === query.specie)
-        .map((pet) => pet.breed?.trim() || '')
-        .filter(Boolean),
-    ),
-  ].sort();
+  useEffect(() => {
+    if (!query.speciesId) return;
+    handleGetBreedsBySpecies(query.speciesId)
+      .then((response) => setBreeds(response.toSorted((a, b) => a.name.localeCompare(b.name))))
+      .catch(() => {});
+  }, [query.speciesId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       handleGetPetsPage(query)
         .then((response) => {
           setPagination(response);
-          setPets(
-            response.items.map((pet) => ({
-              id: pet.id,
-              name: pet.name?.trim() || 'Sin nombre',
-              specie: pet.specie?.trim() || '',
-              breed: pet.breed?.trim() || '',
-              birthDate: pet.birthDate?.slice(0, 10) || '',
-              clientId: pet.clientId,
-              isSuspended: pet.isSuspended,
-            })),
-          );
+          setPets(response.items.map(toPet));
         })
         .catch(() => {
           setError('No se pudo cargar la lista de mascotas. Intenta nuevamente.');

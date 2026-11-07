@@ -33,7 +33,7 @@ export function PetEditPage() {
   useEffect(() => {
     handleGetByIdPet(id)
       .then((pet) => {
-        if (pet.isDeleted) {
+        if (pet.isSuspended) {
           toast.error('La mascota está suspendida y no se puede editar.');
           navigate('/pets', { replace: true });
           return;
@@ -56,7 +56,7 @@ export function PetEditPage() {
 
   useEffect(() => {
     handleGetAllUser()
-      .then((response) => setOwners(response.filter((user) => user.roleName === 'Client' && !user.isDeleted)))
+      .then((response) => setOwners(response.filter((user) => user.roleName === 'Client' && !user.isSuspended)))
       .catch(() => setOwnersError('No se pudo cargar la lista de clientes.'))
       .finally(() => setIsLoadingOwners(false));
   }, []);

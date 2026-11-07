@@ -34,7 +34,7 @@ export function UserEditPage() {
   useEffect(() => {
     handleGetByIdUser(id)
       .then((user) => {
-        if (user.isDeleted) {
+        if (user.isSuspended) {
           toast.error('El usuario está suspendido. Reactivalo para editarlo.');
           navigate('/users', { replace: true });
           return;

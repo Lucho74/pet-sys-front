@@ -5,7 +5,7 @@ export interface Pet {
   breed: string;
   birthDate: string;
   clientId: number;
-  isDeleted: boolean;
+  isSuspended: boolean;
 }
 
 export interface PetFormState {
@@ -14,8 +14,4 @@ export interface PetFormState {
   breed: string;
   birthDate: string;
   clientId: string;
-}
-
-export interface PetsOutletContext {
-  pets: Pet[];
 }

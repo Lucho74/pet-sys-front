@@ -1,3 +1,5 @@
+import type { PageQuery } from "../IPaginated";
+
 export type UserRole = 'Client' | 'Veterinarian' | 'Admin' | 'SysAdmin';
 export type AssignableRole = Exclude<UserRole, 'SysAdmin'>;
 
@@ -6,7 +8,7 @@ export interface IUserResponse {
     fullName: string | null;
     email: string | null;
     phone: string | null;
-    isDeleted: boolean;
+    isSuspended: boolean;
     roleName: string | null;
     dni: string | null;
 }
@@ -26,4 +28,9 @@ export interface IUpdateUserRequest {
     phone: string | null;
     password: string | null;
     dni: string | null;
+}
+
+export interface UserQuery extends PageQuery {
+    role?: string;
+    isSuspend?: boolean;
 }

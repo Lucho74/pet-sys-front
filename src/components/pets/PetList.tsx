@@ -2,28 +2,26 @@ import { Link } from 'react-router-dom';
 import type { Pet } from './petTypes';
 import { initials } from '../../utils/initials';
 import { formatDate } from '../../utils/datetime';
-import { CreateButton } from '../common/CreateButton';
 import { ListState } from '../common/ListState';
-import { activeFirst, CARD_CLASSES, DELETED_BADGE_CLASSES, DELETED_CARD_CLASSES, GRID_CLASSES } from '../common/listStyles';
+import { activeFirst } from '../common/listStyles';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface PetListProps {
   pets: Pet[];
   isLoading: boolean;
   error: string;
-  createTo?: string;
-  createLabel?: string;
   itemTo: (petId: number) => string;
-  emptyLabel?: string;
+  emptyLabel: string;
 }
 
 export function PetList({
   pets,
   isLoading,
   error,
-  createTo,
-  createLabel,
   itemTo,
-  emptyLabel = 'Todavía no hay mascotas. Creá la primera con «Nueva mascota».',
+  emptyLabel,
 }: PetListProps) {
   const hasPets = !isLoading && !error && pets.length > 0;
 
@@ -32,24 +30,29 @@ export function PetList({
       <div className="flex-1 overflow-auto px-4 pb-[100px] pt-4 lg:px-10 lg:pb-12 lg:pt-8">
         <div className="flex h-full w-full flex-col">
           {hasPets ? (
-            <ul className={GRID_CLASSES}>
+            <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {activeFirst(pets).map((pet) => (
-                <li key={pet.id} className="flex">
-                  <Link to={itemTo(pet.id)} className={pet.isDeleted ? DELETED_CARD_CLASSES : CARD_CLASSES}>
-                    <div className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] ${pet.isDeleted ? 'bg-[#9DB2BF]' : 'bg-[#27374D]'}`}>
-                      <span className={`text-[15px] font-semibold ${pet.isDeleted ? 'text-[#27374D]' : 'text-white'}`}>{initials(pet.name)}</span>
-                    </div>
-
-                    <div className="min-w-0 flex-1 text-left">
-                      <div className="flex items-center gap-2">
-                        <span className={`truncate text-[15px] font-semibold ${pet.isDeleted ? 'text-[#526D82]' : 'text-[#27374D]'}`}>{pet.name}</span>
-                        {pet.isDeleted ? <span className={DELETED_BADGE_CLASSES}>Suspendido</span> : null}
-                      </div>
-                      <div className="truncate text-[13px] text-[#526D82]">{pet.specie} · {pet.breed}</div>
-                      {pet.birthDate ? (
-                        <div className="truncate text-[12px] text-[#526D82]">Nacimiento: {formatDate(pet.birthDate)}</div>
-                      ) : null}
-                    </div>
+                <li key={pet.id}>
+                  <Link to={itemTo(pet.id)}>
+                    <Card className="transition-shadow hover:shadow-md">
+                      <CardHeader className="flex items-center gap-3">
+                        <Avatar size="lg">
+                          <AvatarFallback className={pet.isSuspended ? '' : 'bg-primary text-primary-foreground'}>
+                            {initials(pet.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <CardTitle className="flex items-center gap-2">
+                            {pet.name}
+                            {pet.isSuspended && <Badge variant="outline">Suspendido</Badge>}
+                          </CardTitle>
+                          <CardDescription>
+                            {pet.specie} · {pet.breed}
+                            {pet.birthDate && <> · Nacimiento: {formatDate(pet.birthDate)}</>}
+                          </CardDescription>
+                        </div>
+                      </CardHeader>
+                    </Card>
                   </Link>
                 </li>
               ))}
@@ -66,11 +69,6 @@ export function PetList({
         </div>
       </div>
 
-      {createTo && createLabel ? (
-        <div className="absolute inset-x-4 bottom-7 lg:hidden">
-          <CreateButton to={createTo} label={createLabel} />
-        </div>
-      ) : null}
     </>
   );
 }

@@ -14,7 +14,7 @@ export interface User {
   phone: string;
   roleName: UserRole;
   dni: string;
-  isDeleted: boolean;
+  isSuspended: boolean;
 }
 
 export interface UserFormState {
@@ -24,9 +24,4 @@ export interface UserFormState {
   password: string;
   roleName: string;
   dni: string;
-}
-
-export interface UsersOutletContext {
-  users: User[];
-  setUserDeleted: (userId: number, isDeleted: boolean) => void;
 }

@@ -24,26 +24,38 @@ export function SpeciesPage() {
   const [selected, setSelected] = useState<ISpecies | null>(null);
   const [breedQuery, setBreedQuery] = useState<BreedQuery>({ ...DEFAULT_QUERY, sortBy: 'name' });
   const [breedPage, setBreedPage] = useState<IPaginatedResponse<IBreed>>(EMPTY_PAGE);
+  const [speciesLoadedFor, setSpeciesLoadedFor] = useState<PageQuery | null>(null);
+  const [breedLoadedFor, setBreedLoadedFor] = useState<BreedQuery | null>(null);
   const [speciesReload, setSpeciesReload] = useState(0);
   const [breedReload, setBreedReload] = useState(0);
 
   useEffect(() => {
+    let active = true;
     const timer = setTimeout(() => {
       handleGetSpeciesPage(speciesQuery)
-        .then(setSpeciesPage)
-        .catch(() => toast.error('No se pudo cargar la lista de especies.'));
+        .then((response) => active && setSpeciesPage(response))
+        .catch(() => active && toast.error('No se pudo cargar la lista de especies.'))
+        .finally(() => active && setSpeciesLoadedFor(speciesQuery));
     }, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [speciesQuery, speciesReload]);
 
   useEffect(() => {
     if (!breedQuery.speciesId) return;
+    let active = true;
     const timer = setTimeout(() => {
       handleGetBreedsPage(breedQuery)
-        .then(setBreedPage)
-        .catch(() => toast.error('No se pudo cargar la lista de razas.'));
+        .then((response) => active && setBreedPage(response))
+        .catch(() => active && toast.error('No se pudo cargar la lista de razas.'))
+        .finally(() => active && setBreedLoadedFor(breedQuery));
     }, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [breedQuery, breedReload]);
 
   const selectSpecies = (species: ISpecies) => {
@@ -98,6 +110,7 @@ export function SpeciesPage() {
             itemLabel="especie"
             deleteWarning="También se borran sus razas. No se puede si alguna está asignada a una mascota."
             page={speciesPage}
+            isLoading={speciesLoadedFor !== speciesQuery}
             query={speciesQuery}
             onQueryChange={setSpeciesQuery}
             selectedId={selected?.id}
@@ -112,6 +125,7 @@ export function SpeciesPage() {
               itemLabel="raza"
               deleteWarning="No se puede si está asignada a una mascota o si es la última raza de la especie."
               page={breedPage}
+              isLoading={breedLoadedFor !== breedQuery}
               query={breedQuery}
               onQueryChange={(query) => setBreedQuery({ ...query, speciesId: selected.id })}
               onSave={saveBreed}

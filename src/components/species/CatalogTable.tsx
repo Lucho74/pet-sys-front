@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/common/SearchInput';
 import { Spinner } from '@/components/ui/spinner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -105,11 +105,11 @@ export function CatalogTable<T extends CatalogItem>({
         </Button>
       </div>
 
-      <Input
+      <SearchInput
+        aria-label={`Buscar en ${title}`}
         placeholder="Buscar por nombre..."
         value={query.search}
         onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
-        className="h-9 bg-white"
       />
 
       <div className={TABLE_CARD_CLASSES}>

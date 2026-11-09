@@ -24,7 +24,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/common/SearchInput';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PAGE_SIZE_OPTIONS, type Pagination } from '../../services/IPaginated';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -89,11 +89,12 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
-        <Input
+        <SearchInput
+          aria-label="Buscar por nombre o email"
           placeholder="Buscar por nombre o email..."
           value={query.search}
           onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
-          className="h-9 bg-white sm:max-w-[420px]"
+          className="sm:max-w-[420px]"
         />
 
         {role !== 'Veterinarian' && (

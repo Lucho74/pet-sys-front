@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/common/SearchInput';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PAGE_SIZE_OPTIONS, type PageQuery, type Pagination } from '../../services/IPaginated';
@@ -62,7 +62,7 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
       return (
         <div className="flex items-center gap-2">
           <span className="font-semibold">{consultation.description}</span>
-          {consultation.isSuspended && <Badge variant="outline">Suspendido</Badge>}
+          {consultation.isSuspended && <Badge variant="outline">Suspendida</Badge>}
         </div>
       );
     }
@@ -72,11 +72,12 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
-        <Input
+        <SearchInput
+          aria-label="Buscar consultas por título"
           placeholder="Buscar por título..."
           value={query.search}
           onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
-          className="h-9 bg-white sm:max-w-[420px]"
+          className="sm:max-w-[420px]"
         />
 
         <label className="flex sm:ml-auto items-center gap-2 text-[14px] text-[#27374D]">

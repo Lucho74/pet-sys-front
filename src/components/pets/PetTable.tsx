@@ -24,7 +24,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/common/SearchInput';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PAGE_SIZE_OPTIONS, type Pagination } from '../../services/IPaginated';
@@ -71,7 +71,7 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
             <AvatarFallback className={pet.isSuspended ? '' : 'bg-primary text-primary-foreground'}>{initials(pet.name)}</AvatarFallback>
           </Avatar>
           <span className="font-semibold">{pet.name}</span>
-          {pet.isSuspended && <Badge variant="outline">Suspendido</Badge>}
+          {pet.isSuspended && <Badge variant="outline">Suspendida</Badge>}
         </div>
       );
     }
@@ -81,11 +81,12 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
-        <Input
+        <SearchInput
+          aria-label="Buscar mascotas por nombre"
           placeholder="Buscar por nombre..."
           value={query.search}
           onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
-          className="h-9 bg-white sm:max-w-[420px]"
+          className="sm:max-w-[420px]"
         />
 
         <Select

@@ -46,7 +46,7 @@ export function SpeciesBreedSelect({
       <Field data-invalid={Boolean(speciesError)}>
         <FieldLabel htmlFor={speciesFieldId}>Especie</FieldLabel>
         <Select value={speciesId} onValueChange={onSpeciesChange} disabled={disabled}>
-          <SelectTrigger id={speciesFieldId} className="h-10 w-full bg-white" aria-invalid={Boolean(speciesError)}>
+          <SelectTrigger id={speciesFieldId} size="form" className="bg-white" aria-invalid={Boolean(speciesError)}>
             <SelectValue placeholder="Elegí una especie" />
           </SelectTrigger>
           <SelectContent>
@@ -63,7 +63,7 @@ export function SpeciesBreedSelect({
       <Field data-invalid={Boolean(breedError)}>
         <FieldLabel htmlFor={breedFieldId}>Raza</FieldLabel>
         <Select value={breedId} onValueChange={onBreedChange} disabled={disabled || !speciesId}>
-          <SelectTrigger id={breedFieldId} className="h-10 w-full bg-white" aria-invalid={Boolean(breedError)}>
+          <SelectTrigger id={breedFieldId} size="form" className="bg-white" aria-invalid={Boolean(breedError)}>
             <SelectValue placeholder={speciesId ? 'Elegí una raza' : 'Primero elegí la especie'} />
           </SelectTrigger>
           <SelectContent>

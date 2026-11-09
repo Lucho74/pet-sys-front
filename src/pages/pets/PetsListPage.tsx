@@ -9,9 +9,10 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ListState } from '../../components/common/ListState';
 import { PetTable } from '../../components/pets/PetTable';
-import { handleGetPetsPage } from '../../services/pets/petService';
+import { handleGetPetsPage, handleReactivatePet, handleSuspendPet } from '../../services/pets/petService';
 import { handleGetAllSpecies, handleGetBreedsBySpecies } from '../../services/species/speciesService';
 import { toPet, type Pet } from '../../components/pets/petTypes';
+import { errorMessage } from '../../utils/errors';
 
 const CREATE_TO = '/pets/new';
 const CREATE_LABEL = 'Nueva mascota';
@@ -42,6 +43,12 @@ export function PetsListPage() {
     const timer = setTimeout(() => {
       handleGetPetsPage(query)
         .then((response) => {
+          const lastPage = Math.max(response.totalPages, 1);
+          if (query.pageIndex > lastPage) {
+            setQuery({ ...query, pageIndex: lastPage });
+            return;
+          }
+
           setPagination(response);
           setPets(response.items.map(toPet));
         })
@@ -53,6 +60,19 @@ export function PetsListPage() {
     }, 300);
     return () => clearTimeout(timer);
   }, [query]);
+
+  const changeSuspension = async (id: number, isSuspended: boolean) => {
+    try {
+      if (isSuspended) await handleSuspendPet(id);
+      else await handleReactivatePet(id);
+
+      setPets((current) => current.map((pet) => pet.id === id ? { ...pet, isSuspended } : pet));
+      setQuery((current) => current.includeSuspended ? current : { ...current });
+      toast.success(isSuspended ? 'Mascota suspendida correctamente.' : 'Mascota reactivada correctamente.');
+    } catch (error) {
+      toast.error(errorMessage(error, isSuspended ? 'No se pudo suspender la mascota.' : 'No se pudo reactivar la mascota.'));
+    }
+  };
 
   return (
     <ScreenShell
@@ -70,11 +90,13 @@ export function PetsListPage() {
       <div className="flex-1 overflow-auto px-4 pb-[100px] pt-4 lg:px-10 lg:pb-12 lg:pt-8">
         {!isLoading && !error ? (
           <PetTable
-            pets={pets}
+            pets={query.includeSuspended ? pets : pets.filter((pet) => !pet.isSuspended)}
             species={species}
             breeds={breeds}
             query={query}
             onQueryChange={setQuery}
+            onSuspend={(id) => changeSuspension(id, true)}
+            onReactivate={(id) => changeSuspension(id, false)}
             pagination={pagination}
           />
         ) : (

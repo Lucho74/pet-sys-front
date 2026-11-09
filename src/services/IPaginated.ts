@@ -14,8 +14,6 @@ export const PAGE_SIZE = 10;
 
 export const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
-const MAX_PAGE_SIZE = 50;
-
 export interface PageQuery {
   pageIndex: number;
   pageSize: number;
@@ -40,17 +38,3 @@ export const toQueryString = (query: object) =>
       .filter(([, value]) => value !== '' && value !== undefined)
       .map(([key, value]) => [key, String(value)]),
   ).toString();
-
-export async function fetchAllPages<T>(getPage: (query: PageQuery) => Promise<IPaginatedResponse<T>>): Promise<T[]> {
-  const all: T[] = [];
-  let pageIndex = 1;
-  let page: IPaginatedResponse<T>;
-
-  do {
-    page = await getPage({ ...DEFAULT_QUERY, pageIndex, pageSize: MAX_PAGE_SIZE });
-    all.push(...page.items);
-    pageIndex++;
-  } while (page.hasNextPage);
-
-  return all;
-}

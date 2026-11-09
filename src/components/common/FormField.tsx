@@ -4,15 +4,17 @@ import { Eye, EyeOff } from 'lucide-react';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
+import { Textarea } from '@/components/ui/textarea';
 
 interface FormFieldProps {
   label: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   error?: string;
   type?: string;
   placeholder?: string;
   disabled?: boolean;
+  readOnly?: boolean;
   maxLength?: number;
   min?: string | number;
   max?: string | number;
@@ -26,7 +28,7 @@ export function FormField({ label, error, type = 'text', onChange, ...inputProps
   const props = {
     id,
     ...inputProps,
-    onChange: (event: ChangeEvent<HTMLInputElement>) => onChange(event.target.value),
+    onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => onChange?.(event.target.value),
     'aria-invalid': Boolean(error),
   };
 
@@ -48,8 +50,10 @@ export function FormField({ label, error, type = 'text', onChange, ...inputProps
             </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
+      ) : type === 'textarea' ? (
+        <Textarea className="min-h-32 bg-white" {...props} />
       ) : (
-        <Input type={type} className="h-10 bg-white" {...props} />
+        <Input type={type} className="h-10 bg-white read-only:bg-muted" {...props} />
       )}
 
       {error && <FieldError>{error}</FieldError>}

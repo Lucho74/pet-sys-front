@@ -12,6 +12,7 @@ interface UserFormProps {
   formError: string;
   fieldErrors: FormErrors;
   canChangeRole?: boolean;
+  roleHint?: string;
   isPasswordOptional?: boolean;
   isLoading?: boolean;
   isSaving?: boolean;
@@ -27,6 +28,7 @@ export function UserForm({
   formError,
   fieldErrors,
   canChangeRole = true,
+  roleHint,
   isPasswordOptional = false,
   isLoading = false,
   isSaving = false,
@@ -46,38 +48,18 @@ export function UserForm({
       onSave={onSave}
       saveLabel={saveLabel}
     >
-      <Field data-invalid={Boolean(fieldErrors.roleName)}>
-        <FieldLabel htmlFor="user-role">Rol</FieldLabel>
-        <Select
-          value={form.roleName}
-          onValueChange={(value) => onChange('roleName', value)}
-          disabled={isSaving || !canChangeRole}
-        >
-          <SelectTrigger id="user-role" className="h-10! w-full bg-white" aria-invalid={Boolean(fieldErrors.roleName)}>
-            <SelectValue placeholder="Elegí un rol" />
-          </SelectTrigger>
-          <SelectContent>
-            {roleOptions.map((role) => (
-              <SelectItem key={role} value={role}>
-                {ROLE_LABELS[role]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {fieldErrors.roleName && <FieldError>{fieldErrors.roleName}</FieldError>}
-        {!canChangeRole && <FieldDescription>El rol no se puede cambiar después de crear el usuario.</FieldDescription>}
-      </Field>
-
-      <FormField
-        label="Nombre completo"
-        value={form.fullName}
-        onChange={(value) => onChange('fullName', value)}
-        error={fieldErrors.fullName}
-        placeholder="Nombre y apellido"
-        maxLength={100}
-        autoComplete="name"
-        disabled={isSaving}
-      />
+      <div className={form.roleName === 'Client' ? undefined : 'sm:col-span-2'}>
+        <FormField
+          label="Nombre completo"
+          value={form.fullName}
+          onChange={(value) => onChange('fullName', value)}
+          error={fieldErrors.fullName}
+          placeholder="Nombre y apellido"
+          maxLength={100}
+          autoComplete="name"
+          disabled={isSaving}
+        />
+      </div>
 
       {form.roleName === 'Client' ? (
         <FormField
@@ -112,6 +94,28 @@ export function UserForm({
         autoComplete="tel"
         disabled={isSaving}
       />
+
+      <Field data-invalid={Boolean(fieldErrors.roleName)}>
+        <FieldLabel htmlFor="user-role">Rol</FieldLabel>
+        <Select
+          value={form.roleName}
+          onValueChange={(value) => onChange('roleName', value)}
+          disabled={isSaving || !canChangeRole}
+        >
+          <SelectTrigger id="user-role" size="form" className="bg-white" aria-invalid={Boolean(fieldErrors.roleName)}>
+            <SelectValue placeholder="Elegí un rol" />
+          </SelectTrigger>
+          <SelectContent>
+            {roleOptions.map((role) => (
+              <SelectItem key={role} value={role}>
+                {ROLE_LABELS[role]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {fieldErrors.roleName && <FieldError>{fieldErrors.roleName}</FieldError>}
+        {roleHint && <FieldDescription>{roleHint}</FieldDescription>}
+      </Field>
 
       <FormField
         label="Contraseña"

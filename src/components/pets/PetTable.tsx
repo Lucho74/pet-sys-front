@@ -5,6 +5,7 @@ import type { Pet } from './petTypes';
 import type { PetQuery } from '../../services/pets/IPet';
 import type { IBreed, ISpecies } from '../../services/species/ISpecies';
 import { formatDate } from '../../utils/datetime';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 import {
   TABLE_CARD_CLASSES,
   TABLE_HEAD_CLASSES,
@@ -32,6 +33,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 interface PetTableProps {
   query: PetQuery;
   onQueryChange: (query: PetQuery) => void;
+  onSuspend: (id: number) => Promise<void>;
+  onReactivate: (id: number) => Promise<void>;
   pagination: Pagination;
   pets: Pet[];
   species: ISpecies[];
@@ -47,9 +50,10 @@ const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
   { key: 'birthDate', label: 'Nacimiento' },
 ];
 
-export function PetTable({ query, onQueryChange, pagination, pets: rows, species, breeds }: PetTableProps) {
+export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagination, pets: rows, species, breeds }: PetTableProps) {
   const navigate = useNavigate();
   const [hidden, setHidden] = useState<ColumnKey[]>([]);
+  const [petToSuspend, setPetToSuspend] = useState<Pet | null>(null);
 
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
 
@@ -172,7 +176,11 @@ export function PetTable({ query, onQueryChange, pagination, pets: rows, species
 
           <TableBody>
             {rows.map((pet) => (
-              <TableRow key={pet.id} className={`${TABLE_ROW_CLASSES} ${pet.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}>
+              <TableRow
+                key={pet.id}
+                onClick={() => navigate(`/pets/${pet.id}`)}
+                className={`${TABLE_ROW_CLASSES} cursor-pointer ${pet.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
+              >
                 {columns.map((column) => (
                   <TableCell key={column.key} className="px-4 py-3">
                     {renderCell(pet, column.key)}
@@ -181,18 +189,23 @@ export function PetTable({ query, onQueryChange, pagination, pets: rows, species
                 <TableCell className="px-4 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon-sm" aria-label="Acciones">
+                      <Button variant="ghost" size="icon-sm" aria-label="Acciones" onClick={(event) => event.stopPropagation()}>
                         <MoreHorizontal />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
                       <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                      {!pet.isSuspended && (
-                        <DropdownMenuItem onClick={() => navigate(`/pets/${pet.id}/edit`)}>Editar mascota</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(`/pets/${pet.id}`)}>Ver detalle</DropdownMenuItem>
+                      {pet.isSuspended ? (
+                        <DropdownMenuItem onClick={() => onReactivate(pet.id)}>Reactivar mascota</DropdownMenuItem>
+                      ) : (
+                        <>
+                          <DropdownMenuItem onClick={() => navigate(`/pets/${pet.id}/edit`)}>Editar mascota</DropdownMenuItem>
+                          <DropdownMenuItem variant="destructive" onClick={() => setPetToSuspend(pet)}>
+                            Suspender mascota
+                          </DropdownMenuItem>
+                        </>
                       )}
-                      <DropdownMenuItem onClick={() => navigate(`/pets/${pet.id}/consultations`)}>
-                        Ver consultas
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -235,6 +248,15 @@ export function PetTable({ query, onQueryChange, pagination, pets: rows, species
           </Button>
         </div>
       </div>
+      {petToSuspend && (
+        <ConfirmDialog
+          title="Suspender mascota"
+          confirmLabel="Suspender"
+          description={`¿Confirmás que querés suspender la mascota ${petToSuspend.name}?`}
+          onClose={() => setPetToSuspend(null)}
+          onConfirm={() => onSuspend(petToSuspend.id)}
+        />
+      )}
     </div>
   );
 }

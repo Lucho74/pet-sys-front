@@ -10,6 +10,7 @@ export interface Consultation {
 }
 
 export interface ConsultationFormState {
+  title: string;
   description: string;
   date: string;
   petId: string;

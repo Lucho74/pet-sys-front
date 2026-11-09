@@ -2,22 +2,15 @@ import { FormField } from '../common/FormField';
 import { FormShell } from '../common/FormShell';
 import { PetSelect } from './PetSelect';
 import { VeterinarianSelect } from './VeterinarianSelect';
-import type { IUserResponse } from '../../services/users/IUser';
 import type { ConsultationFormState } from './consultationTypes';
 import type { FormErrors } from './consultationValidation';
-import type { IPetResponse } from '../../services/pets/IPet';
 import { todayDate } from '../../utils/datetime';
 
 interface ConsultationFormProps {
   form: ConsultationFormState;
   formError: string;
   fieldErrors: FormErrors;
-  veterinarians: IUserResponse[];
-  isLoadingVeterinarians?: boolean;
-  veterinariansError?: string;
-  pets: IPetResponse[];
-  isLoadingPets?: boolean;
-  petsError?: string;
+  assignedVeterinarian?: string;
   isLoading?: boolean;
   isSaving?: boolean;
   onChange: (field: keyof ConsultationFormState, value: string) => void;
@@ -30,12 +23,7 @@ export function ConsultationForm({
   form,
   formError,
   fieldErrors,
-  veterinarians,
-  isLoadingVeterinarians = false,
-  veterinariansError = '',
-  pets,
-  isLoadingPets = false,
-  petsError = '',
+  assignedVeterinarian,
   isLoading = false,
   isSaving = false,
   onChange,
@@ -53,17 +41,15 @@ export function ConsultationForm({
       onSave={onSave}
       saveLabel={saveLabel}
     >
-      <div className="sm:col-span-2">
-        <FormField
-          label="Descripción de la consulta"
-          value={form.description}
-          onChange={(value) => onChange('description', value)}
-          error={fieldErrors.description}
-          placeholder="Descripción de la consulta"
-          maxLength={500}
-          disabled={isSaving}
-        />
-      </div>
+      <FormField
+        label="Título"
+        value={form.title}
+        onChange={(value) => onChange('title', value)}
+        error={fieldErrors.title}
+        placeholder="Título de la consulta"
+        maxLength={100}
+        disabled={isSaving}
+      />
 
       <FormField
         label="Día de la consulta"
@@ -75,24 +61,35 @@ export function ConsultationForm({
         disabled={isSaving}
       />
 
-      <VeterinarianSelect
-        label="Veterinario"
-        veterinarians={veterinarians}
-        value={form.veterinarianId}
-        onChange={(value) => onChange('veterinarianId', value)}
-        isLoadingVeterinarians={isLoadingVeterinarians}
-        veterinariansError={veterinariansError}
-        error={fieldErrors.veterinarianId}
-        disabled={isSaving}
-      />
+      <div className="sm:col-span-2">
+        <FormField
+          label="Descripción de la consulta"
+          type="textarea"
+          value={form.description}
+          onChange={(value) => onChange('description', value)}
+          error={fieldErrors.description}
+          placeholder="Descripción de la consulta"
+          maxLength={500}
+          disabled={isSaving}
+        />
+      </div>
+
+      {assignedVeterinarian === undefined ? (
+        <VeterinarianSelect
+          label="Veterinario"
+          value={form.veterinarianId}
+          onChange={(value) => onChange('veterinarianId', value)}
+          error={fieldErrors.veterinarianId}
+          disabled={isSaving}
+        />
+      ) : (
+        <FormField label="Veterinario" value={assignedVeterinarian} readOnly />
+      )}
 
       <PetSelect
         label="Mascota"
-        pets={pets}
         value={form.petId}
         onChange={(value) => onChange('petId', value)}
-        isLoadingPets={isLoadingPets}
-        petsError={petsError}
         error={fieldErrors.petId}
         disabled={isSaving}
       />

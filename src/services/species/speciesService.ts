@@ -1,6 +1,11 @@
 import type { BreedQuery, IBreed, ISpecies } from "./ISpecies";
 import { apiFetch } from "../apiClient";
-import { fetchAllPages, toQueryString, type IPaginatedResponse, type PageQuery } from "../IPaginated";
+import { DEFAULT_QUERY, toQueryString, type IPaginatedResponse, type PageQuery } from "../IPaginated";
+
+const SPECIES_PAGE_SIZE = 50;
+
+let speciesCache: Promise<ISpecies[]> | undefined;
+const breedsCache = new Map<number, Promise<IBreed[]>>();
 
 export const handleGetSpeciesPage = async (query: PageQuery): Promise<IPaginatedResponse<ISpecies>> => {
     const response = await apiFetch(`/Species?${toQueryString(query)}`);
@@ -8,7 +13,25 @@ export const handleGetSpeciesPage = async (query: PageQuery): Promise<IPaginated
     return response.json();
 };
 
-export const handleGetAllSpecies = (): Promise<ISpecies[]> => fetchAllPages(handleGetSpeciesPage);
+export const handleGetAllSpecies = (): Promise<ISpecies[]> => {
+    if (speciesCache) return speciesCache;
+
+    const request = (async () => {
+        const species: ISpecies[] = [];
+
+        for (let pageIndex = 1; ; pageIndex++) {
+            const page = await handleGetSpeciesPage({ ...DEFAULT_QUERY, pageIndex, pageSize: SPECIES_PAGE_SIZE });
+            species.push(...page.items);
+            if (!page.hasNextPage) return species;
+        }
+    })().catch((error) => {
+        if (speciesCache === request) speciesCache = undefined;
+        throw error;
+    });
+
+    speciesCache = request;
+    return request;
+};
 
 export const handleAddSpecies = async (name: string): Promise<ISpecies> => {
     const response = await apiFetch('/Species', {
@@ -16,6 +39,7 @@ export const handleAddSpecies = async (name: string): Promise<ISpecies> => {
         body: JSON.stringify({ name })
     });
 
+    speciesCache = undefined;
     return response.json();
 };
 
@@ -25,11 +49,14 @@ export const handleUpdateSpecies = async (id: number, name: string): Promise<ISp
         body: JSON.stringify({ name })
     });
 
+    speciesCache = undefined;
     return response.json();
 };
 
 export const handleDeleteSpecies = async (id: number): Promise<void> => {
     await apiFetch(`/Species/${id}`, { method: 'DELETE' });
+    speciesCache = undefined;
+    breedsCache.delete(id);
 };
 
 export const handleGetBreedsPage = async (query: BreedQuery): Promise<IPaginatedResponse<IBreed>> => {
@@ -38,10 +65,19 @@ export const handleGetBreedsPage = async (query: BreedQuery): Promise<IPaginated
     return response.json();
 };
 
-export const handleGetBreedsBySpecies = async (speciesId: number): Promise<IBreed[]> => {
-    const response = await apiFetch(`/Breed/species/${speciesId}`);
+export const handleGetBreedsBySpecies = (speciesId: number): Promise<IBreed[]> => {
+    const cached = breedsCache.get(speciesId);
+    if (cached) return cached;
 
-    return response.json();
+    const request: Promise<IBreed[]> = apiFetch(`/Breed/species/${speciesId}`)
+        .then((response) => response.json())
+        .catch((error) => {
+            if (breedsCache.get(speciesId) === request) breedsCache.delete(speciesId);
+            throw error;
+        });
+
+    breedsCache.set(speciesId, request);
+    return request;
 };
 
 export const handleAddBreed = async (name: string, speciesId: number): Promise<IBreed> => {
@@ -50,6 +86,7 @@ export const handleAddBreed = async (name: string, speciesId: number): Promise<I
         body: JSON.stringify({ name, speciesId })
     });
 
+    breedsCache.delete(speciesId);
     return response.json();
 };
 
@@ -59,9 +96,12 @@ export const handleUpdateBreed = async (id: number, name: string): Promise<IBree
         body: JSON.stringify({ name })
     });
 
-    return response.json();
+    const updated: IBreed = await response.json();
+    breedsCache.delete(updated.speciesId);
+    return updated;
 };
 
-export const handleDeleteBreed = async (id: number): Promise<void> => {
+export const handleDeleteBreed = async (id: number, speciesId: number): Promise<void> => {
     await apiFetch(`/Breed/${id}`, { method: 'DELETE' });
+    breedsCache.delete(speciesId);
 };

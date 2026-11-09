@@ -1,45 +1,52 @@
+import { SearchSelect } from '../common/SearchSelect';
+import { useRemoteSelect } from '../common/useRemoteSelect';
+import { DEFAULT_QUERY } from '../../services/IPaginated';
 import type { IUserResponse } from '../../services/users/IUser';
-import { MIN_SEARCH_LENGTH, SearchSelect } from '../common/SearchSelect';
+import { handleGetByIdUser, handleGetUsersPage } from '../../services/users/userService';
 
 interface OwnerSelectProps {
   label: string;
-  owners: IUserResponse[];
   value: string;
-  onChange: (ownerId: string) => void;
-  isLoadingOwners?: boolean;
-  ownersError?: string;
+  onChange: (id: string) => void;
   error?: string;
   disabled?: boolean;
 }
 
-export function OwnerSelect({
-  label,
-  owners,
-  value,
-  onChange,
-  isLoadingOwners = false,
-  ownersError = '',
-  error,
-  disabled = false,
-}: OwnerSelectProps) {
-  const options = owners.map((owner) => ({
-    id: owner.id,
-    primary: owner.dni ?? '',
-    secondary: owner.fullName ?? '',
-  }));
+function toOption(user: IUserResponse) {
+  return {
+    id: String(user.id),
+    primary: user.fullName?.trim() || 'Sin nombre',
+    secondary: user.dni ? `DNI ${user.dni}` : '',
+  };
+}
+
+async function searchOptions(search: string) {
+  const { items } = await handleGetUsersPage({ ...DEFAULT_QUERY, role: 'Client', includeSuspended: false, search });
+  return items.map(toOption);
+}
+
+async function loadOption(id: string) {
+  return toOption(await handleGetByIdUser(id));
+}
+
+export function OwnerSelect({ label, value, onChange, error, disabled = false }: OwnerSelectProps) {
+  const search = useRemoteSelect({
+    value,
+    onChange,
+    searchOptions,
+    loadOption,
+    missingLabel: 'No se pudo cargar el dueño',
+  });
 
   return (
     <SearchSelect
+      {...search}
       label={label}
-      options={options}
       value={value}
-      onChange={onChange}
-      placeholder="Escribe el DNI del dueño"
-      searchHint={`Escribe al menos ${MIN_SEARCH_LENGTH} números del DNI para buscar.`}
-      loadingLabel="Cargando clientes..."
-      notFoundLabel="No se encontraron clientes con ese DNI."
-      isLoading={isLoadingOwners}
-      loadError={ownersError}
+      placeholder="Escribí el nombre del dueño"
+      searchHint={`Escribí al menos ${search.minSearchLength} caracteres para buscar.`}
+      loadingLabel="Buscando clientes..."
+      notFoundLabel="No se encontraron clientes."
       error={error}
       disabled={disabled}
     />

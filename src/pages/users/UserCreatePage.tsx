@@ -15,6 +15,7 @@ import { useAuth } from '../../contexts/AuthenticationContext';
 export function UserCreatePage() {
   const navigate = useNavigate();
   const { role } = useAuth();
+  const roleOptions = getManageableRoles(role);
 
   const [form, setForm] = useState<UserFormState>({
     fullName: '',
@@ -76,7 +77,8 @@ export function UserCreatePage() {
         onCancel={() => navigate('/users')}
         onSave={handleSave}
         saveLabel="Crear usuario"
-        roleOptions={getManageableRoles(role)}
+        roleOptions={roleOptions}
+        canChangeRole={roleOptions.length > 1}
       />
     </ScreenShell>
   );

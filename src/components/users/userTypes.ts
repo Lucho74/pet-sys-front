@@ -14,6 +14,7 @@ export interface User {
   phone: string;
   roleName: UserRole;
   dni: string;
+  registrationNumber: string;
   isSuspended: boolean;
 }
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Consultation } from './consultationTypes';
 import { formatDate } from '../../utils/datetime';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 import {
   TABLE_CARD_CLASSES,
   TABLE_HEAD_CLASSES,
@@ -29,6 +30,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 interface ConsultationTableProps {
   query: PageQuery;
   onQueryChange: (query: PageQuery) => void;
+  onSuspend: (id: number) => Promise<void>;
+  onReactivate: (id: number) => Promise<void>;
   pagination: Pagination;
   consultations: Consultation[];
 }
@@ -43,9 +46,10 @@ const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
   { key: 'veterinarianName', label: 'Veterinario' },
 ];
 
-export function ConsultationTable({ query, onQueryChange, pagination, consultations: rows }: ConsultationTableProps) {
+export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivate, pagination, consultations: rows }: ConsultationTableProps) {
   const navigate = useNavigate();
   const [hidden, setHidden] = useState<ColumnKey[]>([]);
+  const [consultationToSuspend, setConsultationToSuspend] = useState<number | null>(null);
 
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
 
@@ -133,7 +137,8 @@ export function ConsultationTable({ query, onQueryChange, pagination, consultati
             {rows.map((consultation) => (
               <TableRow
                 key={consultation.id}
-                className={`${TABLE_ROW_CLASSES} ${consultation.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
+                onClick={() => navigate(`/consultations/${consultation.id}`)}
+                className={`${TABLE_ROW_CLASSES} cursor-pointer ${consultation.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
               >
                 {columns.map((column) => (
                   <TableCell key={column.key} className="px-4 py-3">
@@ -143,16 +148,26 @@ export function ConsultationTable({ query, onQueryChange, pagination, consultati
                 <TableCell className="px-4 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon-sm" aria-label="Acciones">
+                      <Button variant="ghost" size="icon-sm" aria-label="Acciones" onClick={(event) => event.stopPropagation()}>
                         <MoreHorizontal />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
                       <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                      {!consultation.isSuspended && (
-                        <DropdownMenuItem onClick={() => navigate(`/consultations/${consultation.id}/edit`)}>
-                          Editar consulta
-                        </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(`/consultations/${consultation.id}`)}>
+                        Ver detalle
+                      </DropdownMenuItem>
+                      {consultation.isSuspended ? (
+                        <DropdownMenuItem onClick={() => onReactivate(consultation.id)}>Reactivar consulta</DropdownMenuItem>
+                      ) : (
+                        <>
+                          <DropdownMenuItem onClick={() => navigate(`/consultations/${consultation.id}/edit`)}>
+                            Editar consulta
+                          </DropdownMenuItem>
+                          <DropdownMenuItem variant="destructive" onClick={() => setConsultationToSuspend(consultation.id)}>
+                            Suspender consulta
+                          </DropdownMenuItem>
+                        </>
                       )}
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -196,6 +211,15 @@ export function ConsultationTable({ query, onQueryChange, pagination, consultati
           </Button>
         </div>
       </div>
+      {consultationToSuspend !== null && (
+        <ConfirmDialog
+          title="Suspender consulta"
+          confirmLabel="Suspender"
+          description={`¿Confirmás que querés suspender la consulta #${consultationToSuspend}?`}
+          onClose={() => setConsultationToSuspend(null)}
+          onConfirm={() => onSuspend(consultationToSuspend)}
+        />
+      )}
     </div>
   );
 }

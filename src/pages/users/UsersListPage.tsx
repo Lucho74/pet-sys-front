@@ -85,7 +85,7 @@ export function UsersListPage() {
       icon={UserIcon}
       homeTo="/"
       action={
-        <Button asChild variant="secondary">
+        <Button asChild>
           <Link to={CREATE_TO}>
             <Plus /> {CREATE_LABEL}
           </Link>

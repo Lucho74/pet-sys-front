@@ -6,6 +6,10 @@ export const TABLE_HEADER_ROW_CLASSES = 'bg-[#27374D] hover:bg-[#27374D]';
 
 export const TABLE_HEAD_CLASSES = 'h-12 px-5 text-[13px] font-semibold uppercase tracking-[0.05em] text-[#DDE6ED]';
 
+export const TABLE_ACTION_WIDTH = 72;
+
+export const TABLE_CELL_CLASSES = 'px-5 py-4 whitespace-normal wrap-anywhere';
+
 export const TABLE_ROW_CLASSES = 'text-[15px] border-[#DDE6ED] hover:bg-[#DDE6ED]/50';
 
 export const DETAIL_LIST_LINK_CLASSES =

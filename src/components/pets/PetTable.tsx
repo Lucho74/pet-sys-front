@@ -7,7 +7,9 @@ import type { IBreed, ISpecies } from '../../services/species/ISpecies';
 import { formatDate } from '../../utils/datetime';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import {
+  TABLE_ACTION_WIDTH,
   TABLE_CARD_CLASSES,
+  TABLE_CELL_CLASSES,
   TABLE_HEAD_CLASSES,
   TABLE_HEADER_ROW_CLASSES,
   TABLE_ROW_CLASSES,
@@ -43,11 +45,11 @@ interface PetTableProps {
 
 type ColumnKey = 'name' | 'species' | 'breed' | 'birthDate';
 
-const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
-  { key: 'name', label: 'Nombre', sortBy: 'name' },
-  { key: 'species', label: 'Especie', sortBy: 'species' },
-  { key: 'breed', label: 'Raza', sortBy: 'breed' },
-  { key: 'birthDate', label: 'Nacimiento' },
+const COLUMNS: { key: ColumnKey; label: string; width: number; sortBy?: string }[] = [
+  { key: 'name', label: 'Nombre', sortBy: 'name', width: 248 },
+  { key: 'species', label: 'Especie', sortBy: 'species', width: 136 },
+  { key: 'breed', label: 'Raza', sortBy: 'breed', width: 152 },
+  { key: 'birthDate', label: 'Nacimiento', width: 128 },
 ];
 
 export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagination, pets: rows, species, breeds }: PetTableProps) {
@@ -56,6 +58,8 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
   const [petToSuspend, setPetToSuspend] = useState<Pet | null>(null);
 
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
+  const flexibleColumn = columns.find((column) => column.key === 'name') ?? columns[0];
+  const minWidth = columns.reduce((width, column) => width + column.width, TABLE_ACTION_WIDTH);
 
   const handleSort = (sortBy: string) => {
     onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
@@ -63,14 +67,16 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
 
   const renderCell = (pet: Pet, key: ColumnKey) => {
     if (key === 'birthDate') return pet.birthDate ? formatDate(pet.birthDate) : 'Sin fecha';
-    if (key === 'species') return <Badge variant="secondary">{pet.species}</Badge>;
+    if (key === 'species') {
+      return <Badge variant="secondary" className="h-auto min-h-5 max-w-full whitespace-normal">{pet.species}</Badge>;
+    }
     if (key === 'name') {
       return (
         <div className="flex items-center gap-3">
           <Avatar>
             <AvatarFallback className={pet.isSuspended ? '' : 'bg-primary text-primary-foreground'}>{initials(pet.name)}</AvatarFallback>
           </Avatar>
-          <span className="font-semibold">{pet.name}</span>
+          <span className="min-w-0 font-semibold">{pet.name}</span>
           {pet.isSuspended && <Badge variant="outline">Suspendida</Badge>}
         </div>
       );
@@ -157,11 +163,15 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
       </div>
 
       <div className={TABLE_CARD_CLASSES}>
-        <Table>
+        <Table className="table-fixed" style={{ minWidth }}>
           <TableHeader>
             <TableRow className={TABLE_HEADER_ROW_CLASSES}>
               {columns.map((column) => (
-                <TableHead key={column.key} className={TABLE_HEAD_CLASSES}>
+                <TableHead
+                  key={column.key}
+                  className={TABLE_HEAD_CLASSES}
+                  style={column === flexibleColumn ? undefined : { width: column.width }}
+                >
                   {column.sortBy ? (
                     <button type="button" onClick={() => handleSort(column.sortBy!)} className="cursor-pointer uppercase hover:text-white">
                       {column.label} {query.sortBy === column.sortBy ? (query.sortDesc ? '↓' : '↑') : ''}
@@ -171,7 +181,7 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
                   )}
                 </TableHead>
               ))}
-              <TableHead />
+              <TableHead style={{ width: TABLE_ACTION_WIDTH }} />
             </TableRow>
           </TableHeader>
 
@@ -183,7 +193,7 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
                 className={`${TABLE_ROW_CLASSES} cursor-pointer ${pet.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
               >
                 {columns.map((column) => (
-                  <TableCell key={column.key} className="px-5 py-4">
+                  <TableCell key={column.key} className={TABLE_CELL_CLASSES}>
                     {renderCell(pet, column.key)}
                   </TableCell>
                 ))}

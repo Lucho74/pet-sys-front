@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { ArrowUpRight, PawPrint, Plus, Stethoscope, UserPlus } from 'lucide-react';
 import { ScreenShell } from '../components/layout/ScreenShell';
 import { ListState } from '../components/common/ListState';
@@ -20,7 +20,7 @@ import {
 import { useAuth } from '../contexts/AuthenticationContext';
 import { handleGetDashboard } from '../services/dashboard/dashboardService';
 import type { IDashboardResponse } from '../services/dashboard/IDashboard';
-import { CLINICAL_ROLES } from '../utils/roles';
+import { CLIENT_ROLES, CLINICAL_ROLES } from '../utils/roles';
 import { initials } from '../utils/initials';
 import { formatDate } from '../utils/datetime';
 
@@ -47,6 +47,8 @@ export function Home() {
       .catch(() => setError('No se pudo cargar el panel.'))
       .finally(() => setIsLoading(false));
   }, [canManage]);
+
+  if (role !== null && CLIENT_ROLES.includes(role)) return <Navigate to="/my-pets" replace />;
 
   const firstName = dashboard?.user.fullName.split(' ')[0];
   const consultations = dashboard?.recentConsultations ?? [];

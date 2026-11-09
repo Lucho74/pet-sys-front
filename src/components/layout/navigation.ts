@@ -18,7 +18,8 @@ export const NAV_ITEMS: NavItem[] = [
     label: 'Panel',
     description: 'Resumen de la gestión',
     icon: LayoutDashboard,
-    end: true
+    end: true,
+    roles: CLINICAL_ROLES
   },
   {
     to: '/users',

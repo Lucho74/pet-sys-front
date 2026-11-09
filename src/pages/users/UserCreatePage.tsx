@@ -5,7 +5,7 @@ import { ScreenShell } from '../../components/layout/ScreenShell';
 import { UserForm } from '../../components/users/UserForm';
 import { handleAddUser } from '../../services/users/userService';
 import type { AssignableRole } from '../../services/users/IUser';
-import type { UserFormState } from '../../components/users/userTypes';
+import { isProfessionalRole, type UserFormState } from '../../components/users/userTypes';
 import { validateUserForm } from '../../components/users/userValidation';
 import type { FormErrors } from '../../components/users/userValidation';
 import { getManageableRoles } from '../../utils/roles';
@@ -24,6 +24,7 @@ export function UserCreatePage() {
     password: '',
     roleName: 'Client',
     dni: '',
+    registrationNumber: '',
   });
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
   const [formError, setFormError] = useState('');
@@ -47,17 +48,18 @@ export function UserCreatePage() {
     setFormError('');
 
     try {
-      await handleAddUser({
+      const user = await handleAddUser({
         fullName: form.fullName,
         email: form.email,
         phone: form.phone,
         password: form.password,
-        userType: form.roleName as AssignableRole,
-        dni: form.roleName === 'Client' ? form.dni : null,
+        role: form.roleName as AssignableRole,
+        dni: form.roleName === 'Client' ? form.dni.trim() : null,
+        registrationNumber: isProfessionalRole(form.roleName) ? form.registrationNumber.trim() : null,
       });
 
       toast.success('Usuario creado correctamente.');
-      navigate('/users');
+      navigate(`/users/${user.id}`, { replace: true });
     } catch (error) {
       const message = errorMessage(error, 'No se pudo guardar el usuario.');
       setFormError(message);

@@ -72,7 +72,7 @@ export function PetCreatePage() {
     }
 
     toast.success('Mascota creada correctamente.');
-    navigate('/pets');
+    navigate(`/pets/${petId}`, { replace: true });
   };
 
   return (

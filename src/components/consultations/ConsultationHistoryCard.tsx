@@ -1,10 +1,10 @@
-import { useEffect, useId, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useId, useState, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ListState } from '../common/ListState';
-import { TABLE_CARD_CLASSES, TABLE_HEAD_CLASSES, TABLE_HEADER_ROW_CLASSES, TABLE_ROW_CLASSES } from '../common/listStyles';
+import { TABLE_CARD_CLASSES } from '../common/listStyles';
 import type { IConsultationResponse } from '../../services/consultation/IConsultation';
 import { handleGetConsultationsByPet, handleGetConsultationsByVeterinarian } from '../../services/consultation/consultationService';
 import { formatDate, hasDateTime } from '../../utils/datetime';
@@ -14,10 +14,10 @@ interface ConsultationHistoryCardProps {
   source: 'pet' | 'veterinarian';
   id: number;
   detailBase?: string;
+  action?: ReactNode;
 }
 
-export function ConsultationHistoryCard({ source, id, detailBase = '/consultations' }: ConsultationHistoryCardProps) {
-  const navigate = useNavigate();
+export function ConsultationHistoryCard({ source, id, detailBase = '/consultations', action }: ConsultationHistoryCardProps) {
   const headingId = useId();
   const [consultations, setConsultations] = useState<IConsultationResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,12 +50,16 @@ export function ConsultationHistoryCard({ source, id, detailBase = '/consultatio
 
   return (
     <Card className={`${TABLE_CARD_CLASSES} gap-0 py-0 ring-0`}>
-      <CardHeader className="px-4 py-4">
-        <CardTitle><h2 id={headingId}>{source === 'pet' ? 'Historial de consultas' : 'Consultas asignadas'}</h2></CardTitle>
+      <CardHeader className="flex flex-wrap items-center justify-between gap-3 border-b border-[#DDE6ED] px-5 py-4">
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+          <h2 id={headingId}>{source === 'pet' ? 'Historial de consultas' : 'Consultas asignadas'}</h2>
+          {!isLoading && !error && visits.length > 0 && <Badge variant="secondary">{visits.length}</Badge>}
+        </CardTitle>
+        {action}
       </CardHeader>
       <CardContent className="p-0">
         {isLoading || error || visits.length === 0 ? (
-          <div className="px-4 pb-4">
+          <div className="px-5 py-4">
             <ListState
               isLoading={isLoading}
               error={error}
@@ -65,50 +69,36 @@ export function ConsultationHistoryCard({ source, id, detailBase = '/consultatio
             />
           </div>
         ) : (
-          <Table className="table-fixed" aria-labelledby={headingId}>
-            <TableHeader>
-              <TableRow className={TABLE_HEADER_ROW_CLASSES}>
-                <TableHead scope="col" className={TABLE_HEAD_CLASSES}>Consulta</TableHead>
-                <TableHead scope="col" className={`${TABLE_HEAD_CLASSES} w-28`}>Fecha</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {visits.map((consultation) => (
-                <TableRow
-                  key={consultation.id}
-                  onClick={() => navigate(`${detailBase}/${consultation.id}`)}
-                  className={`${TABLE_ROW_CLASSES} cursor-pointer ${
+          <ul aria-labelledby={headingId} className="divide-y divide-[#DDE6ED]">
+            {visits.map((consultation) => (
+              <li key={consultation.id}>
+                <Link
+                  to={`${detailBase}/${consultation.id}`}
+                  className={`group flex items-start gap-4 px-5 py-4 no-underline transition-colors hover:bg-[#DDE6ED]/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring ${
                     consultation.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'
                   }`}
                 >
-                  <TableCell className="space-y-1 px-4 py-3 align-top whitespace-normal">
-                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                      <h3 className="wrap-anywhere font-semibold">
-                        <Link
-                          to={`${detailBase}/${consultation.id}`}
-                          className="rounded-sm no-underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                          onClick={(event) => event.stopPropagation()}
-                        >
-                          {consultation.title?.trim() || 'Sin título'}
-                        </Link>
-                      </h3>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="wrap-anywhere text-[15px] font-semibold">{consultation.title?.trim() || 'Sin título'}</h3>
                       {consultation.isSuspended && <Badge variant="outline">Suspendida</Badge>}
                     </div>
-                    <p className="whitespace-pre-wrap wrap-anywhere text-muted-foreground">
+                    <p className="line-clamp-2 wrap-anywhere text-sm text-muted-foreground">
                       {consultation.description?.trim() || 'Sin descripción'}
                     </p>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 align-top tabular-nums">
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2 pt-0.5 text-sm tabular-nums text-muted-foreground">
                     {consultation.date ? (
                       <time dateTime={consultation.date}>{formatDate(consultation.date)}</time>
                     ) : (
-                      <span className="text-muted-foreground">Sin fecha</span>
+                      <span>Sin fecha</span>
                     )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
         )}
       </CardContent>
     </Card>

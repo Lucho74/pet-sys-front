@@ -18,6 +18,8 @@ export interface User {
   isSuspended: boolean;
 }
 
+export const isProfessionalRole = (role: string) => role === 'Veterinarian' || role === 'Admin';
+
 export interface UserFormState {
   fullName: string;
   email: string;
@@ -25,4 +27,5 @@ export interface UserFormState {
   password: string;
   roleName: string;
   dni: string;
+  registrationNumber: string;
 }

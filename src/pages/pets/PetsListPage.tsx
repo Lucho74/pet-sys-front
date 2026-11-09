@@ -7,6 +7,7 @@ import type { IBreed, ISpecies } from '../../services/species/ISpecies';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { CREATE_BUTTON_CLASSES, CREATE_BAR_CLASSES } from '../../components/common/listStyles';
 import { ListState } from '../../components/common/ListState';
 import { PetTable } from '../../components/pets/PetTable';
 import { handleGetPetsPage, handleReactivatePet, handleSuspendPet } from '../../services/pets/petService';
@@ -80,7 +81,7 @@ export function PetsListPage() {
       icon={PawPrint}
       homeTo="/"
       action={
-        <Button asChild>
+        <Button asChild size="lg" className={CREATE_BUTTON_CLASSES}>
           <Link to={CREATE_TO}>
             <Plus /> {CREATE_LABEL}
           </Link>
@@ -111,7 +112,7 @@ export function PetsListPage() {
       </div>
 
       <div className="absolute inset-x-4 bottom-7 lg:hidden">
-        <Button asChild size="lg" className="h-12 w-full shadow-[0_6px_16px_rgba(39,55,77,0.35)]">
+        <Button asChild size="lg" className={CREATE_BAR_CLASSES}>
           <Link to={CREATE_TO}>
             <Plus /> {CREATE_LABEL}
           </Link>

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { PawPrint, Pencil } from 'lucide-react';
+import { PawPrint, Pencil, Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { CREATE_BUTTON_CLASSES } from '../../components/common/listStyles';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Spinner } from '@/components/ui/spinner';
 import { ListState } from '../../components/common/ListState';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { ScreenShell } from '../../components/layout/ScreenShell';
@@ -47,6 +49,7 @@ function PetDetail({ id, backTo }: { id: string; backTo: PetListPath }) {
   const [isLoading, setIsLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const [showSuspendDialog, setShowSuspendDialog] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const petId = pet?.id;
@@ -85,7 +88,9 @@ function PetDetail({ id, backTo }: { id: string; backTo: PetListPath }) {
         if (!signal.aborted) setImageUrl(url);
       })
       .catch((error: unknown) => {
-        if (signal.aborted || (error instanceof ApiError && error.status === 404)) return;
+        if (signal.aborted) return;
+        setIsImageLoading(false);
+        if (error instanceof ApiError && error.status === 404) return;
 
         setImageError(true);
       });
@@ -132,13 +137,21 @@ function PetDetail({ id, backTo }: { id: string; backTo: PetListPath }) {
                         src={imageUrl}
                         alt={`Foto de ${pet.name}`}
                         onLoadingStatusChange={(status) => {
+                          if (status === 'loading') return;
+                          setIsImageLoading(false);
                           if (status === 'error') setImageError(true);
                         }}
                       />
                     )}
-                    <AvatarFallback aria-hidden="true" className="rounded-none bg-primary text-4xl font-semibold text-primary-foreground">
-                      {initials(pet.name)}
-                    </AvatarFallback>
+                    {isImageLoading ? (
+                      <AvatarFallback className="rounded-none bg-muted">
+                        <Spinner className="size-8 text-muted-foreground" aria-label="Cargando foto" />
+                      </AvatarFallback>
+                    ) : (
+                      <AvatarFallback aria-hidden="true" className="rounded-none bg-primary text-4xl font-semibold text-primary-foreground">
+                        {initials(pet.name)}
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                   {imageError && <p className="mt-2 text-center text-sm text-muted-foreground">No se pudo cargar la foto.</p>}
                 </div>
@@ -198,6 +211,13 @@ function PetDetail({ id, backTo }: { id: string; backTo: PetListPath }) {
               source="pet"
               id={pet.id}
               detailBase={backTo === '/my-pets' ? `/my-pets/${pet.id}/consultations` : '/consultations'}
+              action={backTo === '/pets' && !pet.isSuspended && (
+                <Button asChild size="lg" className={CREATE_BUTTON_CLASSES}>
+                  <Link to={`/consultations/new?petId=${pet.id}`}>
+                    <Plus aria-hidden="true" /> Nueva consulta
+                  </Link>
+                </Button>
+              )}
             />
           </div>
         ) : (

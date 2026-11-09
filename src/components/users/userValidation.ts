@@ -1,4 +1,4 @@
-import type { UserFormState } from './userTypes';
+import { isProfessionalRole, type UserFormState } from './userTypes';
 
 export type FormErrors = Partial<Record<keyof UserFormState, string>>;
 
@@ -51,8 +51,18 @@ export function validateUserForm(form: UserFormState, isPasswordOptional = false
       errors.dni = 'El DNI es obligatorio para los clientes.';
     } else if (!/^[0-9]+$/.test(dni)) {
       errors.dni = 'El DNI solo puede tener números.';
-    } else if (dni.length > 20) {
-      errors.dni = 'El DNI no puede superar los 20 caracteres.';
+    } else if (dni.length > 8) {
+      errors.dni = 'El DNI no puede superar los 8 caracteres.';
+    }
+  }
+
+  if (isProfessionalRole(form.roleName)) {
+    const registrationNumber = form.registrationNumber.trim();
+
+    if (!registrationNumber) {
+      errors.registrationNumber = 'La matrícula es obligatoria.';
+    } else if (registrationNumber.length > 50) {
+      errors.registrationNumber = 'La matrícula no puede superar los 50 caracteres.';
     }
   }
 

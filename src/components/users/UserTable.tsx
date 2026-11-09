@@ -96,6 +96,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
           className="h-9 bg-white sm:max-w-[420px]"
         />
 
+        {role !== 'Veterinarian' && (
         <Select
           value={query.role || 'all'}
           onValueChange={(value) => onQueryChange({ ...query, role: value === 'all' ? '' : value, pageIndex: 1 })}
@@ -112,6 +113,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
             ))}
           </SelectContent>
         </Select>
+        )}
 
         <Select
           value={query.isSuspend ? 'suspended' : query.includeSuspended ? 'all' : 'active'}
@@ -187,11 +189,11 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
                   className={`${TABLE_ROW_CLASSES} ${canOpenDetail ? 'cursor-pointer' : ''} ${user.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
                 >
                   {columns.map((column) => (
-                    <TableCell key={column.key} className="px-4 py-3">
+                    <TableCell key={column.key} className="px-5 py-4">
                       {renderCell(user, column.key)}
                     </TableCell>
                   ))}
-                  <TableCell className="px-4 text-right">
+                  <TableCell className="px-5 text-right">
                     {canOpenDetail && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

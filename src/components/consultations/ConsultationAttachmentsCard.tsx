@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react';
 import { ExternalLink, FileText, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Item, ItemActions, ItemContent } from '@/components/ui/item';
 import { Spinner } from '@/components/ui/spinner';
 import type { IConsultationAttachment } from '../../services/consultation/IConsultation';
 import {
@@ -159,23 +160,25 @@ export function ConsultationAttachmentsCard({ consultationId, initialAttachments
               const label = fileName?.trim() || `Adjunto ${index + 1}${blobName.match(/\.(pdf|docx)$/i)?.[0] ?? ''}`;
 
               return (
-                <li key={blobName} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <FileText aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-                    <span className="wrap-anywhere">{label}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    <Button type="button" variant="ghost" size="sm" aria-label={`Abrir ${label}`} disabled={opening !== null || isUpdating} onClick={() => openAttachment(blobName)}>
-                      <ExternalLink aria-hidden="true" />
-                      {opening === blobName ? 'Abriendo...' : 'Abrir'}
-                    </Button>
-                    {canManage && (
-                      <Button type="button" variant="ghost" size="sm" aria-label={`Eliminar ${label}`} disabled={!canChangeAttachments} onClick={() => setAttachmentToDelete({ blobName, label })}>
-                        Eliminar
+                <Item asChild key={blobName} className="justify-between gap-2 rounded-none border-0 py-2">
+                  <li>
+                    <ItemContent className="min-w-0 flex-initial flex-row items-center gap-2">
+                      <FileText aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="wrap-anywhere">{label}</span>
+                    </ItemContent>
+                    <ItemActions className="flex-wrap gap-1">
+                      <Button type="button" variant="ghost" size="sm" aria-label={`Abrir ${label}`} disabled={opening !== null || isUpdating} onClick={() => openAttachment(blobName)}>
+                        <ExternalLink aria-hidden="true" />
+                        {opening === blobName ? 'Abriendo...' : 'Abrir'}
                       </Button>
-                    )}
-                  </div>
-                </li>
+                      {canManage && (
+                        <Button type="button" variant="ghost" size="sm" aria-label={`Eliminar ${label}`} disabled={!canChangeAttachments} onClick={() => setAttachmentToDelete({ blobName, label })}>
+                          Eliminar
+                        </Button>
+                      )}
+                    </ItemActions>
+                  </li>
+                </Item>
               );
             })}
           </ul>

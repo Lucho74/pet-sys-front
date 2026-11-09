@@ -8,6 +8,9 @@ export const TABLE_HEAD_CLASSES = 'h-12 px-5 text-[13px] font-semibold uppercase
 
 export const TABLE_ROW_CLASSES = 'text-[15px] border-[#DDE6ED] hover:bg-[#DDE6ED]/50';
 
+export const DETAIL_LIST_LINK_CLASSES =
+  'flex-nowrap gap-4 rounded-none border-0 px-5 py-4 no-underline duration-150 [a]:hover:bg-muted/50 focus-visible:ring-0 focus-visible:outline-solid focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring';
+
 
 export const CREATE_BUTTON_CLASSES = 'h-11 rounded-xl bg-[#526D82] px-5 text-[15px] font-semibold text-white hover:bg-[#27374D] [&_svg]:size-5';
 

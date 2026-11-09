@@ -33,7 +33,7 @@ export function FormShell({
           event.preventDefault();
           onSave();
         }}
-        className="w-full max-w-[760px]"
+        className="mx-auto w-full max-w-3xl"
       >
         <Card className="gap-6 py-6">
           <CardContent className="px-6">

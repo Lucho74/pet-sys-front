@@ -133,7 +133,6 @@ export function Sidebar() {
                 sideOffset={8}
                 className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
               >
-                {/* TODO: la página para editar los propios datos todavía no existe */}
                 <DropdownMenuItem disabled>
                   <UserPen />
                   Editar mis datos

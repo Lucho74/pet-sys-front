@@ -14,14 +14,16 @@ export function ConsultationCreatePage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const presetPetId = searchParams.get('petId') ?? '';
-    const backTo = presetPetId ? `/pets/${presetPetId}` : '/consultations';
+    const presetVeterinarianId = searchParams.get('veterinarianId') ?? '';
+    const backTo = presetPetId ? `/pets/${presetPetId}`
+        : presetVeterinarianId ? `/users/${presetVeterinarianId}` : '/consultations';
 
     const [form, setForm] = useState<ConsultationFormState>({
         title: '',
         description: '',
         date: todayDate(),
         petId: presetPetId,
-        veterinarianId: '',
+        veterinarianId: presetVeterinarianId,
     });
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
     const [formError, setFormError] = useState('');

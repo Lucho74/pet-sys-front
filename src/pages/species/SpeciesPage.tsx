@@ -102,7 +102,7 @@ export function SpeciesPage() {
   };
 
   return (
-    <ScreenShell title="Especies y razas" icon={Tags} homeTo="/">
+    <ScreenShell title="Especies y razas" icon={Tags} homeTo="/" reserveActionSpace>
       <div className="flex-1 overflow-auto px-4 pb-[100px] pt-4 lg:px-10 lg:pb-12 lg:pt-8">
         <div className="grid gap-8 lg:grid-cols-2">
           <CatalogTable

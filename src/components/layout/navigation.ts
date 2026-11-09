@@ -35,17 +35,17 @@ export const NAV_ITEMS: NavItem[] = [
     roles: CLINICAL_ROLES
   },
   {
-    to: '/species',
-    label: 'Especies y razas',
-    description: 'Catálogo de especies y razas de mascotas',
-    icon: Tags,
-    roles: CLINICAL_ROLES
-  },
-  {
     to: '/consultations',
     label: 'Consultas',
     description: 'Alta, edición y baja de consultas',
     icon: Stethoscope,
+    roles: CLINICAL_ROLES
+  },
+  {
+    to: '/species',
+    label: 'Especies y razas',
+    description: 'Catálogo de especies y razas de mascotas',
+    icon: Tags,
     roles: CLINICAL_ROLES
   },
   {

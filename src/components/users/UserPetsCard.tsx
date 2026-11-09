@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
 import type { IPetResponse } from '../../services/pets/IPet';
 import { handleGetPetsByClient } from '../../services/pets/petService';
 import { errorMessage } from '../../utils/errors';
 import { ListState } from '../common/ListState';
-import { TABLE_CARD_CLASSES } from '../common/listStyles';
+import { DETAIL_LIST_LINK_CLASSES, TABLE_CARD_CLASSES } from '../common/listStyles';
 
-export function UserPetsCard({ clientId }: { clientId: number }) {
+export function UserPetsCard({ clientId, action }: { clientId: number; action?: ReactNode }) {
   const [pets, setPets] = useState<IPetResponse[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -29,11 +30,12 @@ export function UserPetsCard({ clientId }: { clientId: number }) {
 
   return (
     <Card className={`${TABLE_CARD_CLASSES} gap-0 py-0 ring-0`}>
-      <CardHeader className="border-b border-[#DDE6ED] px-5 py-4">
+      <CardHeader className="flex flex-wrap items-center justify-between gap-3 border-b border-[#DDE6ED] px-5 py-4">
         <CardTitle className="flex items-center gap-2 text-lg font-semibold">
           <h2 id="user-pets-title">Mascotas</h2>
           {!isLoading && !error && pets.length > 0 && <Badge variant="secondary">{pets.length}</Badge>}
         </CardTitle>
+        {action}
       </CardHeader>
       <CardContent className="p-0">
         {isLoading || error || pets.length === 0 ? (
@@ -53,19 +55,23 @@ export function UserPetsCard({ clientId }: { clientId: number }) {
 
               return (
                 <li key={pet.id}>
-                  <Link
-                    to={`/pets/${pet.id}`}
-                    className={`group flex items-center gap-4 px-5 py-4 no-underline transition-colors hover:bg-[#DDE6ED]/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring ${
-                      pet.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'
+                  <Item
+                    asChild
+                    className={`${DETAIL_LIST_LINK_CLASSES} ${
+                      pet.isSuspended ? 'bg-muted/30 text-muted-foreground' : 'text-foreground'
                     }`}
                   >
-                    <div className="min-w-0 flex-1">
-                      <div className="wrap-anywhere text-[15px] font-semibold">{pet.name?.trim() || 'Sin nombre'}</div>
-                      {breed && <div className="wrap-anywhere text-sm text-muted-foreground">{breed}</div>}
-                    </div>
-                    {pet.isSuspended && <Badge variant="outline">Suspendida</Badge>}
-                    <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                  </Link>
+                    <Link to={`/pets/${pet.id}`}>
+                      <ItemContent className="min-w-0 gap-0">
+                        <ItemTitle className="line-clamp-none block w-auto wrap-anywhere text-[15px] leading-[inherit] font-semibold">
+                          {pet.name?.trim() || 'Sin nombre'}
+                        </ItemTitle>
+                        {breed && <ItemDescription className="line-clamp-none wrap-anywhere leading-[inherit]">{breed}</ItemDescription>}
+                      </ItemContent>
+                      {pet.isSuspended && <Badge variant="outline">Suspendida</Badge>}
+                      <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover/item:translate-x-0.5" aria-hidden="true" />
+                    </Link>
+                  </Item>
                 </li>
               );
             })}

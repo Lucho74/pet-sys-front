@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Item, ItemActions, ItemContent, ItemDescription } from '@/components/ui/item';
 import { ListState } from '../common/ListState';
-import { TABLE_CARD_CLASSES } from '../common/listStyles';
+import { DETAIL_LIST_LINK_CLASSES, TABLE_CARD_CLASSES } from '../common/listStyles';
 import type { IConsultationResponse } from '../../services/consultation/IConsultation';
 import { handleGetConsultationsByPet, handleGetConsultationsByVeterinarian } from '../../services/consultation/consultationService';
 import { formatDate, hasDateTime } from '../../utils/datetime';
@@ -72,30 +73,32 @@ export function ConsultationHistoryCard({ source, id, detailBase = '/consultatio
           <ul aria-labelledby={headingId} className="divide-y divide-[#DDE6ED]">
             {visits.map((consultation) => (
               <li key={consultation.id}>
-                <Link
-                  to={`${detailBase}/${consultation.id}`}
-                  className={`group flex items-start gap-4 px-5 py-4 no-underline transition-colors hover:bg-[#DDE6ED]/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring ${
-                    consultation.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'
+                <Item
+                  asChild
+                  className={`${DETAIL_LIST_LINK_CLASSES} items-start ${
+                    consultation.isSuspended ? 'bg-muted/30 text-muted-foreground' : 'text-foreground'
                   }`}
                 >
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="wrap-anywhere text-[15px] font-semibold">{consultation.title?.trim() || 'Sin título'}</h3>
-                      {consultation.isSuspended && <Badge variant="outline">Suspendida</Badge>}
-                    </div>
-                    <p className="line-clamp-2 wrap-anywhere text-sm text-muted-foreground">
-                      {consultation.description?.trim() || 'Sin descripción'}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2 pt-0.5 text-sm tabular-nums text-muted-foreground">
-                    {consultation.date ? (
-                      <time dateTime={consultation.date}>{formatDate(consultation.date)}</time>
-                    ) : (
-                      <span>Sin fecha</span>
-                    )}
-                    <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                  </div>
-                </Link>
+                  <Link to={`${detailBase}/${consultation.id}`}>
+                    <ItemContent className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="wrap-anywhere text-[15px] font-semibold">{consultation.title?.trim() || 'Sin título'}</h3>
+                        {consultation.isSuspended && <Badge variant="outline">Suspendida</Badge>}
+                      </div>
+                      <ItemDescription className="wrap-anywhere leading-[inherit]">
+                        {consultation.description?.trim() || 'Sin descripción'}
+                      </ItemDescription>
+                    </ItemContent>
+                    <ItemActions className="shrink-0 pt-0.5 text-sm tabular-nums text-muted-foreground">
+                      {consultation.date ? (
+                        <time dateTime={consultation.date}>{formatDate(consultation.date)}</time>
+                      ) : (
+                        <span>Sin fecha</span>
+                      )}
+                      <ChevronRight className="size-4 transition-transform group-hover/item:translate-x-0.5" aria-hidden="true" />
+                    </ItemActions>
+                  </Link>
+                </Item>
               </li>
             ))}
           </ul>

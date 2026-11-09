@@ -15,6 +15,10 @@ html, body, #root {
   box-sizing: border-box;
 }
 
+html:has([data-slot="table"]) {
+  scrollbar-gutter: stable;
+}
+
 button,
 input {
   font: inherit;

@@ -96,7 +96,7 @@ export function SpeciesPage() {
   };
 
   const deleteBreed = async (breed: IBreed) => {
-    await handleDeleteBreed(breed.id);
+    await handleDeleteBreed(breed.id, breed.speciesId);
     toast.success('Raza borrada.');
     setBreedReload((n) => n + 1);
   };

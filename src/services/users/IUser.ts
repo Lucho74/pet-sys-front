@@ -19,8 +19,9 @@ export interface ICreateUserRequest {
     email: string | null;
     phone: string | null;
     password: string | null;
-    userType: AssignableRole;
+    role: AssignableRole;
     dni: string | null;
+    registrationNumber: string | null;
 }
 
 export interface IUpdateUserRequest {
@@ -29,6 +30,7 @@ export interface IUpdateUserRequest {
     phone: string | null;
     password: string | null;
     dni: string | null;
+    registrationNumber: string | null;
 }
 
 export interface UserQuery extends PageQuery {

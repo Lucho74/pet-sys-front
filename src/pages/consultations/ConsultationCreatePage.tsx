@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { ConsultationForm } from '../../components/consultations/ConsultationForm';
@@ -12,12 +12,15 @@ import { errorMessage } from '../../utils/errors';
 
 export function ConsultationCreatePage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const presetPetId = searchParams.get('petId') ?? '';
+    const backTo = presetPetId ? `/pets/${presetPetId}` : '/consultations';
 
     const [form, setForm] = useState<ConsultationFormState>({
         title: '',
         description: '',
         date: todayDate(),
-        petId: '',
+        petId: presetPetId,
         veterinarianId: '',
     });
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -63,14 +66,14 @@ export function ConsultationCreatePage() {
     };
 
     return (
-        <ScreenShell title="Nueva consulta" backTo="/consultations">
+        <ScreenShell title="Nueva consulta" backTo={backTo}>
             <ConsultationForm
                 form={form}
                 formError={formError}
                 fieldErrors={fieldErrors}
                 isSaving={isSaving}
                 onChange={handleChange}
-                onCancel={() => navigate('/consultations')}
+                onCancel={() => navigate(backTo)}
                 onSave={handleSave}
                 saveLabel="Crear consulta"
             />

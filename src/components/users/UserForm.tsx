@@ -2,7 +2,7 @@ import { FormField } from '../common/FormField';
 import { FormShell } from '../common/FormShell';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ROLE_LABELS } from './userTypes';
+import { isProfessionalRole, ROLE_LABELS } from './userTypes';
 import type { UserFormState } from './userTypes';
 import type { FormErrors } from './userValidation';
 import type { AssignableRole } from '../../services/users/IUser';
@@ -48,7 +48,7 @@ export function UserForm({
       onSave={onSave}
       saveLabel={saveLabel}
     >
-      <div className={form.roleName === 'Client' ? undefined : 'sm:col-span-2'}>
+      <div>
         <FormField
           label="Nombre completo"
           value={form.fullName}
@@ -68,7 +68,18 @@ export function UserForm({
           onChange={(value) => onChange('dni', value)}
           error={fieldErrors.dni}
           placeholder="30123456"
-          maxLength={20}
+          maxLength={8}
+          disabled={isSaving}
+        />
+      ) : null}
+
+      {isProfessionalRole(form.roleName) ? (
+        <FormField
+          label="Matrícula"
+          value={form.registrationNumber}
+          onChange={(value) => onChange('registrationNumber', value)}
+          error={fieldErrors.registrationNumber}
+          maxLength={50}
           disabled={isSaving}
         />
       ) : null}
@@ -95,6 +106,8 @@ export function UserForm({
         disabled={isSaving}
       />
 
+      {/* el veterinario solo puede gestionar clientes: no tiene rol para elegir */}
+      {roleOptions.length > 1 && (
       <Field data-invalid={Boolean(fieldErrors.roleName)}>
         <FieldLabel htmlFor="user-role">Rol</FieldLabel>
         <Select
@@ -116,6 +129,7 @@ export function UserForm({
         {fieldErrors.roleName && <FieldError>{fieldErrors.roleName}</FieldError>}
         {roleHint && <FieldDescription>{roleHint}</FieldDescription>}
       </Field>
+      )}
 
       <FormField
         label="Contraseña"

@@ -145,8 +145,8 @@ export function CatalogTable<T extends CatalogItem>({
                 onClick={() => onSelect?.(item)}
                 className={`${TABLE_ROW_CLASSES} text-[#27374D] ${onSelect ? 'cursor-pointer' : ''} ${item.id === selectedId ? 'bg-[#DDE6ED] font-semibold' : ''}`}
               >
-                <TableCell className="px-4 py-3">{item.name}</TableCell>
-                <TableCell className="px-4 text-right" onClick={(event) => event.stopPropagation()}>
+                <TableCell className="px-5 py-4">{item.name}</TableCell>
+                <TableCell className="px-5 text-right" onClick={(event) => event.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon-sm" aria-label="Acciones">

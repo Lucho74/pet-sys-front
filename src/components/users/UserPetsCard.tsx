@@ -3,12 +3,11 @@ import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { IPetResponse } from '../../services/pets/IPet';
 import { handleGetPetsByClient } from '../../services/pets/petService';
 import { errorMessage } from '../../utils/errors';
 import { ListState } from '../common/ListState';
-import { TABLE_CARD_CLASSES, TABLE_HEAD_CLASSES, TABLE_HEADER_ROW_CLASSES, TABLE_ROW_CLASSES } from '../common/listStyles';
+import { TABLE_CARD_CLASSES } from '../common/listStyles';
 
 export function UserPetsCard({ clientId }: { clientId: number }) {
   const [pets, setPets] = useState<IPetResponse[]>([]);
@@ -30,14 +29,15 @@ export function UserPetsCard({ clientId }: { clientId: number }) {
 
   return (
     <Card className={`${TABLE_CARD_CLASSES} gap-0 py-0 ring-0`}>
-      <CardHeader className="px-4 py-4 sm:px-5">
-        <CardTitle>
-          <h2 id="user-pets-title" className="font-semibold">Mascotas</h2>
+      <CardHeader className="border-b border-[#DDE6ED] px-5 py-4">
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+          <h2 id="user-pets-title">Mascotas</h2>
+          {!isLoading && !error && pets.length > 0 && <Badge variant="secondary">{pets.length}</Badge>}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         {isLoading || error || pets.length === 0 ? (
-          <div className="px-4 pb-4">
+          <div className="px-5 py-4">
             <ListState
               isLoading={isLoading}
               error={error}
@@ -47,35 +47,29 @@ export function UserPetsCard({ clientId }: { clientId: number }) {
             />
           </div>
         ) : (
-          <Table className="table-fixed" aria-labelledby="user-pets-title">
-            <TableHeader>
-              <TableRow className={TABLE_HEADER_ROW_CLASSES}>
-                <TableHead scope="col" className={`${TABLE_HEAD_CLASSES} sm:px-5`}>Nombre</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {pets.map((pet) => {
-                const name = pet.name?.trim() || 'Sin nombre';
+          <ul aria-labelledby="user-pets-title" className="divide-y divide-[#DDE6ED]">
+            {pets.map((pet) => {
+              const breed = [pet.speciesName, pet.breedName].filter(Boolean).join(' · ');
 
-                return (
-                  <TableRow key={pet.id} className={TABLE_ROW_CLASSES}>
-                    <TableCell className="p-0">
-                      <Link
-                        to={`/pets/${pet.id}`}
-                        className="group flex items-center gap-3 px-4 py-3 no-underline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring sm:px-5"
-                      >
-                        <span className="min-w-0 flex-1 wrap-anywhere font-semibold whitespace-normal">{name}</span>
-                        <Badge variant={pet.isSuspended ? 'outline' : 'secondary'}>
-                          {pet.isSuspended ? 'Suspendida' : 'Activa'}
-                        </Badge>
-                        <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+              return (
+                <li key={pet.id}>
+                  <Link
+                    to={`/pets/${pet.id}`}
+                    className={`group flex items-center gap-4 px-5 py-4 no-underline transition-colors hover:bg-[#DDE6ED]/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring ${
+                      pet.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="wrap-anywhere text-[15px] font-semibold">{pet.name?.trim() || 'Sin nombre'}</div>
+                      {breed && <div className="wrap-anywhere text-sm text-muted-foreground">{breed}</div>}
+                    </div>
+                    {pet.isSuspended && <Badge variant="outline">Suspendida</Badge>}
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         )}
       </CardContent>
     </Card>

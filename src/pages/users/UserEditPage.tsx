@@ -5,7 +5,7 @@ import { ScreenShell } from '../../components/layout/ScreenShell';
 import { UserForm } from '../../components/users/UserForm';
 import { handleGetByIdUser, handleUpdateUser } from '../../services/users/userService';
 import type { UserRole } from '../../services/users/IUser';
-import type { UserFormState } from '../../components/users/userTypes';
+import { isProfessionalRole, type UserFormState } from '../../components/users/userTypes';
 import { validateUserForm } from '../../components/users/userValidation';
 import type { FormErrors } from '../../components/users/userValidation';
 import { canManage, getManageableRoles } from '../../utils/roles';
@@ -25,6 +25,7 @@ export function UserEditPage() {
     password: '',
     roleName: 'Client',
     dni: '',
+    registrationNumber: '',
   });
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
   const [formError, setFormError] = useState('');
@@ -51,6 +52,7 @@ export function UserEditPage() {
           password: '',
           roleName: user.roleName || 'Client',
           dni: user.dni?.trim() || '',
+          registrationNumber: user.registrationNumber?.trim() || '',
         });
       })
       .catch((error) => {
@@ -62,6 +64,7 @@ export function UserEditPage() {
           password: '',
           roleName: 'Client',
           dni: '',
+          registrationNumber: '',
         });
         setFieldErrors({});
         setFormError(message);
@@ -93,7 +96,8 @@ export function UserEditPage() {
         email: form.email,
         phone: form.phone,
         password: form.password || null,
-        dni: form.roleName === 'Client' ? form.dni : null,
+        dni: form.roleName === 'Client' ? form.dni.trim() : null,
+        registrationNumber: isProfessionalRole(form.roleName) ? form.registrationNumber.trim() : null,
       });
 
       toast.success('Usuario actualizado correctamente.');

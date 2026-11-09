@@ -4,7 +4,11 @@ export const TABLE_CARD_CLASSES = 'overflow-hidden rounded-[14px] bg-white shado
 
 export const TABLE_HEADER_ROW_CLASSES = 'bg-[#27374D] hover:bg-[#27374D]';
 
-export const TABLE_HEAD_CLASSES = 'px-4 text-[12px] font-semibold uppercase tracking-[0.05em] text-[#DDE6ED]';
+export const TABLE_HEAD_CLASSES = 'h-12 px-5 text-[13px] font-semibold uppercase tracking-[0.05em] text-[#DDE6ED]';
 
-export const TABLE_ROW_CLASSES = 'border-[#DDE6ED] hover:bg-[#DDE6ED]/50';
+export const TABLE_ROW_CLASSES = 'text-[15px] border-[#DDE6ED] hover:bg-[#DDE6ED]/50';
 
+
+export const CREATE_BUTTON_CLASSES = 'h-11 rounded-xl bg-[#526D82] px-5 text-[15px] font-semibold text-white hover:bg-[#27374D] [&_svg]:size-5';
+
+export const CREATE_BAR_CLASSES = 'h-14 w-full rounded-xl bg-[#526D82] text-[16px] text-white hover:bg-[#27374D] font-semibold shadow-[0_6px_16px_rgba(39,55,77,0.35)] [&_svg]:size-5';

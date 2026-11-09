@@ -182,11 +182,11 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
                 className={`${TABLE_ROW_CLASSES} cursor-pointer ${pet.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
               >
                 {columns.map((column) => (
-                  <TableCell key={column.key} className="px-4 py-3">
+                  <TableCell key={column.key} className="px-5 py-4">
                     {renderCell(pet, column.key)}
                   </TableCell>
                 ))}
-                <TableCell className="px-4 text-right">
+                <TableCell className="px-5 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon-sm" aria-label="Acciones" onClick={(event) => event.stopPropagation()}>

@@ -5,6 +5,7 @@ import { DEFAULT_QUERY, EMPTY_PAGINATION, type PageQuery, type Pagination } from
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { CREATE_BUTTON_CLASSES } from '../../components/common/listStyles';
 import { ConsultationList } from '../../components/consultations/ConsultationList';
 import { handleGetConsultationsPage, handleReactivateConsultation, handleSuspendConsultation } from '../../services/consultation/consultationService';
 import type { IConsultationWithParticipantsResponse } from '../../services/consultation/IConsultation';
@@ -59,7 +60,7 @@ export function ConsultationListPage() {
 
     const consultations: Consultation[] = response.map((consultation) => ({
         id: consultation.id,
-        description: consultation.description?.trim() || 'Sin descripción',
+        description: consultation.description?.trim() || 'Sin título',
         date: hasDateTime(consultation.date) ? consultation.date.trim() : '',
         petId: String(consultation.petId),
         petName:
@@ -80,7 +81,7 @@ export function ConsultationListPage() {
             icon={Stethoscope}
             homeTo="/"
             action={
-        <Button asChild>
+        <Button asChild size="lg" className={CREATE_BUTTON_CLASSES}>
           <Link to={CREATE_TO}>
             <Plus /> {CREATE_LABEL}
           </Link>

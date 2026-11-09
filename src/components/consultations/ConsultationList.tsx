@@ -2,6 +2,7 @@ import type { Consultation } from './consultationTypes';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CREATE_BAR_CLASSES } from '../common/listStyles';
 import { ListState } from '../common/ListState';
 import { ConsultationTable } from './ConsultationTable';
 import type { PageQuery, Pagination } from '../../services/IPaginated';
@@ -58,7 +59,7 @@ export function ConsultationList({
       </div>
 
       <div className="absolute inset-x-4 bottom-7 lg:hidden">
-        <Button asChild size="lg" className="h-12 w-full shadow-[0_6px_16px_rgba(39,55,77,0.35)]">
+        <Button asChild size="lg" className={CREATE_BAR_CLASSES}>
           <Link to={createTo}>
             <Plus /> {createLabel}
           </Link>

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { User as UserIcon, Plus } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { DEFAULT_QUERY, EMPTY_PAGINATION, type Pagination } from '../../services/IPaginated';
 import type { UserQuery } from '../../services/users/IUser';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { CREATE_BUTTON_CLASSES } from '../../components/common/listStyles';
 import { UserList } from '../../components/users/UserList';
 import { handleGetUsersPage } from '../../services/users/userService';
 import type { User } from '../../components/users/userTypes';
@@ -27,7 +28,8 @@ export function UsersListPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      handleGetUsersPage(query)
+      // el veterinario solo gestiona clientes (decisión del front, ver getManageableRoles)
+      handleGetUsersPage(role === 'Veterinarian' ? { ...query, role: 'Client' } : query)
         .then((response) => {
           setPagination(response);
           setUsers(
@@ -53,7 +55,7 @@ export function UsersListPage() {
         .finally(() => setIsLoading(false));
     }, 300);
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, role]);
 
   const setUserSuspended = (userId: number, isSuspended: boolean) => {
     setUsers((current) => current.map((user) => (user.id === userId ? { ...user, isSuspended } : user)));
@@ -82,10 +84,10 @@ export function UsersListPage() {
   return (
     <ScreenShell
       title="Usuarios"
-      icon={UserIcon}
+      icon={Users}
       homeTo="/"
       action={
-        <Button asChild>
+        <Button asChild size="lg" className={CREATE_BUTTON_CLASSES}>
           <Link to={CREATE_TO}>
             <Plus /> {CREATE_LABEL}
           </Link>

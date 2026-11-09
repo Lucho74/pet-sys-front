@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { ImagePlus, PawPrint, Trash2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { initials } from '../../utils/initials';
 
 export type PetPhotoChange = { kind: 'replace'; file: File; previewUrl: string } | { kind: 'remove' } | null;
@@ -20,9 +21,11 @@ export function PetPhotoField({ petName, currentUrl, isLoading, loadError, chang
   const input = useRef<HTMLInputElement>(null);
   const [fileError, setFileError] = useState('');
   const [failedImageUrl, setFailedImageUrl] = useState('');
+  const [loadedImageUrl, setLoadedImageUrl] = useState('');
   const previewUrl = change?.kind === 'replace' ? change.previewUrl : undefined;
   const imageUrl = change?.kind === 'remove' ? undefined : previewUrl ?? currentUrl;
   const imageError = imageUrl && failedImageUrl === imageUrl ? 'No se pudo mostrar la foto.' : '';
+  const showSpinner = (!change && isLoading) || Boolean(imageUrl && !imageError && loadedImageUrl !== imageUrl);
 
   useEffect(() => {
     if (previewUrl) return () => URL.revokeObjectURL(previewUrl);
@@ -56,13 +59,20 @@ export function PetPhotoField({ petName, currentUrl, isLoading, loadError, chang
             src={imageUrl}
             alt={previewUrl ? 'Vista previa de la foto de la mascota' : 'Foto actual de la mascota'}
             onLoadingStatusChange={(status) => {
+              if (status === 'loaded') setLoadedImageUrl(imageUrl);
               if (status === 'error') setFailedImageUrl(imageUrl);
             }}
           />
         )}
-        <AvatarFallback aria-hidden="true" className="rounded-none bg-primary text-3xl font-semibold text-primary-foreground">
-          {initials(petName) || <PawPrint className="size-7" />}
-        </AvatarFallback>
+        {showSpinner ? (
+          <AvatarFallback className="rounded-none bg-muted">
+            <Spinner className="size-8 text-muted-foreground" aria-label="Cargando foto" />
+          </AvatarFallback>
+        ) : (
+          <AvatarFallback aria-hidden="true" className="rounded-none bg-primary text-3xl font-semibold text-primary-foreground">
+            {initials(petName) || <PawPrint className="size-7" />}
+          </AvatarFallback>
+        )}
       </Avatar>
 
       <div className="min-w-0 flex-1 basis-40 space-y-2">

@@ -9,7 +9,6 @@ import {
   TABLE_HEADER_ROW_CLASSES,
   TABLE_ROW_CLASSES,
 } from '../common/listStyles';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -36,11 +35,10 @@ interface ConsultationTableProps {
   consultations: Consultation[];
 }
 
-type ColumnKey = 'id' | 'description' | 'date' | 'petName' | 'veterinarianName';
+type ColumnKey = 'description' | 'date' | 'petName' | 'veterinarianName';
 
 const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
-  { key: 'id', label: 'N°' },
-  { key: 'description', label: 'Descripción' },
+  { key: 'description', label: 'Título' },
   { key: 'date', label: 'Fecha', sortBy: 'date' },
   { key: 'petName', label: 'Mascota' },
   { key: 'veterinarianName', label: 'Veterinario' },
@@ -49,7 +47,7 @@ const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
 export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivate, pagination, consultations: rows }: ConsultationTableProps) {
   const navigate = useNavigate();
   const [hidden, setHidden] = useState<ColumnKey[]>([]);
-  const [consultationToSuspend, setConsultationToSuspend] = useState<number | null>(null);
+  const [consultationToSuspend, setConsultationToSuspend] = useState<Consultation | null>(null);
 
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
 
@@ -59,9 +57,6 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
 
   const renderCell = (consultation: Consultation, key: ColumnKey) => {
     if (key === 'date') return consultation.date ? formatDate(consultation.date) : 'Sin fecha';
-    if (key === 'id') return <Avatar>
-            <AvatarFallback className={consultation.isSuspended ? '' : 'bg-primary text-primary-foreground'}>{consultation.id}</AvatarFallback>
-          </Avatar>;
     if (key === 'petName') return <Badge variant="secondary">{consultation.petName}</Badge>;
     if (key === 'description') {
       return (
@@ -78,7 +73,7 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
         <Input
-          placeholder="Buscar por descripción..."
+          placeholder="Buscar por título..."
           value={query.search}
           onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
           className="h-9 bg-white sm:max-w-[420px]"
@@ -141,11 +136,11 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
                 className={`${TABLE_ROW_CLASSES} cursor-pointer ${consultation.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
               >
                 {columns.map((column) => (
-                  <TableCell key={column.key} className="px-4 py-3">
+                  <TableCell key={column.key} className="px-5 py-4">
                     {renderCell(consultation, column.key)}
                   </TableCell>
                 ))}
-                <TableCell className="px-4 text-right">
+                <TableCell className="px-5 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon-sm" aria-label="Acciones" onClick={(event) => event.stopPropagation()}>
@@ -164,7 +159,7 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
                           <DropdownMenuItem onClick={() => navigate(`/consultations/${consultation.id}/edit`)}>
                             Editar consulta
                           </DropdownMenuItem>
-                          <DropdownMenuItem variant="destructive" onClick={() => setConsultationToSuspend(consultation.id)}>
+                          <DropdownMenuItem variant="destructive" onClick={() => setConsultationToSuspend(consultation)}>
                             Suspender consulta
                           </DropdownMenuItem>
                         </>
@@ -215,9 +210,9 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
         <ConfirmDialog
           title="Suspender consulta"
           confirmLabel="Suspender"
-          description={`¿Confirmás que querés suspender la consulta #${consultationToSuspend}?`}
+          description={`¿Confirmás que querés suspender la consulta "${consultationToSuspend.description}"?`}
           onClose={() => setConsultationToSuspend(null)}
-          onConfirm={() => onSuspend(consultationToSuspend)}
+          onConfirm={() => onSuspend(consultationToSuspend.id)}
         />
       )}
     </div>

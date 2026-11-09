@@ -1,17 +1,20 @@
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from './components/layout/Sidebar'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 function App() {
 
   return (
-    <div className="flex min-h-screen w-full bg-[#e9edf1]">
-      <Sidebar />
+    <TooltipProvider>
+      <SidebarProvider>
+        <Sidebar />
 
-      <main className="flex min-h-screen w-full min-w-0 flex-1 flex-col">
-        <Outlet />
-      </main>
-
-    </div>
+        <SidebarInset className="min-w-0 bg-[#e9edf1]">
+          <Outlet />
+        </SidebarInset>
+      </SidebarProvider>
+    </TooltipProvider>
   )
 }
 

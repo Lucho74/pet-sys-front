@@ -1,47 +1,128 @@
-import { NavLink } from 'react-router-dom';
-import { PawPrint } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LogOut, PawPrint } from 'lucide-react';
 import { getVisibleNavItems } from './navigation';
 import { useAuth } from '../../contexts/AuthenticationContext';
 import { ROLE_LABELS } from '../users/userTypes';
+import { initials } from '../../utils/initials';
+import { handleGetCurrentUser } from '../../services/auth/authService';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  Sidebar as SidebarRoot,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  SidebarTrigger,
+  useSidebar,
+} from '@/components/ui/sidebar';
+
+const MENU_BUTTON =
+  'h-10 gap-3 text-[15px] text-sidebar-foreground/75 [&_svg]:size-5 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-2.5! hover:bg-white/8! hover:text-sidebar-foreground! data-[active=true]:bg-sidebar-accent! data-[active=true]:font-semibold data-[active=true]:text-sidebar-accent-foreground! data-[active=true]:shadow-sm';
 
 export function Sidebar() {
-  const { role } = useAuth();
+  const { token, role, handleUserLogout } = useAuth();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { setOpenMobile } = useSidebar();
+  const [userName, setUserName] = useState('');
 
-  const visibleItems = getVisibleNavItems(role);
+  useEffect(() => {
+    if (!token) return;
+    handleGetCurrentUser()
+      .then((user) => setUserName(user.fullName ?? ''))
+      .catch(() => {});
+  }, [token]);
+
+  const [home, ...sections] = getVisibleNavItems(role);
+  const roleLabel = role ? ROLE_LABELS[role] : '';
+
+  const isActive = (to: string, end?: boolean) => (end ? pathname === to : pathname.startsWith(to));
+
+  const handleLogout = () => {
+    handleUserLogout();
+    navigate('/login', { replace: true });
+  };
+
+  const renderItem = ({ to, label, icon: Icon, end }: typeof home) => (
+    <SidebarMenuItem key={to}>
+      <SidebarMenuButton asChild isActive={isActive(to, end)} tooltip={label} className={MENU_BUTTON}>
+        <Link to={to} onClick={() => setOpenMobile(false)}>
+          <Icon />
+          <span>{label}</span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-[240px] shrink-0 flex-col border-r border-[#27374D]/15 bg-[#27374D] px-4 py-7 lg:flex">
-      <div className="mb-8 flex items-center gap-2.5 px-2">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#526D82]">
-          <PawPrint size={19} strokeWidth={2} className="text-[#DDE6ED]" />
-        </div>
-        <div className="min-w-0">
-          <div className="truncate text-[15px] font-bold tracking-[-0.2px] text-[#DDE6ED]">4 Patas</div>
-          <div className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9DB2BF]">
-            {role ? ROLE_LABELS[role] : ''}
-          </div>
-        </div>
-      </div>
-
-      <nav aria-label="Navegación principal" className="flex flex-col gap-1">
-        {visibleItems.map(({ to, label, icon: Icon, end }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={({ isActive }) =>
-              `flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DDE6ED] ${
-                isActive
-                  ? 'bg-[#526D82] text-[#DDE6ED]'
-                  : 'text-[#9DB2BF] hover:bg-[#526D82]/45 hover:text-[#DDE6ED]'
-              }`
-            }
+    <SidebarRoot collapsible="icon">
+      <SidebarHeader>
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+          <Link
+            to="/"
+            className="flex min-w-0 flex-1 items-center gap-2.5 rounded-md p-1 group-data-[collapsible=icon]:hidden"
           >
-            <Icon size={18} strokeWidth={2} className="shrink-0" aria-hidden="true" />
-            <span className="truncate">{label}</span>
-          </NavLink>
-        ))}
-      </nav>
-    </aside>
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <PawPrint className="size-5" />
+            </div>
+            <div className="grid min-w-0 leading-tight">
+              <span className="truncate font-semibold">4 Patas</span>
+              <span className="truncate text-xs text-sidebar-foreground/60">Clínica veterinaria</span>
+            </div>
+          </Link>
+          <SidebarTrigger className="size-10 shrink-0 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground [&_svg]:size-5" />
+        </div>
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>{home && renderItem(home)}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {sections.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-sidebar-foreground/50">Gestión</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>{sections.map(renderItem)}</SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+      </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <div className="flex items-center gap-3 p-1 group-data-[collapsible=icon]:p-0">
+              <Avatar className="size-9 rounded-lg after:rounded-lg">
+                <AvatarFallback className="rounded-lg bg-sidebar-foreground text-xs font-semibold text-sidebar">
+                  {initials(userName)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 leading-tight group-data-[collapsible=icon]:hidden">
+                <span className="truncate text-sm font-medium">{userName}</span>
+                <span className="truncate text-xs text-sidebar-foreground/60">{roleLabel}</span>
+              </div>
+            </div>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleLogout} tooltip="Cerrar sesión" className={`${MENU_BUTTON} text-sidebar-foreground/80`}>
+              <LogOut />
+              <span>Cerrar sesión</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+
+      <SidebarRail />
+    </SidebarRoot>
   );
 }

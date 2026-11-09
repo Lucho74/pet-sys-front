@@ -41,6 +41,7 @@ export function UsersListPage() {
                   ? user.roleName
                   : 'Client',
               dni: user.dni?.trim() || '',
+              registrationNumber: user.registrationNumber?.trim() || '',
               isSuspended: user.isSuspended,
             })),
           );

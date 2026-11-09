@@ -55,6 +55,15 @@ export function UserEditPage() {
       })
       .catch((error) => {
         const message = errorMessage(error, 'No se pudo cargar el usuario.');
+        setForm({
+          fullName: '',
+          email: '',
+          phone: '',
+          password: '',
+          roleName: 'Client',
+          dni: '',
+        });
+        setFieldErrors({});
         setFormError(message);
         toast.error(message);
       })
@@ -104,6 +113,9 @@ export function UserEditPage() {
         formError={formError}
         fieldErrors={fieldErrors}
         canChangeRole={false}
+        roleHint={role === 'SysAdmin' && (form.roleName === 'Veterinarian' || form.roleName === 'Admin')
+          ? 'El rol se cambia desde el detalle del usuario.'
+          : 'El rol no se puede cambiar desde este formulario.'}
         isPasswordOptional
         isLoading={isLoading}
         isSaving={isSaving}

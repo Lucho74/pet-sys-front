@@ -14,6 +14,8 @@ interface ConsultationListProps {
   createLabel: string;
   query: PageQuery;
   onQueryChange: (query: PageQuery) => void;
+  onSuspend: (id: number) => Promise<void>;
+  onReactivate: (id: number) => Promise<void>;
   pagination: Pagination;
 }
 
@@ -25,6 +27,8 @@ export function ConsultationList({
   createLabel,
   query,
   onQueryChange,
+  onSuspend,
+  onReactivate,
   pagination,
 }: ConsultationListProps) {
 
@@ -37,6 +41,8 @@ export function ConsultationList({
               consultations={consultations}
               query={query}
               onQueryChange={onQueryChange}
+              onSuspend={onSuspend}
+              onReactivate={onReactivate}
               pagination={pagination}
             />
           ) : (

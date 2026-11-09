@@ -11,6 +11,7 @@ export interface IUserResponse {
     isSuspended: boolean;
     roleName: string | null;
     dni: string | null;
+    registrationNumber: string | null;
 }
 
 export interface ICreateUserRequest {

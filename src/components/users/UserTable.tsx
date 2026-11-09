@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 import type { User } from './userTypes';
 import type { AssignableRole, UserQuery } from '../../services/users/IUser';
+import { useAuth } from '../../contexts/AuthenticationContext';
 import { ROLE_LABELS } from './userTypes';
 import {
   TABLE_CARD_CLASSES,
@@ -11,16 +12,7 @@ import {
   TABLE_ROW_CLASSES,
 } from '../common/listStyles';
 import { initials } from '../../utils/initials';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,24 +39,25 @@ interface UserTableProps {
   onReactivate: (user: User) => void;
 }
 
-type ColumnKey = 'fullName' | 'roleName' | 'email' | 'dni' | 'phone';
-
-const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
-  { key: 'fullName', label: 'Nombre', sortBy: 'fullName' },
-  { key: 'roleName', label: 'Rol' },
-  { key: 'email', label: 'Email', sortBy: 'email' },
-  { key: 'dni', label: 'DNI' },
-  { key: 'phone', label: 'Teléfono' },
-];
+type ColumnKey = 'fullName' | 'roleName' | 'email' | 'identification' | 'phone';
 
 const ROLE_FILTER_OPTIONS: AssignableRole[] = ['Client', 'Veterinarian', 'Admin'];
 
 export function UserTable({ query, onQueryChange, pagination, users: rows, canManageUser, onSuspend, onReactivate }: UserTableProps) {
   const navigate = useNavigate();
+  const { role } = useAuth();
   const [hidden, setHidden] = useState<ColumnKey[]>([]);
   const [userToSuspend, setUserToSuspend] = useState<User | null>(null);
 
-  const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
+  const showRegistrationNumber = role === 'Admin' || role === 'SysAdmin';
+  const availableColumns: { key: ColumnKey; label: string; sortBy?: string }[] = [
+    { key: 'fullName', label: 'Nombre', sortBy: 'fullName' },
+    { key: 'roleName', label: 'Rol' },
+    { key: 'email', label: 'Email', sortBy: 'email' },
+    { key: 'identification', label: showRegistrationNumber ? 'DNI / Matrícula' : 'DNI' },
+    { key: 'phone', label: 'Teléfono' },
+  ];
+  const columns = availableColumns.filter((column) => !hidden.includes(column.key));
 
   const handleSort = (sortBy: string) => {
     onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
@@ -72,6 +65,13 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
 
   const renderCell = (user: User, key: ColumnKey) => {
     if (key === 'roleName') return <Badge variant="secondary">{ROLE_LABELS[user.roleName]}</Badge>;
+    if (key === 'identification') {
+      if (user.roleName === 'Client') return user.dni || '-';
+      if (showRegistrationNumber && (user.roleName === 'Admin' || user.roleName === 'Veterinarian')) {
+        return user.registrationNumber || '-';
+      }
+      return '-';
+    }
     if (key === 'fullName') {
       return (
         <div className="flex items-center gap-3">
@@ -141,7 +141,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {COLUMNS.map((column) => (
+            {availableColumns.map((column) => (
               <DropdownMenuCheckboxItem
                 key={column.key}
                 checked={!hidden.includes(column.key)}
@@ -176,41 +176,51 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
           </TableHeader>
 
           <TableBody>
-            {rows.map((user) => (
-              <TableRow key={user.id} className={`${TABLE_ROW_CLASSES} ${user.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}>
-                {columns.map((column) => (
-                  <TableCell key={column.key} className="px-4 py-3">
-                    {renderCell(user, column.key)}
+            {rows.map((user) => {
+              const canOpenDetail = canManageUser(user);
+              const detailTo = `/users/${user.id}`;
+
+              return (
+                <TableRow
+                  key={user.id}
+                  onClick={canOpenDetail ? () => navigate(detailTo) : undefined}
+                  className={`${TABLE_ROW_CLASSES} ${canOpenDetail ? 'cursor-pointer' : ''} ${user.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
+                >
+                  {columns.map((column) => (
+                    <TableCell key={column.key} className="px-4 py-3">
+                      {renderCell(user, column.key)}
+                    </TableCell>
+                  ))}
+                  <TableCell className="px-4 text-right">
+                    {canOpenDetail && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon-sm" aria-label="Acciones" onClick={(event) => event.stopPropagation()}>
+                            <MoreHorizontal />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
+                          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => navigate(detailTo)}>Ver detalle</DropdownMenuItem>
+                          {user.isSuspended ? (
+                            <DropdownMenuItem onClick={() => onReactivate(user)}>Reactivar usuario</DropdownMenuItem>
+                          ) : (
+                            <>
+                              <DropdownMenuItem onClick={() => navigate(`/users/${user.id}/edit`)}>
+                                Editar usuario
+                              </DropdownMenuItem>
+                              <DropdownMenuItem variant="destructive" onClick={() => setUserToSuspend(user)}>
+                                Suspender usuario
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </TableCell>
-                ))}
-                <TableCell className="px-4 text-right">
-                  {canManageUser(user) && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon-sm" aria-label="Acciones">
-                          <MoreHorizontal />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                        {user.isSuspended ? (
-                          <DropdownMenuItem onClick={() => onReactivate(user)}>Reactivar usuario</DropdownMenuItem>
-                        ) : (
-                          <>
-                            <DropdownMenuItem onClick={() => navigate(`/users/${user.id}/edit`)}>
-                              Editar usuario
-                            </DropdownMenuItem>
-                            <DropdownMenuItem variant="destructive" onClick={() => setUserToSuspend(user)}>
-                              Suspender usuario
-                            </DropdownMenuItem>
-                          </>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+                </TableRow>
+              );
+            })}
             {rows.length === 0 && (
               <TableRow>
                 <TableCell colSpan={columns.length + 1} className="h-24 text-center text-[#526D82]">
@@ -249,21 +259,15 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
         </div>
       </div>
 
-      <AlertDialog open={userToSuspend !== null} onOpenChange={(open) => !open && setUserToSuspend(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Suspender usuario</AlertDialogTitle>
-            <AlertDialogDescription>
-              ¿Confirmás que querés suspender a {userToSuspend?.fullName}? No va a poder iniciar sesión, y sus mascotas y
-              consultas quedan suspendidas. Podés reactivarlo después.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => userToSuspend && onSuspend(userToSuspend)}>Suspender</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {userToSuspend && (
+        <ConfirmDialog
+          title="Suspender usuario"
+          confirmLabel="Suspender"
+          description={`¿Confirmás que querés suspender a ${userToSuspend.fullName}? No va a poder iniciar sesión, y sus mascotas y consultas quedan suspendidas. Podés reactivarlo después.`}
+          onClose={() => setUserToSuspend(null)}
+          onConfirm={() => onSuspend(userToSuspend)}
+        />
+      )}
     </div>
   );
 }

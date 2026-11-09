@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogOut, PawPrint } from 'lucide-react';
 import { getVisibleNavItems } from './navigation';
 import { useAuth } from '../../contexts/AuthenticationContext';
 import { ROLE_LABELS } from '../users/userTypes';
 import { initials } from '../../utils/initials';
+import { handleGetCurrentUser } from '../../services/auth/authService';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Sidebar as SidebarRoot,
@@ -21,16 +23,22 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
-const USER_NAME = 'Nahuel Escalante';
-
 const MENU_BUTTON =
   'h-10 gap-3 text-[15px] text-sidebar-foreground/75 [&_svg]:size-5 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:p-2.5! hover:bg-white/8! hover:text-sidebar-foreground! data-[active=true]:bg-sidebar-accent! data-[active=true]:font-semibold data-[active=true]:text-sidebar-accent-foreground! data-[active=true]:shadow-sm';
 
 export function Sidebar() {
-  const { role, handleUserLogout } = useAuth();
+  const { token, role, handleUserLogout } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { setOpenMobile } = useSidebar();
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    if (!token) return;
+    handleGetCurrentUser()
+      .then((user) => setUserName(user.fullName ?? ''))
+      .catch(() => {});
+  }, [token]);
 
   const [home, ...sections] = getVisibleNavItems(role);
   const roleLabel = role ? ROLE_LABELS[role] : '';
@@ -96,11 +104,11 @@ export function Sidebar() {
             <div className="flex items-center gap-3 p-1 group-data-[collapsible=icon]:p-0">
               <Avatar className="size-9 rounded-lg after:rounded-lg">
                 <AvatarFallback className="rounded-lg bg-sidebar-foreground text-xs font-semibold text-sidebar">
-                  {initials(USER_NAME)}
+                  {initials(userName)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate text-sm font-medium">{USER_NAME}</span>
+                <span className="truncate text-sm font-medium">{userName}</span>
                 <span className="truncate text-xs text-sidebar-foreground/60">{roleLabel}</span>
               </div>
             </div>

@@ -28,7 +28,6 @@ export function UsersListPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // el veterinario solo gestiona clientes (decisión del front, ver getManageableRoles)
       handleGetUsersPage(role === 'Veterinarian' ? { ...query, role: 'Client' } : query)
         .then((response) => {
           setPagination(response);

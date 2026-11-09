@@ -1,12 +1,9 @@
 import { useId, useState } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
-import { matchesSearch } from '../../utils/search';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-
-export const MIN_SEARCH_LENGTH = 2;
 
 interface SearchSelectOption {
   id: number | string;
@@ -19,6 +16,9 @@ interface SearchSelectProps {
   options: SearchSelectOption[];
   value: string;
   onChange: (id: string) => void;
+  onRemoteSearch: (search: string) => void;
+  minSearchLength: number;
+  selectedOption?: SearchSelectOption;
   placeholder: string;
   searchHint: string;
   loadingLabel: string;
@@ -34,6 +34,9 @@ export function SearchSelect({
   options,
   value,
   onChange,
+  onRemoteSearch,
+  minSearchLength,
+  selectedOption,
   placeholder,
   searchHint,
   loadingLabel,
@@ -47,9 +50,12 @@ export function SearchSelect({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
 
-  const selected = options.find((option) => String(option.id) === value);
-  const hasSearch = search.trim().length >= MIN_SEARCH_LENGTH;
-  const matches = hasSearch ? options.filter((option) => matchesSearch(option.primary, search.trim())) : [];
+  const hasSearch = search.trim().length >= minSearchLength;
+
+  const handleSearchChange = (nextSearch: string) => {
+    setSearch(nextSearch);
+    onRemoteSearch(nextSearch.trim());
+  };
 
   const message = isLoading ? loadingLabel : loadError || (hasSearch ? notFoundLabel : searchHint);
 
@@ -57,7 +63,10 @@ export function SearchSelect({
     <Field data-invalid={Boolean(error)}>
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
 
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (!nextOpen) handleSearchChange('');
+      }}>
         <PopoverTrigger asChild>
           <Button
             id={id}
@@ -69,9 +78,9 @@ export function SearchSelect({
             disabled={disabled}
             className="h-10 w-full justify-between bg-white font-normal"
           >
-            {selected ? (
+            {selectedOption ? (
               <span className="truncate">
-                {selected.primary} {selected.secondary && `· ${selected.secondary}`}
+                {selectedOption.primary} {selectedOption.secondary && `· ${selectedOption.secondary}`}
               </span>
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
@@ -82,17 +91,17 @@ export function SearchSelect({
 
         <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-0">
           <Command shouldFilter={false}>
-            <CommandInput placeholder={placeholder} value={search} onValueChange={setSearch} />
+            <CommandInput placeholder={placeholder} value={search} onValueChange={handleSearchChange} />
             <CommandList>
               <CommandEmpty>{message}</CommandEmpty>
-              {matches.map((option) => (
+              {hasSearch && options.map((option) => (
                 <CommandItem
                   key={option.id}
                   value={String(option.id)}
                   onSelect={() => {
                     onChange(String(option.id));
                     setOpen(false);
-                    setSearch('');
+                    handleSearchChange('');
                   }}
                 >
                   <div className="min-w-0">

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { PetForm } from '../../components/pets/PetForm';
-import { handleGetByIdPet, handleUpdatePet } from '../../services/pets/petService';
-import { handleGetAllUser } from '../../services/users/userService';
-import type { IUserResponse } from '../../services/users/IUser';
+import type { PetPhotoChange } from '../../components/pets/PetPhotoField';
+import { ApiError } from '../../services/apiClient';
+import { handleDeletePetImage, handleGetByIdPet, handleGetPetImageUrl, handleUpdatePet, handleUpdatePetImage } from '../../services/pets/petService';
 import type { PetFormState } from '../../components/pets/petTypes';
 import { validatePetForm } from '../../components/pets/petValidation';
 import type { FormErrors } from '../../components/pets/petValidation';
@@ -14,6 +14,8 @@ import { errorMessage } from '../../utils/errors';
 export function PetEditPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const returnTo = state?.fromPetDetail === true ? `/pets/${id}` : '/pets';
 
   const [form, setForm] = useState<PetFormState>({
     name: '',
@@ -22,17 +24,23 @@ export function PetEditPage() {
     birthDate: '',
     clientId: '',
   });
-  const [owners, setOwners] = useState<IUserResponse[]>([]);
-  const [isLoadingOwners, setIsLoadingOwners] = useState(true);
-  const [ownersError, setOwnersError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
   const [formError, setFormError] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [photo, setPhoto] = useState<{ petId: string; url?: string; error?: string } | null>(null);
+  const [photoChange, setPhotoChange] = useState<PetPhotoChange>(null);
+  const [savedForm, setSavedForm] = useState<PetFormState | null>(null);
+  const isLoading = loadedId !== id;
+  const currentPhoto = photo?.petId === id ? photo : null;
 
   useEffect(() => {
+    let active = true;
+
     handleGetByIdPet(id)
       .then((pet) => {
+        if (!active) return;
+
         if (pet.isSuspended) {
           toast.error('La mascota está suspendida y no se puede editar.');
           navigate('/pets', { replace: true });
@@ -45,21 +53,55 @@ export function PetEditPage() {
           birthDate: pet.birthDate?.slice(0, 10) || '',
           clientId: String(pet.clientId),
         });
+        setFormError('');
       })
       .catch((error) => {
+        if (!active) return;
+
         const message = errorMessage(error, 'No se pudo cargar la mascota.');
+        setForm({
+          name: '',
+          speciesId: '',
+          breedId: '',
+          birthDate: '',
+          clientId: '',
+        });
         setFormError(message);
         toast.error(message);
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        if (!active) return;
+
+        setFieldErrors({});
+        setPhotoChange(null);
+        setSavedForm(null);
+        setLoadedId(id);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [id, navigate]);
 
   useEffect(() => {
-    handleGetAllUser()
-      .then((response) => setOwners(response.filter((user) => user.roleName === 'Client' && !user.isSuspended)))
-      .catch(() => setOwnersError('No se pudo cargar la lista de clientes.'))
-      .finally(() => setIsLoadingOwners(false));
-  }, []);
+    if (loadedId !== id) return;
+
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    handleGetPetImageUrl(id, signal)
+      .then((url) => {
+        if (!signal.aborted) setPhoto({ petId: id, url });
+      })
+      .catch((error) => {
+        if (signal.aborted) return;
+
+        const message = error instanceof ApiError && error.status === 404 ? '' : 'No se pudo mostrar la foto.';
+        setPhoto({ petId: id, error: message });
+      });
+
+    return () => controller.abort();
+  }, [id, loadedId]);
 
   const handleChange = (field: keyof PetFormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -67,6 +109,8 @@ export function PetEditPage() {
   };
 
   const handleSave = async () => {
+    if (isLoading || isSaving) return;
+
     const errors = validatePetForm(form);
     setFieldErrors(errors);
 
@@ -79,17 +123,34 @@ export function PetEditPage() {
     setFormError('');
 
     try {
-      await handleUpdatePet(id, {
-        name: form.name,
-        breedId: Number(form.breedId),
-        birthDate: form.birthDate,
-        clientId: Number(form.clientId),
-      });
-
-      toast.success('Mascota actualizada correctamente.');
-      navigate('/pets');
+      if (savedForm !== form) {
+        await handleUpdatePet(id, {
+          name: form.name,
+          breedId: Number(form.breedId),
+          birthDate: form.birthDate,
+          clientId: Number(form.clientId),
+        });
+        setSavedForm(form);
+      }
     } catch (error) {
       const message = errorMessage(error, 'No se pudo guardar la mascota.');
+      setFormError(message);
+      toast.error(message);
+      setIsSaving(false);
+      return;
+    }
+
+    try {
+      if (photoChange?.kind === 'replace') {
+        await handleUpdatePetImage(id, photoChange.file);
+      } else if (photoChange?.kind === 'remove') {
+        await handleDeletePetImage(id);
+      }
+
+      toast.success('Mascota actualizada correctamente.');
+      navigate(returnTo);
+    } catch {
+      const message = 'Los datos se guardaron, pero no se pudo guardar el cambio de foto. Volvé a guardar para reintentar.';
       setFormError(message);
       toast.error(message);
       setIsSaving(false);
@@ -99,16 +160,18 @@ export function PetEditPage() {
   return (
     <ScreenShell title="Editar mascota" backTo="/pets">
       <PetForm
+        photoUrl={currentPhoto?.url}
+        photoChange={photoChange}
+        isLoadingPhoto={currentPhoto === null}
+        photoError={currentPhoto?.error}
+        onPhotoChange={setPhotoChange}
         form={form}
         formError={formError}
         fieldErrors={fieldErrors}
-        owners={owners}
-        isLoadingOwners={isLoadingOwners}
-        ownersError={ownersError}
         isLoading={isLoading}
         isSaving={isSaving}
         onChange={handleChange}
-        onCancel={() => navigate('/pets')}
+        onCancel={() => navigate(returnTo)}
         onSave={handleSave}
         saveLabel="Guardar cambios"
       />

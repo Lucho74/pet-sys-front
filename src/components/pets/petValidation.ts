@@ -29,7 +29,7 @@ export function validatePetForm(form: PetFormState): FormErrors {
 
   const clientId = Number(form.clientId);
   if (!form.clientId.trim() || !Number.isInteger(clientId) || clientId < 1) {
-    errors.clientId = 'Busca el DNI y selecciona el dueño de la lista.';
+    errors.clientId = 'Buscá al dueño por nombre y seleccionalo de la lista.';
   }
 
   return errors;

@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { PetForm } from '../../components/pets/PetForm';
-import { handleAddPet } from '../../services/pets/petService';
-import { handleGetAllUser } from '../../services/users/userService';
-import type { IUserResponse } from '../../services/users/IUser';
+import type { PetPhotoChange } from '../../components/pets/PetPhotoField';
+import { handleAddPet, handleUpdatePetImage } from '../../services/pets/petService';
 import type { PetFormState } from '../../components/pets/petTypes';
 import { validatePetForm } from '../../components/pets/petValidation';
 import type { FormErrors } from '../../components/pets/petValidation';
@@ -21,19 +20,10 @@ export function PetCreatePage() {
     birthDate: '',
     clientId: '',
   });
-  const [owners, setOwners] = useState<IUserResponse[]>([]);
-  const [isLoadingOwners, setIsLoadingOwners] = useState(true);
-  const [ownersError, setOwnersError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
   const [formError, setFormError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    handleGetAllUser()
-      .then((response) => setOwners(response.filter((user) => user.roleName === 'Client' && !user.isSuspended)))
-      .catch(() => setOwnersError('No se pudo cargar la lista de clientes.'))
-      .finally(() => setIsLoadingOwners(false));
-  }, []);
+  const [photoChange, setPhotoChange] = useState<PetPhotoChange>(null);
 
   const handleChange = (field: keyof PetFormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -41,6 +31,8 @@ export function PetCreatePage() {
   };
 
   const handleSave = async () => {
+    if (isSaving) return;
+
     const errors = validatePetForm(form);
     setFieldErrors(errors);
 
@@ -51,34 +43,46 @@ export function PetCreatePage() {
 
     setIsSaving(true);
     setFormError('');
+    let petId: string;
 
     try {
-      await handleAddPet({
+      const pet = await handleAddPet({
         name: form.name,
         breedId: Number(form.breedId),
         birthDate: form.birthDate,
         clientId: Number(form.clientId),
       });
-
-      toast.success('Mascota creada correctamente.');
-      navigate('/pets');
+      petId = String(pet.id);
     } catch (error) {
       const message = errorMessage(error, 'No se pudo guardar la mascota.');
       setFormError(message);
       toast.error(message);
       setIsSaving(false);
+      return;
     }
+
+    if (photoChange?.kind === 'replace') {
+      try {
+        await handleUpdatePetImage(petId, photoChange.file);
+      } catch {
+        toast.warn('La mascota se creó, pero no se pudo subir la foto. Volvé a elegirla y guardá los cambios.');
+        navigate(`/pets/${petId}/edit`, { replace: true });
+        return;
+      }
+    }
+
+    toast.success('Mascota creada correctamente.');
+    navigate('/pets');
   };
 
   return (
     <ScreenShell title="Nueva mascota" backTo="/pets">
       <PetForm
+        photoChange={photoChange}
+        onPhotoChange={setPhotoChange}
         form={form}
         formError={formError}
         fieldErrors={fieldErrors}
-        owners={owners}
-        isLoadingOwners={isLoadingOwners}
-        ownersError={ownersError}
         isSaving={isSaving}
         onChange={handleChange}
         onCancel={() => navigate('/pets')}

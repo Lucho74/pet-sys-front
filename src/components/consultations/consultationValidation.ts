@@ -9,6 +9,13 @@ export function validateConsultationForm(
 ): FormErrors {
   const errors: FormErrors = {};
 
+  const title = form.title.trim();
+  if (!title) {
+    errors.title = 'El título es obligatorio.';
+  } else if (title.length > 100) {
+    errors.title = 'El título no puede superar los 100 caracteres.';
+  }
+
   const description = form.description.trim();
   if (!description) {
     errors.description = 'La descripción es obligatoria.';

@@ -1,37 +1,30 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { ConsultationForm } from '../../components/consultations/ConsultationForm';
-import { handleGetAllPet } from '../../services/pets/petService';
-import { handleGetAllUser } from '../../services/users/userService';
-import type { IUserResponse } from '../../services/users/IUser';
 import type { FormErrors } from '../../components/consultations/consultationValidation';
 import type { ConsultationFormState } from '../../components/consultations/consultationTypes';
 import { handleGetByIdConsultation, handleUpdateConsultation } from '../../services/consultation/consultationService';
 import { validateConsultationForm } from '../../components/consultations/consultationValidation';
-import type { IPetResponse } from '../../services/pets/IPet';
 import { hasDateTime, toApiDate, toInputDate } from '../../utils/datetime';
 import { errorMessage } from '../../utils/errors';
 
 export function ConsultationEditPage() {
     const { id = '' } = useParams();
     const navigate = useNavigate();
+    const { state } = useLocation();
+    const returnTo = state?.fromConsultationDetail === true ? `/consultations/${id}` : '/consultations';
 
     const [form, setForm] = useState<ConsultationFormState>({
+        title: '',
         description: '',
         date: '',
         petId: '',
         veterinarianId: '',
     });
-    const [veterinarians, setVeterinarians] = useState<IUserResponse[]>([]);
-    const [isLoadingVeterinarians, setIsLoadingVeterinarians] = useState(true);
-    const [veterinariansError, setVeterinariansError] = useState('');
-    const [pets, setPets] = useState<IPetResponse[]>([]);
-    const [isLoadingPets, setIsLoadingPets] = useState(true);
-    const [petsError, setPetsError] = useState('');
-    const [initialDate, setInitialDate] = useState('');
-    const [initialVeterinarianId, setInitialVeterinarianId] = useState('');
+    const [initialDate, setInitialDate] = useState<string>();
+    const [assignedVeterinarian, setAssignedVeterinarian] = useState('');
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
     const [formError, setFormError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -50,8 +43,9 @@ export function ConsultationEditPage() {
                 const veterinarianId = consultation.veterinarianId === null ? '' : String(consultation.veterinarianId);
 
                 setInitialDate(date);
-                setInitialVeterinarianId(veterinarianId);
+                setAssignedVeterinarian(consultation.veterinarianName?.trim() || (veterinarianId ? `Veterinario #${veterinarianId}` : 'Sin registrar'));
                 setForm({
+                    title: consultation.title ?? '',
                     description: consultation.description?.trim() || '',
                     date,
                     petId: consultation.petId === null ? '' : String(consultation.petId),
@@ -60,22 +54,21 @@ export function ConsultationEditPage() {
             })
             .catch((error) => {
                 const message = errorMessage(error, 'No se pudo cargar la consulta.');
+                setForm({
+                    title: '',
+                    description: '',
+                    date: '',
+                    petId: '',
+                    veterinarianId: '',
+                });
+                setInitialDate(undefined);
+                setAssignedVeterinarian('');
+                setFieldErrors({});
                 setFormError(message);
                 toast.error(message);
             })
             .finally(() => setIsLoading(false));
     }, [id, navigate]);
-
-    useEffect(() => {
-        handleGetAllUser()
-            .then((response) => setVeterinarians(response.filter((user) => user.roleName === 'Veterinarian')))
-            .catch(() => setVeterinariansError('No se pudo cargar la lista de veterinarios.'))
-            .finally(() => setIsLoadingVeterinarians(false));
-        handleGetAllPet()
-            .then((response) => setPets(response.filter((pet) => !pet.isSuspended)))
-            .catch(() => setPetsError('No se pudo cargar la lista de mascotas.'))
-            .finally(() => setIsLoadingPets(false));
-    }, []);
 
     const handleChange = (field: keyof ConsultationFormState, value: string) => {
         setForm((current) => ({ ...current, [field]: value }));
@@ -83,6 +76,8 @@ export function ConsultationEditPage() {
     };
 
     const handleSave = async () => {
+        if (isLoading || isSaving || initialDate === undefined) return;
+
         const errors = validateConsultationForm(form, initialDate);
         setFieldErrors(errors);
 
@@ -96,14 +91,14 @@ export function ConsultationEditPage() {
 
         try {
             await handleUpdateConsultation(id, {
+                title: form.title.trim(),
                 description: form.description,
                 date: toApiDate(form.date),
                 petId: Number(form.petId),
-                veterinarianId: Number(form.veterinarianId),
             });
 
             toast.success('Consulta actualizada correctamente.');
-            navigate('/consultations');
+            navigate(returnTo);
         } catch (error) {
             const message = errorMessage(error, 'No se pudo guardar la consulta.');
             setFormError(message);
@@ -118,16 +113,11 @@ export function ConsultationEditPage() {
                 form={form}
                 formError={formError}
                 fieldErrors={fieldErrors}
-                veterinarians={veterinarians.filter((v) => !v.isSuspended || String(v.id) === initialVeterinarianId)}
-                isLoadingVeterinarians={isLoadingVeterinarians}
-                veterinariansError={veterinariansError}
-                pets={pets}
-                isLoadingPets={isLoadingPets}
-                petsError={petsError}
+                assignedVeterinarian={assignedVeterinarian}
                 isLoading={isLoading}
                 isSaving={isSaving}
                 onChange={handleChange}
-                onCancel={() => navigate('/consultations')}
+                onCancel={() => navigate(returnTo)}
                 onSave={handleSave}
                 saveLabel="Guardar cambios"
             />

@@ -11,7 +11,7 @@ import { handleAddConsultation } from '../../services/consultation/consultationS
 import type { ConsultationFormState } from '../../components/consultations/consultationTypes';
 import { validateConsultationForm } from '../../components/consultations/consultationValidation';
 import type { IPetResponse } from '../../services/pets/IPet';
-import { toApiDate } from '../../utils/datetime';
+import { toApiDate, todayDate } from '../../utils/datetime';
 import { errorMessage } from '../../utils/errors';
 
 export function ConsultationCreatePage() {
@@ -19,7 +19,7 @@ export function ConsultationCreatePage() {
 
     const [form, setForm] = useState<ConsultationFormState>({
         description: '',
-        date: '',
+        date: todayDate(),
         petId: '',
         veterinarianId: '',
     });

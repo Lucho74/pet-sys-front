@@ -38,8 +38,8 @@ interface ConsultationTableProps {
 type ColumnKey = 'description' | 'date' | 'petName' | 'veterinarianName';
 
 const COLUMNS: { key: ColumnKey; label: string; sortBy?: string }[] = [
-  { key: 'description', label: 'Título' },
   { key: 'date', label: 'Fecha', sortBy: 'date' },
+  { key: 'description', label: 'Título' },
   { key: 'petName', label: 'Mascota' },
   { key: 'veterinarianName', label: 'Veterinario' },
 ];

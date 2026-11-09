@@ -22,7 +22,7 @@ export function UsersListPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [query, setQuery] = useState<UserQuery>({ ...DEFAULT_QUERY, role: '' });
+  const [query, setQuery] = useState<UserQuery>({ ...DEFAULT_QUERY, role: '', sortBy: 'role' });
   const [pagination, setPagination] = useState<Pagination>(EMPTY_PAGINATION);
   const { role } = useAuth();
 

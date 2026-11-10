@@ -74,7 +74,7 @@ export function ProfilePage() {
             {canEditOwnProfile(role) && (
               <CardFooter className="justify-end">
                 <Button asChild size="lg" className="w-full sm:w-auto">
-                  <Link to="/profile/edit"><Pencil aria-hidden="true" />Editar mis datos</Link>
+                  <Link to="/profile/edit" state={{ fromProfile: true }}><Pencil aria-hidden="true" />Editar mis datos</Link>
                 </Button>
               </CardFooter>
             )}

@@ -146,7 +146,7 @@ export function UserDetailPage() {
                   )}
                   {!user.isSuspended && !isUpdating && (
                     <Button asChild size="lg" className="w-full sm:w-auto">
-                      <Link to={`/users/${user.id}/edit`}><Pencil aria-hidden="true" />Editar usuario</Link>
+                      <Link to={`/users/${user.id}/edit`} state={{ fromUserDetail: true }}><Pencil aria-hidden="true" />Editar usuario</Link>
                     </Button>
                   )}
                 </CardFooter>

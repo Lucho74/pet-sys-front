@@ -18,8 +18,18 @@ export function ConsultationEditPage() {
     const navigate = useNavigate();
     const { role } = useAuth();
     const canReassign = role === 'Admin' || role === 'SysAdmin';
-    const { state } = useLocation();
-    const returnTo = state?.fromConsultationDetail === true ? `/consultations/${id}` : '/consultations';
+    const { key, state } = useLocation();
+    const fromDetail = state?.fromConsultationDetail === true;
+    const returnTo = fromDetail ? `/consultations/${id}` : '/consultations';
+
+    const returnToOrigin = () => {
+      if (fromDetail) {
+        if (window.history.state?.key === key) navigate(-1);
+        return;
+      }
+
+      navigate(returnTo);
+    };
 
     const [form, setForm] = useState<ConsultationFormState>({
         title: '',
@@ -123,7 +133,7 @@ export function ConsultationEditPage() {
             });
 
             toast.success('Consulta actualizada correctamente.');
-            navigate(returnTo);
+            returnToOrigin();
         } catch (error) {
             const message = errorMessage(error, 'No se pudo guardar la consulta.');
             setFormError(message);
@@ -133,7 +143,7 @@ export function ConsultationEditPage() {
     };
 
     return (
-        <ScreenShell title="Editar consulta" backTo="/consultations">
+        <ScreenShell title="Editar consulta" backTo={returnTo}>
             <ConsultationForm
                 form={form}
                 formError={formError}
@@ -145,7 +155,7 @@ export function ConsultationEditPage() {
                 isLoading={isLoading}
                 isSaving={isSaving}
                 onChange={handleChange}
-                onCancel={() => navigate(returnTo)}
+                onCancel={returnToOrigin}
                 onSave={handleSave}
                 saveLabel="Guardar cambios"
             />

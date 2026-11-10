@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { UserForm } from '../../components/users/UserForm';
@@ -15,6 +15,9 @@ import { useAuth } from '../../contexts/AuthenticationContext';
 export function UserEditPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
+  const { key, state } = useLocation();
+  const fromUserDetail = state?.fromUserDetail === true;
+  const backTo = fromUserDetail ? `/users/${id}` : '/users';
   const { role } = useAuth();
   
 
@@ -101,7 +104,7 @@ export function UserEditPage() {
       });
 
       toast.success('Usuario actualizado correctamente.');
-      navigate('/users');
+      returnToOrigin();
     } catch (error) {
       const message = errorMessage(error, 'No se pudo guardar el usuario.');
       setFormError(message);
@@ -110,8 +113,17 @@ export function UserEditPage() {
     }
   };
 
+  const returnToOrigin = () => {
+    if (fromUserDetail) {
+      if (window.history.state?.key === key) navigate(-1);
+      return;
+    }
+
+    navigate(backTo);
+  };
+
   return (
-    <ScreenShell title="Editar usuario" backTo="/users">
+    <ScreenShell title="Editar usuario" backTo={backTo}>
       <UserForm
         form={form}
         formError={formError}
@@ -124,7 +136,7 @@ export function UserEditPage() {
         isLoading={isLoading}
         isSaving={isSaving}
         onChange={handleChange}
-        onCancel={() => navigate('/users')}
+        onCancel={returnToOrigin}
         onSave={handleSave}
         saveLabel="Guardar cambios"
         roleOptions={getManageableRoles(role)}

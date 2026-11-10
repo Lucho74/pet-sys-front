@@ -15,6 +15,8 @@ interface VeterinarianSelectProps {
   label: string;
   value: string;
   ownProfessional?: ProfessionalOption;
+  initialProfessional?: ProfessionalOption;
+  includeAdmins?: boolean;
   onChange: (id: string) => void;
   error?: string;
   disabled?: boolean;
@@ -28,9 +30,13 @@ function toOption(user: IUserResponse) {
   };
 }
 
-async function searchOptions(search: string) {
-  const { items } = await handleGetUsersPage({ ...DEFAULT_QUERY, role: 'Veterinarian', includeSuspended: false, search });
-  return items.map(toOption);
+async function searchOptions(search: string, includeAdmins: boolean) {
+  const query = { ...DEFAULT_QUERY, includeSuspended: false, search };
+  const [veterinarians, admins] = await Promise.all([
+    handleGetUsersPage({ ...query, role: 'Veterinarian' }),
+    includeAdmins ? handleGetUsersPage({ ...query, role: 'Admin' }) : undefined,
+  ]);
+  return [...veterinarians.items, ...(admins?.items ?? [])].map(toOption);
 }
 
 async function loadOption(id: string) {
@@ -41,20 +47,22 @@ export function VeterinarianSelect({
   label,
   value,
   ownProfessional,
+  initialProfessional,
+  includeAdmins = false,
   onChange,
   error,
   disabled = false,
 }: VeterinarianSelectProps) {
   const ownId = ownProfessional?.id;
   const ownName = ownProfessional?.name;
-  const knownProfessional = ownProfessional?.id === value ? ownProfessional : undefined;
+  const knownProfessional = [initialProfessional, ownProfessional].find((professional) => professional?.id === value);
   const searchProfessionals = useCallback(async (query: string) => {
-    const options = await searchOptions(query);
+    const options = await searchOptions(query, includeAdmins);
     if (ownId && ownName && matchesSearch(ownName, query)) {
       return [{ id: ownId, primary: ownName, secondary: '' }, ...options];
     }
     return options;
-  }, [ownId, ownName]);
+  }, [includeAdmins, ownId, ownName]);
 
   const search = useRemoteSelect({
     value: knownProfessional ? '' : value,
@@ -72,10 +80,10 @@ export function VeterinarianSelect({
         : search.selectedOption}
       label={label}
       value={value}
-      placeholder="Escribe el nombre del veterinario"
+      placeholder={includeAdmins ? 'Escribí el nombre del profesional' : 'Escribe el nombre del veterinario'}
       searchHint={`Escribí al menos ${search.minSearchLength} caracteres del nombre para buscar.`}
-      loadingLabel="Buscando veterinarios..."
-      notFoundLabel="No se encontraron veterinarios con ese nombre."
+      loadingLabel={includeAdmins ? 'Buscando profesionales...' : 'Buscando veterinarios...'}
+      notFoundLabel={includeAdmins ? 'No se encontraron profesionales con ese nombre.' : 'No se encontraron veterinarios con ese nombre.'}
       error={error}
       disabled={disabled}
     />

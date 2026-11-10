@@ -12,6 +12,8 @@ interface ConsultationFormProps {
   fieldErrors: FormErrors;
   assignedVeterinarian?: string;
   ownProfessional?: ProfessionalOption;
+  initialProfessional?: ProfessionalOption;
+  includeAdmins?: boolean;
   isLoading?: boolean;
   isSaving?: boolean;
   onChange: (field: keyof ConsultationFormState, value: string) => void;
@@ -26,6 +28,8 @@ export function ConsultationForm({
   fieldErrors,
   assignedVeterinarian,
   ownProfessional,
+  initialProfessional,
+  includeAdmins,
   isLoading = false,
   isSaving = false,
   onChange,
@@ -81,6 +85,8 @@ export function ConsultationForm({
           label="Veterinario"
           value={form.veterinarianId}
           ownProfessional={ownProfessional}
+          initialProfessional={initialProfessional}
+          includeAdmins={includeAdmins}
           onChange={(value) => onChange('veterinarianId', value)}
           error={fieldErrors.veterinarianId}
           disabled={isSaving}

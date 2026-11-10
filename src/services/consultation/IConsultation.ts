@@ -38,4 +38,5 @@ export interface IUpdateConsultationRequest {
     description: string | null;
     date: string | null;
     petId: number | null;
+    veterinarianId?: number;
 }

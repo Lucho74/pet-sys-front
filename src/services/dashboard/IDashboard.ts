@@ -10,7 +10,6 @@ export interface IDashboardResponse {
 export interface IRecentConsultation {
     id: number;
     title: string;
-    description: string;
     date: string;
     isSuspended: boolean;
     petId: number;

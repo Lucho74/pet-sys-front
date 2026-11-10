@@ -72,7 +72,7 @@ export function ConsultationListPage() {
 
     const consultations: Consultation[] = response.map((consultation) => ({
         id: consultation.id,
-        description: consultation.description?.trim() || 'Sin título',
+        title: consultation.title?.trim() || 'Sin título',
         date: hasDateTime(consultation.date) ? consultation.date.trim() : '',
         petId: String(consultation.petId),
         petName:

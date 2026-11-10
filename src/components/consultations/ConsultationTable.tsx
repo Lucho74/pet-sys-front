@@ -39,11 +39,11 @@ interface ConsultationTableProps {
   consultations: Consultation[];
 }
 
-type ColumnKey = 'description' | 'date' | 'petName' | 'veterinarianName';
+type ColumnKey = 'title' | 'date' | 'petName' | 'veterinarianName';
 
 const COLUMNS: { key: ColumnKey; label: string; width: number; sortBy?: string }[] = [
   { key: 'date', label: 'Fecha', sortBy: 'date', width: 120 },
-  { key: 'description', label: 'Título', width: 256 },
+  { key: 'title', label: 'Título', width: 256 },
   { key: 'petName', label: 'Mascota', width: 144 },
   { key: 'veterinarianName', label: 'Veterinario', width: 184 },
 ];
@@ -55,7 +55,7 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
   const [consultationToSuspend, setConsultationToSuspend] = useState<Consultation | null>(null);
 
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
-  const flexibleColumn = columns.find((column) => column.key === 'description') ?? columns[0];
+  const flexibleColumn = columns.find((column) => column.key === 'title') ?? columns[0];
   const minWidth = columns.reduce((width, column) => width + column.width, TABLE_ACTION_WIDTH);
   const sortDirection = query.sortDesc ? '↓' : '↑';
 
@@ -68,10 +68,10 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
     if (key === 'petName') {
       return <Badge variant="secondary" className="h-auto min-h-5 max-w-full whitespace-normal">{consultation.petName}</Badge>;
     }
-    if (key === 'description') {
+    if (key === 'title') {
       return (
         <div className="flex items-center gap-2">
-          <span className="min-w-0 font-semibold">{consultation.description}</span>
+          <span className="min-w-0 font-semibold">{consultation.title}</span>
           {consultation.isSuspended && <Badge variant="outline">Suspendida</Badge>}
         </div>
       );
@@ -240,7 +240,7 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
         <ConfirmDialog
           title="Suspender consulta"
           confirmLabel="Suspender"
-          description={`¿Confirmás que querés suspender la consulta "${consultationToSuspend.description}"?`}
+          description={`¿Confirmás que querés suspender la consulta "${consultationToSuspend.title}"?`}
           onClose={() => setConsultationToSuspend(null)}
           onConfirm={() => onSuspend(consultationToSuspend.id)}
         />

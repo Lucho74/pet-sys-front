@@ -6,6 +6,8 @@ import { useAuth } from '../../contexts/AuthenticationContext';
 import { ROLE_LABELS } from '../users/userTypes';
 import { initials } from '../../utils/initials';
 import { handleGetCurrentUser } from '../../services/auth/authService';
+import { canViewOwnProfile } from '../../utils/roles';
+import { PROFILE_UPDATED_EVENT } from '../../utils/events';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -43,9 +45,15 @@ export function Sidebar() {
 
   useEffect(() => {
     if (!token) return;
-    handleGetCurrentUser()
-      .then((user) => setUserName(user.fullName ?? ''))
-      .catch(() => {});
+    const loadUserName = () => {
+      handleGetCurrentUser()
+        .then((user) => setUserName(user.fullName ?? ''))
+        .catch(() => {});
+    };
+
+    loadUserName();
+    window.addEventListener(PROFILE_UPDATED_EVENT, loadUserName);
+    return () => window.removeEventListener(PROFILE_UPDATED_EVENT, loadUserName);
   }, [token]);
 
   const [home, ...sections] = getVisibleNavItems(role);
@@ -133,12 +141,17 @@ export function Sidebar() {
                 sideOffset={8}
                 className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
               >
-                <DropdownMenuItem disabled>
-                  <UserPen />
-                  Editar mis datos
-                  <span className="ml-auto text-xs">Próximamente</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                {canViewOwnProfile(role) && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" onClick={() => setOpenMobile(false)}>
+                        <UserPen />
+                        Mis datos
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem variant="destructive" onClick={handleLogout}>
                   <LogOut />
                   Cerrar sesión

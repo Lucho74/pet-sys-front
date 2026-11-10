@@ -19,9 +19,11 @@ import { LoginPage } from '../pages/auth/LoginPage';
 import Protected from './Protected';
 import PublicOnly from './PublicOnly';
 import RoleRoute from './RoleRoute';
-import { CLINICAL_ROLES, CLIENT_ROLES } from '../utils/roles';
+import { CLINICAL_ROLES, CLIENT_ROLES, PROFILE_EDIT_ROLES, PROFILE_VIEW_ROLES } from '../utils/roles';
 import { MyPetsPage } from '../pages/pets/MyPetsPage';
 import { SpeciesPage } from '../pages/species/SpeciesPage';
+import { ProfilePage } from '../pages/profile/ProfilePage';
+import { ProfileEditPage } from '../pages/profile/ProfileEditPage';
 
 const routes: RouteObject[] = [
   {
@@ -69,6 +71,18 @@ const routes: RouteObject[] = [
               { path: 'my-pets', element: <MyPetsPage /> },
               { path: 'my-pets/:id', element: <PetDetailPage backTo="/my-pets" /> },
               { path: 'my-pets/:petId/consultations/:id', element: <ConsultationDetailPage /> },
+            ],
+          },
+          {
+            element: <RoleRoute allowedRoles={PROFILE_VIEW_ROLES} />,
+            children: [
+              { path: 'profile', element: <ProfilePage /> },
+            ],
+          },
+          {
+            element: <RoleRoute allowedRoles={PROFILE_EDIT_ROLES} />,
+            children: [
+              { path: 'profile/edit', element: <ProfileEditPage /> },
             ],
           },
         ]

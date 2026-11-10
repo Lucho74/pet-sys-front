@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { ConsultationForm } from '../../components/consultations/ConsultationForm';
+import type { ProfessionalOption } from '../../components/consultations/VeterinarianSelect';
 import type { FormErrors } from '../../components/consultations/consultationValidation';
 import { useAuth } from '../../contexts/AuthenticationContext';
 import { handleGetCurrentUser } from '../../services/auth/authService';
@@ -18,44 +18,50 @@ export function ConsultationCreatePage() {
     const { state } = useLocation();
     const fromHome = state?.fromHome === true;
     const canReturnToOrigin = fromHome || state?.fromDetail === true;
-    const { role, token } = useAuth();
+    const { role } = useAuth();
     const [searchParams] = useSearchParams();
     const presetPetId = searchParams.get('petId') ?? '';
     const presetVeterinarianId = searchParams.get('veterinarianId') ?? '';
-    const adminId = role === 'Admin' && token ? jwtDecode(token).sub : undefined;
+    const isAdmin = role === 'Admin';
     const assignToSelf = role === 'Veterinarian';
     const backTo = presetPetId ? `/pets/${presetPetId}`
         : presetVeterinarianId ? `/users/${presetVeterinarianId}` : '/consultations';
 
-    const [form, setForm] = useState<ConsultationFormState>({
+    const [draft, setDraft] = useState<Omit<ConsultationFormState, 'veterinarianId'> & { veterinarianId?: string }>({
         title: '',
         description: '',
         date: todayDate(),
         petId: presetPetId,
-        veterinarianId: assignToSelf ? '' : presetVeterinarianId || adminId || '',
     });
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
     const [formError, setFormError] = useState('');
     const [isSaving, setIsSaving] = useState(false);
-    const [professionalName, setProfessionalName] = useState('Cargando nombre...');
+    const [professional, setProfessional] = useState<ProfessionalOption | null>();
+    const ownProfessional = isAdmin ? professional ?? undefined : undefined;
+    const professionalName = professional?.name ?? (professional === null ? 'Mi usuario' : 'Cargando nombre...');
+    const defaultVeterinarianId = presetVeterinarianId || ownProfessional?.id || '';
+    const form: ConsultationFormState = {
+        ...draft,
+        veterinarianId: assignToSelf ? '' : draft.veterinarianId ?? defaultVeterinarianId,
+    };
 
     useEffect(() => {
-        if (!assignToSelf && !adminId) return;
+        if (!assignToSelf && !isAdmin) return;
 
         let active = true;
         handleGetCurrentUser()
             .then((user) => {
-                if (active) setProfessionalName(user.fullName?.trim() || 'Mi usuario');
+                if (active) setProfessional({ id: String(user.id), name: user.fullName?.trim() || 'Mi usuario' });
             })
             .catch(() => {
-                if (active) setProfessionalName('Mi usuario');
+                if (active) setProfessional(null);
             });
 
         return () => { active = false; };
-    }, [assignToSelf, adminId]);
+    }, [assignToSelf, isAdmin]);
 
     const handleChange = (field: keyof ConsultationFormState, value: string) => {
-        setForm((current) => ({ ...current, [field]: value }));
+        setDraft((current) => ({ ...current, [field]: value }));
         setFieldErrors((current) => ({ ...current, [field]: '' }));
     };
 
@@ -99,7 +105,7 @@ export function ConsultationCreatePage() {
                 formError={formError}
                 fieldErrors={fieldErrors}
                 assignedVeterinarian={assignToSelf ? professionalName : undefined}
-                ownProfessional={adminId ? { id: adminId, name: professionalName } : undefined}
+                ownProfessional={ownProfessional}
                 isSaving={isSaving}
                 onChange={handleChange}
                 onCancel={() => canReturnToOrigin ? navigate(-1) : navigate(backTo, { replace: true })}

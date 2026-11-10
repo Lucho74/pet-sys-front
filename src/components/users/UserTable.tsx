@@ -6,7 +6,9 @@ import type { AssignableRole, UserQuery } from '../../services/users/IUser';
 import { useAuth } from '../../contexts/AuthenticationContext';
 import { ROLE_LABELS } from './userTypes';
 import {
+  TABLE_ACTION_WIDTH,
   TABLE_CARD_CLASSES,
+  TABLE_CELL_CLASSES,
   TABLE_HEAD_CLASSES,
   TABLE_HEADER_ROW_CLASSES,
   TABLE_ROW_CLASSES,
@@ -24,7 +26,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/common/SearchInput';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PAGE_SIZE_OPTIONS, type Pagination } from '../../services/IPaginated';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -50,14 +52,16 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
   const [userToSuspend, setUserToSuspend] = useState<User | null>(null);
 
   const showRegistrationNumber = role === 'Admin' || role === 'SysAdmin';
-  const availableColumns: { key: ColumnKey; label: string; sortBy?: string }[] = [
-    { key: 'fullName', label: 'Nombre', sortBy: 'fullName' },
-    { key: 'roleName', label: 'Rol' },
-    { key: 'email', label: 'Email', sortBy: 'email' },
-    { key: 'identification', label: showRegistrationNumber ? 'DNI / Matrícula' : 'DNI' },
-    { key: 'phone', label: 'Teléfono' },
+  const availableColumns: { key: ColumnKey; label: string; width: number; sortBy?: string }[] = [
+    { key: 'fullName', label: 'Nombre', sortBy: 'fullName', width: 248 },
+    { key: 'roleName', label: 'Rol', width: 112 },
+    { key: 'email', label: 'Email', sortBy: 'email', width: 208 },
+    { key: 'identification', label: showRegistrationNumber ? 'DNI / Matrícula' : 'DNI', width: 144 },
+    { key: 'phone', label: 'Teléfono', width: 150 },
   ];
   const columns = availableColumns.filter((column) => !hidden.includes(column.key));
+  const flexibleColumn = columns.find((column) => column.key === 'fullName') ?? columns[0];
+  const minWidth = columns.reduce((width, column) => width + column.width, TABLE_ACTION_WIDTH);
 
   const handleSort = (sortBy: string) => {
     onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
@@ -78,7 +82,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
           <Avatar>
             <AvatarFallback className={user.isSuspended ? '' : 'bg-primary text-primary-foreground'}>{initials(user.fullName)}</AvatarFallback>
           </Avatar>
-          <span className="font-semibold">{user.fullName}</span>
+          <span className="min-w-0 font-semibold">{user.fullName}</span>
           {user.isSuspended && <Badge variant="outline">Suspendido</Badge>}
         </div>
       );
@@ -89,11 +93,12 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
-        <Input
+        <SearchInput
+          aria-label="Buscar por nombre o email"
           placeholder="Buscar por nombre o email..."
           value={query.search}
           onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
-          className="h-9 bg-white sm:max-w-[420px]"
+          className="sm:max-w-[420px]"
         />
 
         {role !== 'Veterinarian' && (
@@ -159,11 +164,15 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
       </div>
 
       <div className={TABLE_CARD_CLASSES}>
-        <Table>
+        <Table className="table-fixed" style={{ minWidth }}>
           <TableHeader>
             <TableRow className={TABLE_HEADER_ROW_CLASSES}>
               {columns.map((column) => (
-                <TableHead key={column.key} className={TABLE_HEAD_CLASSES}>
+                <TableHead
+                  key={column.key}
+                  className={TABLE_HEAD_CLASSES}
+                  style={column === flexibleColumn ? undefined : { width: column.width }}
+                >
                   {column.sortBy ? (
                     <button type="button" onClick={() => handleSort(column.sortBy!)} className="cursor-pointer uppercase hover:text-white">
                       {column.label} {query.sortBy === column.sortBy ? (query.sortDesc ? '↓' : '↑') : ''}
@@ -173,7 +182,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
                   )}
                 </TableHead>
               ))}
-              <TableHead />
+              <TableHead style={{ width: TABLE_ACTION_WIDTH }} />
             </TableRow>
           </TableHeader>
 
@@ -189,7 +198,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
                   className={`${TABLE_ROW_CLASSES} ${canOpenDetail ? 'cursor-pointer' : ''} ${user.isSuspended ? 'bg-[#DDE6ED]/30 text-[#526D82]' : 'text-[#27374D]'}`}
                 >
                   {columns.map((column) => (
-                    <TableCell key={column.key} className="px-5 py-4">
+                    <TableCell key={column.key} className={TABLE_CELL_CLASSES}>
                       {renderCell(user, column.key)}
                     </TableCell>
                   ))}

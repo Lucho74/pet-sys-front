@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import type { IPaginatedResponse, PageQuery } from '../../services/IPaginated';
 import { errorMessage } from '../../utils/errors';
 import { FormField } from '../common/FormField';
-import { TABLE_CARD_CLASSES, TABLE_HEAD_CLASSES, TABLE_HEADER_ROW_CLASSES, TABLE_ROW_CLASSES } from '../common/listStyles';
+import { TABLE_ACTION_WIDTH, TABLE_CARD_CLASSES, TABLE_CELL_CLASSES, TABLE_HEAD_CLASSES, TABLE_HEADER_ROW_CLASSES, TABLE_ROW_CLASSES } from '../common/listStyles';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/common/SearchInput';
 import { Spinner } from '@/components/ui/spinner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -105,15 +105,15 @@ export function CatalogTable<T extends CatalogItem>({
         </Button>
       </div>
 
-      <Input
+      <SearchInput
+        aria-label={`Buscar en ${title}`}
         placeholder="Buscar por nombre..."
         value={query.search}
         onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
-        className="h-9 bg-white"
       />
 
       <div className={TABLE_CARD_CLASSES}>
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow className={TABLE_HEADER_ROW_CLASSES}>
               <TableHead className={TABLE_HEAD_CLASSES}>
@@ -125,7 +125,7 @@ export function CatalogTable<T extends CatalogItem>({
                   Nombre {query.sortBy === 'name' ? (query.sortDesc ? '↓' : '↑') : ''}
                 </button>
               </TableHead>
-              <TableHead />
+              <TableHead style={{ width: TABLE_ACTION_WIDTH }} />
             </TableRow>
           </TableHeader>
 
@@ -145,7 +145,7 @@ export function CatalogTable<T extends CatalogItem>({
                 onClick={() => onSelect?.(item)}
                 className={`${TABLE_ROW_CLASSES} text-[#27374D] ${onSelect ? 'cursor-pointer' : ''} ${item.id === selectedId ? 'bg-[#DDE6ED] font-semibold' : ''}`}
               >
-                <TableCell className="px-5 py-4">{item.name}</TableCell>
+                <TableCell className={TABLE_CELL_CLASSES}>{item.name}</TableCell>
                 <TableCell className="px-5 text-right" onClick={(event) => event.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

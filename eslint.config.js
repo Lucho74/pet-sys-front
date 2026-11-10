@@ -20,7 +20,6 @@ export default defineConfig([
     },
   },
   {
-    // Los componentes de shadcn exportan helpers junto al componente (ej. buttonVariants).
     files: ['src/components/ui/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',

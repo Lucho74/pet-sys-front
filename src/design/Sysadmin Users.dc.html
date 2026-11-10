@@ -22,7 +22,6 @@
     <div style="position:absolute;top:25px;left:50%;transform:translateX(-50%);width:126px;height:37px;border-radius:24px;background:#000;z-index:50"></div>
     <div style="height:100%;border-radius:36px;overflow:hidden;display:flex;flex-direction:column;background:#DDE6ED;font-family:'Inter',-apple-system,system-ui,sans-serif;position:relative">
 
-      <!-- Header -->
       <div style="flex:none;padding:56px 20px 16px;background:#27374D;display:flex;flex-direction:column;gap:14px">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <sc-if value="{{ isFormScreen }}" hint-placeholder-val="{{ false }}">
@@ -46,7 +45,6 @@
         </div>
       </div>
 
-      <!-- LIST SCREEN -->
       <sc-if value="{{ isListScreen }}" hint-placeholder-val="{{ true }}">
         <div style="flex:1;overflow:auto;padding:16px 16px 100px">
           <div style="display:flex;flex-direction:column;gap:10px">
@@ -78,7 +76,6 @@
         </div>
       </sc-if>
 
-      <!-- FORM SCREEN (create / edit) -->
       <sc-if value="{{ isFormScreen }}" hint-placeholder-val="{{ false }}">
         <div style="flex:1;overflow:auto;padding:20px 20px 24px">
           <div style="display:flex;flex-direction:column;gap:16px">
@@ -127,7 +124,6 @@
         </div>
       </sc-if>
 
-      <!-- ACTION SHEET -->
       <sc-if value="{{ showSheet }}" hint-placeholder-val="{{ false }}">
         <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(39,55,77,0.45);z-index:40"></div>
         <div style="position:absolute;left:0;right:0;bottom:0;z-index:41;background:#DDE6ED;border-radius:22px 22px 0 0;padding:20px 18px 34px;box-shadow:0 -8px 24px rgba(39,55,77,0.25)">
@@ -149,7 +145,6 @@
         </div>
       </sc-if>
 
-      <!-- DELETE CONFIRM -->
       <sc-if value="{{ showDeleteConfirm }}" hint-placeholder-val="{{ false }}">
         <div style="position:absolute;inset:0;background:rgba(39,55,77,0.5);z-index:50;display:flex;align-items:center;justify-content:center;padding:28px">
           <div style="background:#fff;border-radius:16px;padding:22px;width:100%;box-shadow:0 12px 30px rgba(39,55,77,0.3)">
@@ -186,7 +181,7 @@ function roleStyle(role) {
 
 class Component extends DCLogic {
   state = {
-    screen: 'list', // list | create | edit
+    screen: 'list',
     users: [
       { id: 1, username: 'jrivas', fullName: 'Julia Rivas', email: 'julia.rivas@empresa.com', role: 'Administrador', status: 'active' },
       { id: 2, username: 'mcastro', fullName: 'Mario Castro', email: 'mario.castro@empresa.com', role: 'Operador', status: 'active' },

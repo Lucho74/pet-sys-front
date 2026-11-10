@@ -44,7 +44,7 @@ export function PetList({
                         <div className="min-w-0">
                           <CardTitle className="flex items-center gap-2">
                             {pet.name}
-                            {pet.isSuspended && <Badge variant="outline">Suspendido</Badge>}
+                            {pet.isSuspended && <Badge variant="outline">Suspendida</Badge>}
                           </CardTitle>
                           <CardDescription>
                             {pet.species} · {pet.breed}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Pencil, UserRound } from 'lucide-react';
+import { Pencil, Plus, UserRound } from 'lucide-react';
+import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +10,7 @@ import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import { ListState } from '../../components/common/ListState';
+import { CREATE_BUTTON_CLASSES } from '../../components/common/listStyles';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { ConsultationHistoryCard } from '../../components/consultations/ConsultationHistoryCard';
 import { UserPetsCard } from '../../components/users/UserPetsCard';
@@ -22,7 +24,7 @@ import { canManage } from '../../utils/roles';
 
 export function UserDetailPage() {
   const { id = '' } = useParams();
-  const { role } = useAuth();
+  const { role, token } = useAuth();
   const [result, setResult] = useState<{ id: string; user?: IUserResponse; error?: string } | null>(null);
   const [userToSuspend, setUserToSuspend] = useState<number | null>(null);
   const [userToChangeRole, setUserToChangeRole] = useState<number | null>(null);
@@ -31,6 +33,7 @@ export function UserDetailPage() {
   const user = current?.user;
   const userRole = user?.roleName as UserRole | null | undefined;
   const canManageUser = Boolean(userRole && canManage(role, userRole));
+  const canAssignConsultation = role === 'SysAdmin' || (token !== null && jwtDecode(token).sub === String(user?.id));
   const nextRole = userRole === 'Veterinarian' ? 'Admin' : userRole === 'Admin' ? 'Veterinarian' : null;
   const canChangeRole = role === 'SysAdmin' && nextRole !== null;
   const name = user?.fullName?.trim() || 'Sin nombre';
@@ -147,9 +150,32 @@ export function UserDetailPage() {
                 </CardFooter>
               )}
             </Card>
-            {userRole === 'Client' && <UserPetsCard key={user.id} clientId={user.id} />}
+            {userRole === 'Client' && (
+              <UserPetsCard
+                key={user.id}
+                clientId={user.id}
+                action={!user.isSuspended && (
+                  <Button asChild size="lg" className={CREATE_BUTTON_CLASSES}>
+                    <Link to={`/pets/new?clientId=${user.id}`}>
+                      <Plus aria-hidden="true" /> Nueva mascota
+                    </Link>
+                  </Button>
+                )}
+              />
+            )}
             {(userRole === 'Veterinarian' || userRole === 'Admin') && (
-              <ConsultationHistoryCard key={user.id} source="veterinarian" id={user.id} />
+              <ConsultationHistoryCard
+                key={user.id}
+                source="veterinarian"
+                id={user.id}
+                action={canAssignConsultation && !user.isSuspended && (
+                  <Button asChild size="lg" className={CREATE_BUTTON_CLASSES}>
+                    <Link to={`/consultations/new?veterinarianId=${user.id}`}>
+                      <Plus aria-hidden="true" /> Nueva consulta
+                    </Link>
+                  </Button>
+                )}
+              />
             )}
             {canManageUser && userToSuspend === user.id && (
               <ConfirmDialog

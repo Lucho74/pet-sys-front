@@ -106,7 +106,6 @@ export function UserForm({
         disabled={isSaving}
       />
 
-      {/* el veterinario solo puede gestionar clientes: no tiene rol para elegir */}
       {roleOptions.length > 1 && (
       <Field data-invalid={Boolean(fieldErrors.roleName)}>
         <FieldLabel htmlFor="user-role">Rol</FieldLabel>

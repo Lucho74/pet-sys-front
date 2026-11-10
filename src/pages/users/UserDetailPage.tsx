@@ -158,7 +158,7 @@ export function UserDetailPage() {
                 clientId={user.id}
                 action={!user.isSuspended && (
                   <Button asChild size="lg" className={CREATE_BUTTON_CLASSES}>
-                    <Link to={`/pets/new?clientId=${user.id}`}>
+                    <Link to={`/pets/new?clientId=${user.id}`} state={{ fromDetail: true }}>
                       <Plus aria-hidden="true" /> Nueva mascota
                     </Link>
                   </Button>
@@ -172,7 +172,7 @@ export function UserDetailPage() {
                 id={user.id}
                 action={canAssignConsultation && !user.isSuspended && (
                   <Button asChild size="lg" className={CREATE_BUTTON_CLASSES}>
-                    <Link to={`/consultations/new?veterinarianId=${user.id}`}>
+                    <Link to={`/consultations/new?veterinarianId=${user.id}`} state={{ fromDetail: true }}>
                       <Plus aria-hidden="true" /> Nueva consulta
                     </Link>
                   </Button>

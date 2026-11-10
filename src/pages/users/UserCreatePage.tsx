@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { UserForm } from '../../components/users/UserForm';
@@ -14,6 +14,8 @@ import { useAuth } from '../../contexts/AuthenticationContext';
 
 export function UserCreatePage() {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const fromHome = state?.fromHome === true;
   const { role } = useAuth();
   const roleOptions = getManageableRoles(role);
 
@@ -69,14 +71,14 @@ export function UserCreatePage() {
   };
 
   return (
-    <ScreenShell title="Nuevo usuario" backTo="/users">
+    <ScreenShell title="Nuevo usuario" backTo={fromHome ? '/' : '/users'}>
       <UserForm
         form={form}
         formError={formError}
         fieldErrors={fieldErrors}
         isSaving={isSaving}
         onChange={handleChange}
-        onCancel={() => navigate('/users')}
+        onCancel={() => fromHome ? navigate(-1) : navigate('/users')}
         onSave={handleSave}
         saveLabel="Crear usuario"
         roleOptions={roleOptions}

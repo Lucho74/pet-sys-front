@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
@@ -15,6 +15,9 @@ import { errorMessage } from '../../utils/errors';
 
 export function ConsultationCreatePage() {
     const navigate = useNavigate();
+    const { state } = useLocation();
+    const fromHome = state?.fromHome === true;
+    const canReturnToOrigin = fromHome || state?.fromDetail === true;
     const { role, token } = useAuth();
     const [searchParams] = useSearchParams();
     const presetPetId = searchParams.get('petId') ?? '';
@@ -90,7 +93,7 @@ export function ConsultationCreatePage() {
     };
 
     return (
-        <ScreenShell title="Nueva consulta" backTo={backTo}>
+        <ScreenShell title="Nueva consulta" backTo={fromHome ? '/' : backTo}>
             <ConsultationForm
                 form={form}
                 formError={formError}
@@ -99,7 +102,7 @@ export function ConsultationCreatePage() {
                 ownProfessional={adminId ? { id: adminId, name: professionalName } : undefined}
                 isSaving={isSaving}
                 onChange={handleChange}
-                onCancel={() => navigate(backTo)}
+                onCancel={() => canReturnToOrigin ? navigate(-1) : navigate(backTo, { replace: true })}
                 onSave={handleSave}
                 saveLabel="Crear consulta"
             />

@@ -2,14 +2,18 @@ import type { PageQuery } from "../IPaginated";
 
 export interface IPetResponse {
     id: number;
-    name: string | null;
+    name: string;
     speciesId: number;
-    speciesName: string | null;
+    speciesName: string;
     breedId: number;
-    breedName: string | null;
-    birthDate: string | null;
+    breedName: string;
+    birthDate: string;
     clientId: number;
     isSuspended: boolean;
+}
+
+export interface IPetDetailResponse extends IPetResponse {
+    clientName: string;
 }
 
 export interface IPetRequest {

@@ -44,7 +44,7 @@ export function PetDetailPage({ backTo }: { backTo: PetListPath }) {
 }
 
 function PetDetail({ id, backTo }: { id: string; backTo: PetListPath }) {
-  const [pet, setPet] = useState<Pet | null>(null);
+  const [pet, setPet] = useState<(Pet & { clientName: string }) | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -59,7 +59,7 @@ function PetDetail({ id, backTo }: { id: string; backTo: PetListPath }) {
 
     handleGetByIdPet(id)
       .then((response) => {
-        if (active) setPet(toPet(response));
+        if (active) setPet({ ...toPet(response), clientName: response.clientName });
       })
       .catch((error) => {
         if (!active) return;
@@ -206,7 +206,7 @@ function PetDetail({ id, backTo }: { id: string; backTo: PetListPath }) {
                 onConfirm={() => changeSuspension(pet.id, true)}
               />
             )}
-            {backTo === '/pets' && <PetOwnerCard key={pet.clientId} clientId={pet.clientId} />}
+            {backTo === '/pets' && <PetOwnerCard clientId={pet.clientId} clientName={pet.clientName} />}
             <ConsultationHistoryCard
               source="pet"
               id={pet.id}

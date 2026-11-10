@@ -5,11 +5,11 @@ export type AssignableRole = Exclude<UserRole, 'SysAdmin'>;
 
 export interface IUserResponse {
     id: number;
-    fullName: string | null;
-    email: string | null;
-    phone: string | null;
+    fullName: string;
+    email: string;
+    phone: string;
     isSuspended: boolean;
-    roleName: string | null;
+    roleName: string;
     dni: string | null;
     registrationNumber: string | null;
 }

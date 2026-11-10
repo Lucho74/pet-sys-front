@@ -5,18 +5,18 @@ export interface IConsultationAttachment {
 
 export interface IConsultationResponse {
     id: number;
-    title?: string | null;
-    description: string | null;
-    date: string | null;
-    petId: number | null;
-    veterinarianId: number | null;
+    title: string;
+    description: string;
+    date: string;
+    petId: number;
+    veterinarianId: number;
     attachments: IConsultationAttachment[];
     isSuspended: boolean;
 }
 
 export interface IConsultationWithParticipantsResponse extends IConsultationResponse {
-    petName: string | null;
-    veterinarianName: string | null;
+    petName: string;
+    veterinarianName: string;
 }
 
 export interface ICreateConsultationRequest {

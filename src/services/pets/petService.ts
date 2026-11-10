@@ -1,4 +1,4 @@
-import { type PetQuery, type IPetRequest, type IPetResponse } from "./IPet"
+import { type PetQuery, type IPetRequest, type IPetResponse, type IPetDetailResponse } from "./IPet"
 import { apiFetch } from "../apiClient";
 import { toQueryString, type IPaginatedResponse } from "../IPaginated";
 
@@ -20,7 +20,7 @@ export const handleUpdatePet = async (id: string, updatedPet: IPetRequest): Prom
     return response.json();
 };
 
-export const handleGetByIdPet = async (id: string): Promise<IPetResponse> => {
+export const handleGetByIdPet = async (id: string): Promise<IPetDetailResponse> => {
     const response = await apiFetch(`/Pet/${id}`);
 
     return response.json();

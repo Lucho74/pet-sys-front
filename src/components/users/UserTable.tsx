@@ -62,9 +62,17 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
   const columns = availableColumns.filter((column) => !hidden.includes(column.key));
   const flexibleColumn = columns.find((column) => column.key === 'fullName') ?? columns[0];
   const minWidth = columns.reduce((width, column) => width + column.width, TABLE_ACTION_WIDTH);
+  const sortDirection = query.sortDesc ? '↓' : '↑';
+
+  let suspensionFilter = 'active';
+  if (query.isSuspend) {
+    suspensionFilter = 'suspended';
+  } else if (query.includeSuspended) {
+    suspensionFilter = 'all';
+  }
 
   const handleSort = (sortBy: string) => {
-    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
+    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy && !query.sortDesc, pageIndex: 1 });
   };
 
   const renderCell = (user: User, key: ColumnKey) => {
@@ -121,7 +129,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
         )}
 
         <Select
-          value={query.isSuspend ? 'suspended' : query.includeSuspended ? 'all' : 'active'}
+          value={suspensionFilter}
           onValueChange={(value) =>
             onQueryChange({
               ...query,
@@ -175,7 +183,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
                 >
                   {column.sortBy ? (
                     <button type="button" onClick={() => handleSort(column.sortBy!)} className="cursor-pointer uppercase hover:text-white">
-                      {column.label} {query.sortBy === column.sortBy ? (query.sortDesc ? '↓' : '↑') : ''}
+                      {column.label} {query.sortBy === column.sortBy && sortDirection}
                     </button>
                   ) : (
                     column.label

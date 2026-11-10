@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ListState } from '../../components/common/ListState';
 import { ScreenShell } from '../../components/layout/ScreenShell';
-import { ROLE_LABELS } from '../../components/users/userTypes';
+import { isProfessionalRole, ROLE_LABELS } from '../../components/users/userTypes';
 import { useAuth } from '../../contexts/AuthenticationContext';
 import { handleGetCurrentUser } from '../../services/auth/authService';
 import type { IUserResponse, UserRole } from '../../services/users/IUser';
@@ -33,16 +33,21 @@ export function ProfilePage() {
   }, []);
 
   const userRole = user?.roleName as UserRole | null | undefined;
+  const roleLabel = (userRole && ROLE_LABELS[userRole]) || 'Sin registrar';
   const name = user?.fullName?.trim() || 'Sin nombre';
 
-  const fields = user ? [
-    { label: 'Correo', value: user.email },
-    { label: 'Teléfono', value: user.phone },
-    ...(userRole === 'Client' ? [{ label: 'DNI', value: user.dni }] : []),
-    ...(userRole === 'Veterinarian' || userRole === 'Admin'
-      ? [{ label: 'Matrícula', value: user.registrationNumber }]
-      : []),
-  ] : [];
+  const fields: { label: string; value: string | null }[] = [];
+  if (user) {
+    fields.push(
+      { label: 'Correo', value: user.email },
+      { label: 'Teléfono', value: user.phone },
+    );
+    if (userRole === 'Client') {
+      fields.push({ label: 'DNI', value: user.dni });
+    } else if (isProfessionalRole(user.roleName)) {
+      fields.push({ label: 'Matrícula', value: user.registrationNumber });
+    }
+  }
 
   return (
     <ScreenShell title="Mis datos" icon={UserRound} backTo="/" homeTo="/">
@@ -57,7 +62,7 @@ export function ProfilePage() {
                 <div className="min-w-0">
                   <CardTitle className="wrap-anywhere text-2xl font-semibold sm:text-3xl"><h2>{name}</h2></CardTitle>
                   <span className="mt-1 block text-sm text-muted-foreground">
-                    {userRole ? ROLE_LABELS[userRole] ?? 'Sin registrar' : 'Sin registrar'}
+                    {roleLabel}
                   </span>
                 </div>
               </div>

@@ -24,8 +24,12 @@ export function ConsultationCreatePage() {
     const presetVeterinarianId = searchParams.get('veterinarianId') ?? '';
     const isAdmin = role === 'Admin';
     const assignToSelf = role === 'Veterinarian';
-    const backTo = presetPetId ? `/pets/${presetPetId}`
-        : presetVeterinarianId ? `/users/${presetVeterinarianId}` : '/consultations';
+    let backTo = '/consultations';
+    if (presetPetId) {
+        backTo = `/pets/${presetPetId}`;
+    } else if (presetVeterinarianId) {
+        backTo = `/users/${presetVeterinarianId}`;
+    }
 
     const [draft, setDraft] = useState<Omit<ConsultationFormState, 'veterinarianId'> & { veterinarianId?: string }>({
         title: '',
@@ -37,12 +41,14 @@ export function ConsultationCreatePage() {
     const [formError, setFormError] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [professional, setProfessional] = useState<ProfessionalOption | null>();
-    const ownProfessional = isAdmin ? professional ?? undefined : undefined;
-    const professionalName = professional?.name ?? (professional === null ? 'Mi usuario' : 'Cargando nombre...');
+    const ownProfessional = isAdmin && professional ? professional : undefined;
+    const fallbackProfessionalName = professional === undefined ? 'Cargando nombre...' : 'Mi usuario';
+    const professionalName = professional?.name ?? fallbackProfessionalName;
     const defaultVeterinarianId = presetVeterinarianId || ownProfessional?.id || '';
+    const selectedVeterinarianId = draft.veterinarianId ?? defaultVeterinarianId;
     const form: ConsultationFormState = {
         ...draft,
-        veterinarianId: assignToSelf ? '' : draft.veterinarianId ?? defaultVeterinarianId,
+        veterinarianId: assignToSelf ? '' : selectedVeterinarianId,
     };
 
     useEffect(() => {
@@ -63,6 +69,14 @@ export function ConsultationCreatePage() {
     const handleChange = (field: keyof ConsultationFormState, value: string) => {
         setDraft((current) => ({ ...current, [field]: value }));
         setFieldErrors((current) => ({ ...current, [field]: '' }));
+    };
+
+    const handleCancel = () => {
+        if (canReturnToOrigin) {
+            navigate(-1);
+        } else {
+            navigate(backTo, { replace: true });
+        }
     };
 
     const handleSave = async () => {
@@ -108,7 +122,7 @@ export function ConsultationCreatePage() {
                 ownProfessional={ownProfessional}
                 isSaving={isSaving}
                 onChange={handleChange}
-                onCancel={() => canReturnToOrigin ? navigate(-1) : navigate(backTo, { replace: true })}
+                onCancel={handleCancel}
                 onSave={handleSave}
                 saveLabel="Crear consulta"
             />

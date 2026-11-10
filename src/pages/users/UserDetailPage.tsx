@@ -14,7 +14,7 @@ import { CREATE_BUTTON_CLASSES } from '../../components/common/listStyles';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { ConsultationHistoryCard } from '../../components/consultations/ConsultationHistoryCard';
 import { UserPetsCard } from '../../components/users/UserPetsCard';
-import { ROLE_LABELS } from '../../components/users/userTypes';
+import { isProfessionalRole, ROLE_LABELS } from '../../components/users/userTypes';
 import { useAuth } from '../../contexts/AuthenticationContext';
 import type { IUserResponse, UserRole } from '../../services/users/IUser';
 import { handleDeleteUser, handleGetByIdUser, handleReactivateUser, handleUpdateUserRole } from '../../services/users/userService';
@@ -32,11 +32,17 @@ export function UserDetailPage() {
   const current = result?.id === id ? result : null;
   const user = current?.user;
   const userRole = user?.roleName as UserRole | null | undefined;
+  const roleLabel = (userRole && ROLE_LABELS[userRole]) || 'Sin registrar';
   const canManageUser = Boolean(userRole && canManage(role, userRole));
   const canAssignConsultation = role === 'SysAdmin'
     || (role === 'Admin' && userRole === 'Veterinarian')
     || (token !== null && jwtDecode(token).sub === String(user?.id));
-  const nextRole = userRole === 'Veterinarian' ? 'Admin' : userRole === 'Admin' ? 'Veterinarian' : null;
+  let nextRole: 'Admin' | 'Veterinarian' | null = null;
+  if (userRole === 'Veterinarian') {
+    nextRole = 'Admin';
+  } else if (userRole === 'Admin') {
+    nextRole = 'Veterinarian';
+  }
   const canChangeRole = role === 'SysAdmin' && nextRole !== null;
   const name = user?.fullName?.trim() || 'Sin nombre';
 
@@ -88,14 +94,18 @@ export function UserDetailPage() {
     }
   };
 
-  const fields = user ? [
-    { label: 'Correo', value: user.email },
-    { label: 'Teléfono', value: user.phone },
-    ...(userRole === 'Client' ? [{ label: 'DNI', value: user.dni }] : []),
-    ...(userRole === 'Veterinarian' || userRole === 'Admin'
-      ? [{ label: 'Matrícula', value: user.registrationNumber }]
-      : []),
-  ] : [];
+  const fields: { label: string; value: string | null }[] = [];
+  if (user) {
+    fields.push(
+      { label: 'Correo', value: user.email },
+      { label: 'Teléfono', value: user.phone },
+    );
+    if (userRole === 'Client') {
+      fields.push({ label: 'DNI', value: user.dni });
+    } else if (isProfessionalRole(user.roleName)) {
+      fields.push({ label: 'Matrícula', value: user.registrationNumber });
+    }
+  }
 
   return (
     <ScreenShell title="Detalle de usuario" icon={UserRound} backTo="/users" homeTo="/">
@@ -111,7 +121,7 @@ export function UserDetailPage() {
                   <div className="min-w-0">
                     <CardTitle className="wrap-anywhere text-2xl font-semibold sm:text-3xl"><h2>{name}</h2></CardTitle>
                     <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <span className="text-sm text-muted-foreground">{userRole ? ROLE_LABELS[userRole] ?? 'Sin registrar' : 'Sin registrar'}</span>
+                      <span className="text-sm text-muted-foreground">{roleLabel}</span>
                       <Badge variant={user.isSuspended ? 'outline' : 'secondary'}>
                         {user.isSuspended ? 'Suspendido' : 'Activo'}
                       </Badge>

@@ -57,9 +57,10 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
   const flexibleColumn = columns.find((column) => column.key === 'description') ?? columns[0];
   const minWidth = columns.reduce((width, column) => width + column.width, TABLE_ACTION_WIDTH);
+  const sortDirection = query.sortDesc ? '↓' : '↑';
 
   const handleSort = (sortBy: string) => {
-    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
+    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy && !query.sortDesc, pageIndex: 1 });
   };
 
   const renderCell = (consultation: Consultation, key: ColumnKey) => {
@@ -146,7 +147,7 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
                 >
                   {column.sortBy ? (
                     <button type="button" onClick={() => handleSort(column.sortBy!)} className="cursor-pointer uppercase hover:text-white">
-                      {column.label} {query.sortBy === column.sortBy ? (query.sortDesc ? '↓' : '↑') : ''}
+                      {column.label} {query.sortBy === column.sortBy && sortDirection}
                     </button>
                   ) : (
                     column.label

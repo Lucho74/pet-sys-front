@@ -57,7 +57,12 @@ export function SearchSelect({
     onRemoteSearch(nextSearch.trim());
   };
 
-  const message = isLoading ? loadingLabel : loadError || (hasSearch ? notFoundLabel : searchHint);
+  let message = hasSearch ? notFoundLabel : searchHint;
+  if (isLoading) {
+    message = loadingLabel;
+  } else if (loadError) {
+    message = loadError;
+  }
 
   return (
     <Field data-invalid={Boolean(error)}>

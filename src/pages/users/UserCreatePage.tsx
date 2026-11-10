@@ -37,6 +37,14 @@ export function UserCreatePage() {
     setFieldErrors((current) => ({ ...current, [field]: '' }));
   };
 
+  const handleCancel = () => {
+    if (fromHome) {
+      navigate(-1);
+    } else {
+      navigate('/users');
+    }
+  };
+
   const handleSave = async () => {
     const errors = validateUserForm(form);
     setFieldErrors(errors);
@@ -78,7 +86,7 @@ export function UserCreatePage() {
         fieldErrors={fieldErrors}
         isSaving={isSaving}
         onChange={handleChange}
-        onCancel={() => fromHome ? navigate(-1) : navigate('/users')}
+        onCancel={handleCancel}
         onSave={handleSave}
         saveLabel="Crear usuario"
         roleOptions={roleOptions}

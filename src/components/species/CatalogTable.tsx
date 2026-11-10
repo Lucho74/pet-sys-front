@@ -63,6 +63,7 @@ export function CatalogTable<T extends CatalogItem>({
   const [nameError, setNameError] = useState('');
   const [toDelete, setToDelete] = useState<T | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const sortDirection = query.sortDesc ? '↓' : '↑';
 
   const openEditor = (id: number | null, name: string) => {
     setEditing({ id, name });
@@ -122,7 +123,7 @@ export function CatalogTable<T extends CatalogItem>({
                   onClick={() => onQueryChange({ ...query, sortBy: 'name', sortDesc: query.sortBy === 'name' && !query.sortDesc, pageIndex: 1 })}
                   className="cursor-pointer uppercase hover:text-white"
                 >
-                  Nombre {query.sortBy === 'name' ? (query.sortDesc ? '↓' : '↑') : ''}
+                  Nombre {query.sortBy === 'name' && sortDirection}
                 </button>
               </TableHead>
               <TableHead style={{ width: TABLE_ACTION_WIDTH }} />

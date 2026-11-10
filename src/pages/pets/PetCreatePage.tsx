@@ -36,6 +36,14 @@ export function PetCreatePage() {
     setFieldErrors((current) => ({ ...current, [field]: '' }));
   };
 
+  const handleCancel = () => {
+    if (canReturnToOrigin) {
+      navigate(-1);
+    } else {
+      navigate(backTo, { replace: true });
+    }
+  };
+
   const handleSave = async () => {
     if (isSaving) return;
 
@@ -91,7 +99,7 @@ export function PetCreatePage() {
         fieldErrors={fieldErrors}
         isSaving={isSaving}
         onChange={handleChange}
-        onCancel={() => canReturnToOrigin ? navigate(-1) : navigate(backTo, { replace: true })}
+        onCancel={handleCancel}
         onSave={handleSave}
         saveLabel="Crear mascota"
       />

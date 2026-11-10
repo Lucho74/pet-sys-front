@@ -32,30 +32,33 @@ export function FormField({ label, error, type = 'text', onChange, ...inputProps
     'aria-invalid': Boolean(error),
   };
 
+  let control;
+  if (type === 'password') {
+    control = (
+      <InputGroup className="h-10 bg-white">
+        <InputGroupInput type={showPassword ? 'text' : 'password'} {...props} />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton
+            size="icon-xs"
+            onClick={() => setShowPassword(!showPassword)}
+            disabled={inputProps.disabled}
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+          >
+            {showPassword ? <EyeOff /> : <Eye />}
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
+    );
+  } else if (type === 'textarea') {
+    control = <Textarea className="min-h-32 bg-white" {...props} />;
+  } else {
+    control = <Input type={type} className="h-10 bg-white read-only:bg-muted" {...props} />;
+  }
+
   return (
     <Field data-invalid={Boolean(error)}>
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
-
-      {type === 'password' ? (
-        <InputGroup className="h-10 bg-white">
-          <InputGroupInput type={showPassword ? 'text' : 'password'} {...props} />
-          <InputGroupAddon align="inline-end">
-            <InputGroupButton
-              size="icon-xs"
-              onClick={() => setShowPassword(!showPassword)}
-              disabled={inputProps.disabled}
-              aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-            >
-              {showPassword ? <EyeOff /> : <Eye />}
-            </InputGroupButton>
-          </InputGroupAddon>
-        </InputGroup>
-      ) : type === 'textarea' ? (
-        <Textarea className="min-h-32 bg-white" {...props} />
-      ) : (
-        <Input type={type} className="h-10 bg-white read-only:bg-muted" {...props} />
-      )}
-
+      {control}
       {error && <FieldError>{error}</FieldError>}
     </Field>
   );

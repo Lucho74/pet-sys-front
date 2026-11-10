@@ -25,12 +25,14 @@ import { MoreHorizontal } from 'lucide-react';
 import { SearchInput } from '@/components/common/SearchInput';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PAGE_SIZE_OPTIONS, type PageQuery, type Pagination } from '../../services/IPaginated';
+import { PAGE_SIZE_OPTIONS, type Pagination } from '../../services/IPaginated';
+import type { ConsultationQuery } from '../../services/consultation/IConsultation';
+import { useAuth } from '../../contexts/AuthenticationContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface ConsultationTableProps {
-  query: PageQuery;
-  onQueryChange: (query: PageQuery) => void;
+  query: ConsultationQuery;
+  onQueryChange: (query: ConsultationQuery) => void;
   onSuspend: (id: number) => Promise<void>;
   onReactivate: (id: number) => Promise<void>;
   pagination: Pagination;
@@ -48,6 +50,7 @@ const COLUMNS: { key: ColumnKey; label: string; width: number; sortBy?: string }
 
 export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivate, pagination, consultations: rows }: ConsultationTableProps) {
   const navigate = useNavigate();
+  const { role } = useAuth();
   const [hidden, setHidden] = useState<ColumnKey[]>([]);
   const [consultationToSuspend, setConsultationToSuspend] = useState<Consultation | null>(null);
 
@@ -85,6 +88,21 @@ export function ConsultationTable({ query, onQueryChange, onSuspend, onReactivat
           onChange={(event) => onQueryChange({ ...query, search: event.target.value, pageIndex: 1 })}
           className="sm:max-w-[420px]"
         />
+
+        {(role === 'Veterinarian' || role === 'Admin') && (
+          <Select
+            value={query.mine ? 'mine' : 'all'}
+            onValueChange={(value) => onQueryChange({ ...query, mine: value === 'mine', pageIndex: 1 })}
+          >
+            <SelectTrigger className="h-9 bg-white" aria-label="Consultas por responsable">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mine">Mis consultas</SelectItem>
+              <SelectItem value="all">Todas</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
 
         <label className="flex sm:ml-auto items-center gap-2 text-[14px] text-[#27374D]">
           <Switch

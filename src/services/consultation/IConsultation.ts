@@ -1,3 +1,9 @@
+import type { PageQuery } from '../IPaginated';
+
+export interface ConsultationQuery extends PageQuery {
+    mine?: boolean;
+}
+
 export interface IConsultationAttachment {
     blobName: string;
     fileName: string | null;

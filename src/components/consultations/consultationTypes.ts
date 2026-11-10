@@ -1,6 +1,6 @@
 export interface Consultation {
   id: number;
-  description: string;
+  title: string;
   date: string;
   petId: string;
   petName: string;

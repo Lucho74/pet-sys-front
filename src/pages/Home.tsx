@@ -123,7 +123,7 @@ export function Home() {
                                 </Avatar>
                               </ItemMedia>
                               <ItemContent>
-                                <ItemTitle className="line-clamp-1">{consultation.description || 'Sin descripción'}</ItemTitle>
+                                <ItemTitle className="line-clamp-1">{consultation.title || 'Sin título'}</ItemTitle>
                                 <ItemDescription className="line-clamp-1">
                                   {consultation.petName} · {consultation.veterinarianName}
                                 </ItemDescription>

@@ -1,7 +1,7 @@
 import { FormField } from '../common/FormField';
 import { FormShell } from '../common/FormShell';
 import { PetSelect } from './PetSelect';
-import { VeterinarianSelect } from './VeterinarianSelect';
+import { VeterinarianSelect, type ProfessionalOption } from './VeterinarianSelect';
 import type { ConsultationFormState } from './consultationTypes';
 import type { FormErrors } from './consultationValidation';
 import { todayDate } from '../../utils/datetime';
@@ -11,6 +11,7 @@ interface ConsultationFormProps {
   formError: string;
   fieldErrors: FormErrors;
   assignedVeterinarian?: string;
+  ownProfessional?: ProfessionalOption;
   isLoading?: boolean;
   isSaving?: boolean;
   onChange: (field: keyof ConsultationFormState, value: string) => void;
@@ -24,6 +25,7 @@ export function ConsultationForm({
   formError,
   fieldErrors,
   assignedVeterinarian,
+  ownProfessional,
   isLoading = false,
   isSaving = false,
   onChange,
@@ -78,6 +80,7 @@ export function ConsultationForm({
         <VeterinarianSelect
           label="Veterinario"
           value={form.veterinarianId}
+          ownProfessional={ownProfessional}
           onChange={(value) => onChange('veterinarianId', value)}
           error={fieldErrors.veterinarianId}
           disabled={isSaving}

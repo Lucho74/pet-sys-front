@@ -33,7 +33,9 @@ export function UserDetailPage() {
   const user = current?.user;
   const userRole = user?.roleName as UserRole | null | undefined;
   const canManageUser = Boolean(userRole && canManage(role, userRole));
-  const canAssignConsultation = role === 'SysAdmin' || (token !== null && jwtDecode(token).sub === String(user?.id));
+  const canAssignConsultation = role === 'SysAdmin'
+    || (role === 'Admin' && userRole === 'Veterinarian')
+    || (token !== null && jwtDecode(token).sub === String(user?.id));
   const nextRole = userRole === 'Veterinarian' ? 'Admin' : userRole === 'Admin' ? 'Veterinarian' : null;
   const canChangeRole = role === 'SysAdmin' && nextRole !== null;
   const name = user?.fullName?.trim() || 'Sin nombre';

@@ -1,12 +1,20 @@
+import { useCallback } from 'react';
 import { SearchSelect } from '../common/SearchSelect';
 import { useRemoteSelect } from '../common/useRemoteSelect';
 import { DEFAULT_QUERY } from '../../services/IPaginated';
 import type { IUserResponse } from '../../services/users/IUser';
 import { handleGetByIdUser, handleGetUsersPage } from '../../services/users/userService';
+import { matchesSearch } from '../../utils/search';
+
+export interface ProfessionalOption {
+  id: string;
+  name: string;
+}
 
 interface VeterinarianSelectProps {
   label: string;
   value: string;
+  ownProfessional?: ProfessionalOption;
   onChange: (id: string) => void;
   error?: string;
   disabled?: boolean;
@@ -29,11 +37,29 @@ async function loadOption(id: string) {
   return toOption(await handleGetByIdUser(id));
 }
 
-export function VeterinarianSelect({ label, value, onChange, error, disabled = false }: VeterinarianSelectProps) {
+export function VeterinarianSelect({
+  label,
+  value,
+  ownProfessional,
+  onChange,
+  error,
+  disabled = false,
+}: VeterinarianSelectProps) {
+  const ownId = ownProfessional?.id;
+  const ownName = ownProfessional?.name;
+  const knownProfessional = ownProfessional?.id === value ? ownProfessional : undefined;
+  const searchProfessionals = useCallback(async (query: string) => {
+    const options = await searchOptions(query);
+    if (ownId && ownName && matchesSearch(ownName, query)) {
+      return [{ id: ownId, primary: ownName, secondary: '' }, ...options];
+    }
+    return options;
+  }, [ownId, ownName]);
+
   const search = useRemoteSelect({
-    value,
+    value: knownProfessional ? '' : value,
     onChange,
-    searchOptions,
+    searchOptions: searchProfessionals,
     loadOption,
     missingLabel: 'No se pudo cargar el veterinario',
   });
@@ -41,6 +67,9 @@ export function VeterinarianSelect({ label, value, onChange, error, disabled = f
   return (
     <SearchSelect
       {...search}
+      selectedOption={knownProfessional
+        ? { id: knownProfessional.id, primary: knownProfessional.name, secondary: '' }
+        : search.selectedOption}
       label={label}
       value={value}
       placeholder="Escribe el nombre del veterinario"

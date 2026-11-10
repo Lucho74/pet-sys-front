@@ -14,8 +14,18 @@ import { errorMessage } from '../../utils/errors';
 export function PetEditPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const returnTo = state?.fromPetDetail === true ? `/pets/${id}` : '/pets';
+  const { key, state } = useLocation();
+  const fromDetail = state?.fromPetDetail === true;
+  const returnTo = fromDetail ? `/pets/${id}` : '/pets';
+
+  const returnToOrigin = () => {
+    if (fromDetail) {
+      if (window.history.state?.key === key) navigate(-1);
+      return;
+    }
+
+    navigate(returnTo);
+  };
 
   const [form, setForm] = useState<PetFormState>({
     name: '',
@@ -148,7 +158,7 @@ export function PetEditPage() {
       }
 
       toast.success('Mascota actualizada correctamente.');
-      navigate(returnTo);
+      returnToOrigin();
     } catch {
       const message = 'Los datos se guardaron, pero no se pudo guardar el cambio de foto. Volvé a guardar para reintentar.';
       setFormError(message);
@@ -158,7 +168,7 @@ export function PetEditPage() {
   };
 
   return (
-    <ScreenShell title="Editar mascota" backTo="/pets">
+    <ScreenShell title="Editar mascota" backTo={returnTo}>
       <PetForm
         photoUrl={currentPhoto?.url}
         photoChange={photoChange}
@@ -171,7 +181,7 @@ export function PetEditPage() {
         isLoading={isLoading}
         isSaving={isSaving}
         onChange={handleChange}
-        onCancel={() => navigate(returnTo)}
+        onCancel={returnToOrigin}
         onSave={handleSave}
         saveLabel="Guardar cambios"
       />

@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 import type { User } from './userTypes';
-import type { AssignableRole, UserQuery } from '../../services/users/IUser';
+import type { UserQuery } from '../../services/users/IUser';
 import { useAuth } from '../../contexts/AuthenticationContext';
+import { getManageableRoles } from '../../utils/roles';
 import { ROLE_LABELS } from './userTypes';
 import {
   TABLE_ACTION_WIDTH,
@@ -43,11 +44,10 @@ interface UserTableProps {
 
 type ColumnKey = 'fullName' | 'roleName' | 'email' | 'identification' | 'phone';
 
-const ROLE_FILTER_OPTIONS: AssignableRole[] = ['Client', 'Veterinarian', 'Admin'];
-
 export function UserTable({ query, onQueryChange, pagination, users: rows, canManageUser, onSuspend, onReactivate }: UserTableProps) {
   const navigate = useNavigate();
   const { role } = useAuth();
+  const roleFilterOptions = getManageableRoles(role);
   const [hidden, setHidden] = useState<ColumnKey[]>([]);
   const [userToSuspend, setUserToSuspend] = useState<User | null>(null);
 
@@ -62,9 +62,17 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
   const columns = availableColumns.filter((column) => !hidden.includes(column.key));
   const flexibleColumn = columns.find((column) => column.key === 'fullName') ?? columns[0];
   const minWidth = columns.reduce((width, column) => width + column.width, TABLE_ACTION_WIDTH);
+  const sortDirection = query.sortDesc ? '↓' : '↑';
+
+  let suspensionFilter = 'active';
+  if (query.isSuspend) {
+    suspensionFilter = 'suspended';
+  } else if (query.includeSuspended) {
+    suspensionFilter = 'all';
+  }
 
   const handleSort = (sortBy: string) => {
-    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
+    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy && !query.sortDesc, pageIndex: 1 });
   };
 
   const renderCell = (user: User, key: ColumnKey) => {
@@ -101,7 +109,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
           className="sm:max-w-[420px]"
         />
 
-        {role !== 'Veterinarian' && (
+        {roleFilterOptions.length > 1 && (
         <Select
           value={query.role || 'all'}
           onValueChange={(value) => onQueryChange({ ...query, role: value === 'all' ? '' : value, pageIndex: 1 })}
@@ -111,7 +119,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos los roles</SelectItem>
-            {ROLE_FILTER_OPTIONS.map((role) => (
+            {roleFilterOptions.map((role) => (
               <SelectItem key={role} value={role}>
                 {ROLE_LABELS[role]}
               </SelectItem>
@@ -121,7 +129,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
         )}
 
         <Select
-          value={query.isSuspend ? 'suspended' : query.includeSuspended ? 'all' : 'active'}
+          value={suspensionFilter}
           onValueChange={(value) =>
             onQueryChange({
               ...query,
@@ -175,7 +183,7 @@ export function UserTable({ query, onQueryChange, pagination, users: rows, canMa
                 >
                   {column.sortBy ? (
                     <button type="button" onClick={() => handleSort(column.sortBy!)} className="cursor-pointer uppercase hover:text-white">
-                      {column.label} {query.sortBy === column.sortBy ? (query.sortDesc ? '↓' : '↑') : ''}
+                      {column.label} {query.sortBy === column.sortBy && sortDirection}
                     </button>
                   ) : (
                     column.label

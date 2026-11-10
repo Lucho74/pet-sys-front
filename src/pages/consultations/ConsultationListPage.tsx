@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Stethoscope, Plus } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { DEFAULT_QUERY, EMPTY_PAGINATION, type PageQuery, type Pagination } from '../../services/IPaginated';
+import { DEFAULT_QUERY, EMPTY_PAGINATION, type Pagination } from '../../services/IPaginated';
+import { useAuth } from '../../contexts/AuthenticationContext';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CREATE_BUTTON_CLASSES } from '../../components/common/listStyles';
 import { ConsultationList } from '../../components/consultations/ConsultationList';
 import { handleGetConsultationsPage, handleReactivateConsultation, handleSuspendConsultation } from '../../services/consultation/consultationService';
-import type { IConsultationWithParticipantsResponse } from '../../services/consultation/IConsultation';
+import type { ConsultationQuery, IConsultationWithParticipantsResponse } from '../../services/consultation/IConsultation';
 import type { Consultation } from '../../components/consultations/consultationTypes';
 import { hasDateTime } from '../../utils/datetime';
 import { errorMessage } from '../../utils/errors';
@@ -17,16 +18,21 @@ const CREATE_TO = '/consultations/new';
 const CREATE_LABEL = 'Nueva consulta';
 
 export function ConsultationListPage() {
+    const { role } = useAuth();
     const [response, setResponse] = useState<IConsultationWithParticipantsResponse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const [query, setQuery] = useState<PageQuery>(DEFAULT_QUERY);
+    const [query, setQuery] = useState<ConsultationQuery>({ ...DEFAULT_QUERY, mine: role === 'Veterinarian' });
     const [pagination, setPagination] = useState<Pagination>(EMPTY_PAGINATION);
 
     useEffect(() => {
+        const controller = new AbortController();
+        const { signal } = controller;
         const timer = setTimeout(() => {
-            handleGetConsultationsPage(query)
+            handleGetConsultationsPage(query, signal)
                 .then((result) => {
+                    if (signal.aborted) return;
+
                     const lastPage = Math.max(result.totalPages, 1);
                     if (query.pageIndex > lastPage) {
                         setQuery({ ...query, pageIndex: lastPage });
@@ -37,12 +43,18 @@ export function ConsultationListPage() {
                     setResponse(result.items);
                 })
                 .catch(() => {
+                    if (signal.aborted) return;
                     setError('No se pudo cargar la lista de consultas. Intenta nuevamente.');
                     toast.error('No se pudo cargar la lista de consultas.');
                 })
-                .finally(() => setIsLoading(false));
+                .finally(() => {
+                    if (!signal.aborted) setIsLoading(false);
+                });
         }, 300);
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+            controller.abort();
+        };
     }, [query]);
 
     const changeSuspension = async (id: number, isSuspended: boolean) => {

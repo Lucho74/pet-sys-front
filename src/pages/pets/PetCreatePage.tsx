@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { PetForm } from '../../components/pets/PetForm';
@@ -12,6 +12,9 @@ import { errorMessage } from '../../utils/errors';
 
 export function PetCreatePage() {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const fromHome = state?.fromHome === true;
+  const canReturnToOrigin = fromHome || state?.fromDetail === true;
   const [searchParams] = useSearchParams();
   const presetClientId = searchParams.get('clientId') ?? '';
   const backTo = presetClientId ? `/users/${presetClientId}` : '/pets';
@@ -31,6 +34,14 @@ export function PetCreatePage() {
   const handleChange = (field: keyof PetFormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     setFieldErrors((current) => ({ ...current, [field]: '' }));
+  };
+
+  const handleCancel = () => {
+    if (canReturnToOrigin) {
+      navigate(-1);
+    } else {
+      navigate(backTo, { replace: true });
+    }
   };
 
   const handleSave = async () => {
@@ -79,7 +90,7 @@ export function PetCreatePage() {
   };
 
   return (
-    <ScreenShell title="Nueva mascota" backTo={backTo}>
+    <ScreenShell title="Nueva mascota" backTo={fromHome ? '/' : backTo}>
       <PetForm
         photoChange={photoChange}
         onPhotoChange={setPhotoChange}
@@ -88,7 +99,7 @@ export function PetCreatePage() {
         fieldErrors={fieldErrors}
         isSaving={isSaving}
         onChange={handleChange}
-        onCancel={() => navigate(backTo)}
+        onCancel={handleCancel}
         onSave={handleSave}
         saveLabel="Crear mascota"
       />

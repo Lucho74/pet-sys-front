@@ -213,7 +213,7 @@ function PetDetail({ id, backTo }: { id: string; backTo: PetListPath }) {
               detailBase={backTo === '/my-pets' ? `/my-pets/${pet.id}/consultations` : '/consultations'}
               action={backTo === '/pets' && !pet.isSuspended && (
                 <Button asChild size="lg" className={CREATE_BUTTON_CLASSES}>
-                  <Link to={`/consultations/new?petId=${pet.id}`}>
+                  <Link to={`/consultations/new?petId=${pet.id}`} state={{ fromDetail: true }}>
                     <Plus aria-hidden="true" /> Nueva consulta
                   </Link>
                 </Button>

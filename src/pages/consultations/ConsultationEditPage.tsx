@@ -3,8 +3,11 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { ConsultationForm } from '../../components/consultations/ConsultationForm';
+import type { ProfessionalOption } from '../../components/consultations/VeterinarianSelect';
 import type { FormErrors } from '../../components/consultations/consultationValidation';
 import type { ConsultationFormState } from '../../components/consultations/consultationTypes';
+import { useAuth } from '../../contexts/AuthenticationContext';
+import { handleGetCurrentUser } from '../../services/auth/authService';
 import { handleGetByIdConsultation, handleUpdateConsultation } from '../../services/consultation/consultationService';
 import { validateConsultationForm } from '../../components/consultations/consultationValidation';
 import { hasDateTime, toApiDate, toInputDate } from '../../utils/datetime';
@@ -13,8 +16,20 @@ import { errorMessage } from '../../utils/errors';
 export function ConsultationEditPage() {
     const { id = '' } = useParams();
     const navigate = useNavigate();
-    const { state } = useLocation();
-    const returnTo = state?.fromConsultationDetail === true ? `/consultations/${id}` : '/consultations';
+    const { role } = useAuth();
+    const canReassign = role === 'Admin' || role === 'SysAdmin';
+    const { key, state } = useLocation();
+    const fromDetail = state?.fromConsultationDetail === true;
+    const returnTo = fromDetail ? `/consultations/${id}` : '/consultations';
+
+    const returnToOrigin = () => {
+      if (fromDetail) {
+        if (window.history.state?.key === key) navigate(-1);
+        return;
+      }
+
+      navigate(returnTo);
+    };
 
     const [form, setForm] = useState<ConsultationFormState>({
         title: '',
@@ -24,11 +39,25 @@ export function ConsultationEditPage() {
         veterinarianId: '',
     });
     const [initialDate, setInitialDate] = useState<string>();
-    const [assignedVeterinarian, setAssignedVeterinarian] = useState('');
+    const [initialProfessional, setInitialProfessional] = useState<ProfessionalOption>();
+    const [ownProfessional, setOwnProfessional] = useState<ProfessionalOption>();
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
     const [formError, setFormError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (role !== 'Admin') return;
+
+        let active = true;
+        handleGetCurrentUser()
+            .then((user) => {
+                if (active) setOwnProfessional({ id: String(user.id), name: user.fullName?.trim() || 'Mi usuario' });
+            })
+            .catch(() => {});
+
+        return () => { active = false; };
+    }, [role]);
 
     useEffect(() => {
         handleGetByIdConsultation(id)
@@ -40,10 +69,13 @@ export function ConsultationEditPage() {
                 }
                 const date = hasDateTime(consultation.date) ? toInputDate(consultation.date.trim()) : '';
 
-                const veterinarianId = consultation.veterinarianId === null ? '' : String(consultation.veterinarianId);
+                const veterinarianId = consultation.veterinarianId == null ? '' : String(consultation.veterinarianId);
 
                 setInitialDate(date);
-                setAssignedVeterinarian(consultation.veterinarianName?.trim() || (veterinarianId ? `Veterinario #${veterinarianId}` : 'Sin registrar'));
+                setInitialProfessional(veterinarianId ? {
+                    id: veterinarianId,
+                    name: consultation.veterinarianName?.trim() || `Veterinario #${veterinarianId}`,
+                } : undefined);
                 setForm({
                     title: consultation.title ?? '',
                     description: consultation.description?.trim() || '',
@@ -62,7 +94,7 @@ export function ConsultationEditPage() {
                     veterinarianId: '',
                 });
                 setInitialDate(undefined);
-                setAssignedVeterinarian('');
+                setInitialProfessional(undefined);
                 setFieldErrors({});
                 setFormError(message);
                 toast.error(message);
@@ -78,7 +110,7 @@ export function ConsultationEditPage() {
     const handleSave = async () => {
         if (isLoading || isSaving || initialDate === undefined) return;
 
-        const errors = validateConsultationForm(form, initialDate);
+        const errors = validateConsultationForm(form, initialDate, canReassign);
         setFieldErrors(errors);
 
         if (Object.keys(errors).length > 0) {
@@ -95,10 +127,13 @@ export function ConsultationEditPage() {
                 description: form.description,
                 date: toApiDate(form.date),
                 petId: Number(form.petId),
+                veterinarianId: canReassign && form.veterinarianId !== initialProfessional?.id
+                    ? Number(form.veterinarianId)
+                    : undefined,
             });
 
             toast.success('Consulta actualizada correctamente.');
-            navigate(returnTo);
+            returnToOrigin();
         } catch (error) {
             const message = errorMessage(error, 'No se pudo guardar la consulta.');
             setFormError(message);
@@ -108,16 +143,19 @@ export function ConsultationEditPage() {
     };
 
     return (
-        <ScreenShell title="Editar consulta" backTo="/consultations">
+        <ScreenShell title="Editar consulta" backTo={returnTo}>
             <ConsultationForm
                 form={form}
                 formError={formError}
                 fieldErrors={fieldErrors}
-                assignedVeterinarian={assignedVeterinarian}
+                assignedVeterinarian={canReassign ? undefined : initialProfessional?.name || 'Sin registrar'}
+                initialProfessional={initialProfessional}
+                ownProfessional={ownProfessional}
+                includeAdmins={role === 'SysAdmin'}
                 isLoading={isLoading}
                 isSaving={isSaving}
                 onChange={handleChange}
-                onCancel={() => navigate(returnTo)}
+                onCancel={returnToOrigin}
                 onSave={handleSave}
                 saveLabel="Guardar cambios"
             />

@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { CREATE_BAR_CLASSES } from '../common/listStyles';
 import { ListState } from '../common/ListState';
 import { ConsultationTable } from './ConsultationTable';
-import type { PageQuery, Pagination } from '../../services/IPaginated';
+import type { Pagination } from '../../services/IPaginated';
+import type { ConsultationQuery } from '../../services/consultation/IConsultation';
 
 interface ConsultationListProps {
   consultations: Consultation[];
@@ -13,8 +14,8 @@ interface ConsultationListProps {
   error: string;
   createTo: string;
   createLabel: string;
-  query: PageQuery;
-  onQueryChange: (query: PageQuery) => void;
+  query: ConsultationQuery;
+  onQueryChange: (query: ConsultationQuery) => void;
   onSuspend: (id: number) => Promise<void>;
   onReactivate: (id: number) => Promise<void>;
   pagination: Pagination;

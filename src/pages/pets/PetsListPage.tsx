@@ -75,6 +75,8 @@ export function PetsListPage() {
     }
   };
 
+  const visiblePets = query.includeSuspended ? pets : pets.filter((pet) => !pet.isSuspended);
+
   return (
     <ScreenShell
       title="Mascotas"
@@ -91,7 +93,7 @@ export function PetsListPage() {
       <div className="flex-1 overflow-auto px-4 pb-[100px] pt-4 lg:px-10 lg:pb-12 lg:pt-8">
         {!isLoading && !error ? (
           <PetTable
-            pets={query.includeSuspended ? pets : pets.filter((pet) => !pet.isSuspended)}
+            pets={visiblePets}
             species={species}
             breeds={breeds}
             query={query}

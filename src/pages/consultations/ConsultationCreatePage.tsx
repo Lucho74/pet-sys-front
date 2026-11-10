@@ -1,9 +1,12 @@
-import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { ConsultationForm } from '../../components/consultations/ConsultationForm';
+import type { ProfessionalOption } from '../../components/consultations/VeterinarianSelect';
 import type { FormErrors } from '../../components/consultations/consultationValidation';
+import { useAuth } from '../../contexts/AuthenticationContext';
+import { handleGetCurrentUser } from '../../services/auth/authService';
 import { handleAddConsultation } from '../../services/consultation/consultationService';
 import type { ConsultationFormState } from '../../components/consultations/consultationTypes';
 import { validateConsultationForm } from '../../components/consultations/consultationValidation';
@@ -12,32 +15,74 @@ import { errorMessage } from '../../utils/errors';
 
 export function ConsultationCreatePage() {
     const navigate = useNavigate();
+    const { state } = useLocation();
+    const fromHome = state?.fromHome === true;
+    const canReturnToOrigin = fromHome || state?.fromDetail === true;
+    const { role } = useAuth();
     const [searchParams] = useSearchParams();
     const presetPetId = searchParams.get('petId') ?? '';
     const presetVeterinarianId = searchParams.get('veterinarianId') ?? '';
-    const backTo = presetPetId ? `/pets/${presetPetId}`
-        : presetVeterinarianId ? `/users/${presetVeterinarianId}` : '/consultations';
+    const isAdmin = role === 'Admin';
+    const assignToSelf = role === 'Veterinarian';
+    let backTo = '/consultations';
+    if (presetPetId) {
+        backTo = `/pets/${presetPetId}`;
+    } else if (presetVeterinarianId) {
+        backTo = `/users/${presetVeterinarianId}`;
+    }
 
-    const [form, setForm] = useState<ConsultationFormState>({
+    const [draft, setDraft] = useState<Omit<ConsultationFormState, 'veterinarianId'> & { veterinarianId?: string }>({
         title: '',
         description: '',
         date: todayDate(),
         petId: presetPetId,
-        veterinarianId: presetVeterinarianId,
     });
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
     const [formError, setFormError] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+    const [professional, setProfessional] = useState<ProfessionalOption | null>();
+    const ownProfessional = isAdmin && professional ? professional : undefined;
+    const fallbackProfessionalName = professional === undefined ? 'Cargando nombre...' : 'Mi usuario';
+    const professionalName = professional?.name ?? fallbackProfessionalName;
+    const defaultVeterinarianId = presetVeterinarianId || ownProfessional?.id || '';
+    const selectedVeterinarianId = draft.veterinarianId ?? defaultVeterinarianId;
+    const form: ConsultationFormState = {
+        ...draft,
+        veterinarianId: assignToSelf ? '' : selectedVeterinarianId,
+    };
+
+    useEffect(() => {
+        if (!assignToSelf && !isAdmin) return;
+
+        let active = true;
+        handleGetCurrentUser()
+            .then((user) => {
+                if (active) setProfessional({ id: String(user.id), name: user.fullName?.trim() || 'Mi usuario' });
+            })
+            .catch(() => {
+                if (active) setProfessional(null);
+            });
+
+        return () => { active = false; };
+    }, [assignToSelf, isAdmin]);
 
     const handleChange = (field: keyof ConsultationFormState, value: string) => {
-        setForm((current) => ({ ...current, [field]: value }));
+        setDraft((current) => ({ ...current, [field]: value }));
         setFieldErrors((current) => ({ ...current, [field]: '' }));
+    };
+
+    const handleCancel = () => {
+        if (canReturnToOrigin) {
+            navigate(-1);
+        } else {
+            navigate(backTo, { replace: true });
+        }
     };
 
     const handleSave = async () => {
         if (isSaving) return;
 
-        const errors = validateConsultationForm(form);
+        const errors = validateConsultationForm(form, undefined, !assignToSelf);
         setFieldErrors(errors);
 
         if (Object.keys(errors).length > 0) {
@@ -54,7 +99,7 @@ export function ConsultationCreatePage() {
                 description: form.description,
                 date: toApiDate(form.date),
                 petId: Number(form.petId),
-                veterinarianId: Number(form.veterinarianId),
+                veterinarianId: assignToSelf ? null : Number(form.veterinarianId),
             });
 
             toast.success('Consulta creada correctamente.');
@@ -68,14 +113,16 @@ export function ConsultationCreatePage() {
     };
 
     return (
-        <ScreenShell title="Nueva consulta" backTo={backTo}>
+        <ScreenShell title="Nueva consulta" backTo={fromHome ? '/' : backTo}>
             <ConsultationForm
                 form={form}
                 formError={formError}
                 fieldErrors={fieldErrors}
+                assignedVeterinarian={assignToSelf ? professionalName : undefined}
+                ownProfessional={ownProfessional}
                 isSaving={isSaving}
                 onChange={handleChange}
-                onCancel={() => navigate(backTo)}
+                onCancel={handleCancel}
                 onSave={handleSave}
                 saveLabel="Crear consulta"
             />

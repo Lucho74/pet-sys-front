@@ -1,6 +1,6 @@
-import type { IConsultationResponse, IConsultationWithParticipantsResponse, ICreateConsultationRequest, IUpdateConsultationRequest } from "./IConsultation";
+import type { ConsultationQuery, IConsultationResponse, IConsultationWithParticipantsResponse, ICreateConsultationRequest, IUpdateConsultationRequest } from "./IConsultation";
 import { apiFetch } from "../apiClient";
-import { toQueryString, type IPaginatedResponse, type PageQuery } from "../IPaginated";
+import { toQueryString, type IPaginatedResponse } from "../IPaginated";
 
 export const handleAddConsultation = async (newConsultation: ICreateConsultationRequest): Promise<IConsultationResponse> => {
     const response = await apiFetch('/Consultation', {
@@ -52,8 +52,8 @@ export const handleDeleteConsultationAttachment = async (id: string, blobName: s
     await apiFetch(`/Consultation/${id}/attachments?${query}`, { method: 'DELETE' });
 };
 
-export const handleGetConsultationsPage = async (query: PageQuery): Promise<IPaginatedResponse<IConsultationWithParticipantsResponse>> => {
-    const response = await apiFetch(`/Consultation?${toQueryString(query)}`);
+export const handleGetConsultationsPage = async (query: ConsultationQuery, signal?: AbortSignal): Promise<IPaginatedResponse<IConsultationWithParticipantsResponse>> => {
+    const response = await apiFetch(`/Consultation?${toQueryString(query)}`, { signal });
 
     return response.json();
 };

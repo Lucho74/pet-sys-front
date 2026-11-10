@@ -67,7 +67,7 @@ export function Home() {
                     variant="outline"
                     className="h-full flex-nowrap gap-4 rounded-xl bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:bg-card! hover:shadow-md"
                   >
-                    <Link to={to}>
+                    <Link to={to} state={{ fromHome: true }}>
                       <ItemMedia className="size-11 rounded-lg bg-primary text-primary-foreground">
                         <Icon className="size-5" />
                       </ItemMedia>
@@ -114,7 +114,7 @@ export function Home() {
                         <Fragment key={consultation.id}>
                           {index > 0 && <ItemSeparator />}
                           <Item asChild size="sm">
-                            <Link to={`/consultations/${consultation.id}/edit`}>
+                            <Link to={`/consultations/${consultation.id}`}>
                               <ItemMedia>
                                 <Avatar>
                                   <AvatarFallback className="bg-primary text-primary-foreground">
@@ -168,7 +168,7 @@ export function Home() {
                         <Fragment key={pet.id}>
                           {index > 0 && <ItemSeparator />}
                           <Item asChild size="sm">
-                            <Link to={`/pets/${pet.id}/edit`}>
+                            <Link to={`/pets/${pet.id}`}>
                               <ItemMedia>
                                 <Avatar>
                                   <AvatarFallback>{initials(pet.name)}</AvatarFallback>

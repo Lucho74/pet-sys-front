@@ -23,7 +23,8 @@ export function PetPhotoField({ petName, currentUrl, isLoading, loadError, chang
   const [failedImageUrl, setFailedImageUrl] = useState('');
   const [loadedImageUrl, setLoadedImageUrl] = useState('');
   const previewUrl = change?.kind === 'replace' ? change.previewUrl : undefined;
-  const imageUrl = change?.kind === 'remove' ? undefined : previewUrl ?? currentUrl;
+  const availableImageUrl = previewUrl ?? currentUrl;
+  const imageUrl = change?.kind === 'remove' ? undefined : availableImageUrl;
   const imageError = imageUrl && failedImageUrl === imageUrl ? 'No se pudo mostrar la foto.' : '';
   const showSpinner = (!change && isLoading) || Boolean(imageUrl && !imageError && loadedImageUrl !== imageUrl);
 

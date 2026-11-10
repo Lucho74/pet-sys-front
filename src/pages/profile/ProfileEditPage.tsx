@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ScreenShell } from '../../components/layout/ScreenShell';
 import { UserForm } from '../../components/users/UserForm';
@@ -22,6 +22,7 @@ const EMPTY_FORM: UserFormState = {
 
 export function ProfileEditPage() {
   const navigate = useNavigate();
+  const { key, state } = useLocation();
   const [userId, setUserId] = useState<number | null>(null);
   const [form, setForm] = useState<UserFormState>(EMPTY_FORM);
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -62,6 +63,16 @@ export function ProfileEditPage() {
     setFieldErrors((current) => ({ ...current, [field]: '' }));
   };
 
+  const returnToProfile = () => {
+    if ((window.history.state?.key ?? 'default') !== key) return;
+
+    if (state?.fromProfile === true) {
+      navigate(-1);
+    } else {
+      navigate('/profile', { replace: true });
+    }
+  };
+
   const handleSave = async () => {
     const errors = validateUserForm(form, true);
     delete errors.roleName;
@@ -87,7 +98,7 @@ export function ProfileEditPage() {
 
       window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
       toast.success('Tus datos se actualizaron correctamente.');
-      navigate('/profile');
+      returnToProfile();
     } catch (error) {
       const message = errorMessage(error, 'No se pudieron guardar tus datos.');
       setFormError(message);
@@ -107,7 +118,7 @@ export function ProfileEditPage() {
         isLoading={isLoading}
         isSaving={isSaving}
         onChange={handleChange}
-        onCancel={() => navigate('/profile')}
+        onCancel={returnToProfile}
         onSave={handleSave}
         saveLabel="Guardar cambios"
         roleOptions={[]}

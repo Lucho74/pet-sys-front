@@ -60,9 +60,10 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
   const columns = COLUMNS.filter((column) => !hidden.includes(column.key));
   const flexibleColumn = columns.find((column) => column.key === 'name') ?? columns[0];
   const minWidth = columns.reduce((width, column) => width + column.width, TABLE_ACTION_WIDTH);
+  const sortDirection = query.sortDesc ? '↓' : '↑';
 
   const handleSort = (sortBy: string) => {
-    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy ? !query.sortDesc : false, pageIndex: 1 });
+    onQueryChange({ ...query, sortBy, sortDesc: query.sortBy === sortBy && !query.sortDesc, pageIndex: 1 });
   };
 
   const renderCell = (pet: Pet, key: ColumnKey) => {
@@ -174,7 +175,7 @@ export function PetTable({ query, onQueryChange, onSuspend, onReactivate, pagina
                 >
                   {column.sortBy ? (
                     <button type="button" onClick={() => handleSort(column.sortBy!)} className="cursor-pointer uppercase hover:text-white">
-                      {column.label} {query.sortBy === column.sortBy ? (query.sortDesc ? '↓' : '↑') : ''}
+                      {column.label} {query.sortBy === column.sortBy && sortDirection}
                     </button>
                   ) : (
                     column.label

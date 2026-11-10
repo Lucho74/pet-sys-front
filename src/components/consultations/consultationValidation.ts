@@ -6,6 +6,7 @@ export type FormErrors = Partial<Record<keyof ConsultationFormState, string>>;
 export function validateConsultationForm(
   form: ConsultationFormState,
   initialDate?: string,
+  requiresVeterinarian = true,
 ): FormErrors {
   const errors: FormErrors = {};
 
@@ -33,7 +34,7 @@ export function validateConsultationForm(
     errors.petId = 'La mascota es obligatoria.';
   }
 
-  if (!form.veterinarianId) {
+  if (requiresVeterinarian && !form.veterinarianId) {
     errors.veterinarianId = 'El veterinario es obligatorio.';
   }
 

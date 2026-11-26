@@ -7,6 +7,7 @@ export interface Pet {
   breed: string;
   birthDate: string;
   clientId: number;
+  owner: string;
   isSuspended: boolean;
 }
 
@@ -25,5 +26,6 @@ export const toPet = (pet: IPetResponse): Pet => ({
   breed: pet.breedName || '',
   birthDate: pet.birthDate?.slice(0, 10) || '',
   clientId: pet.clientId,
+  owner: pet.clientName?.trim() || 'Sin dueño',
   isSuspended: pet.isSuspended,
 });

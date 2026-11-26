@@ -9,6 +9,7 @@ export interface IPetResponse {
     breedName: string;
     birthDate: string;
     clientId: number;
+    clientName: string;
     isSuspended: boolean;
 }
 

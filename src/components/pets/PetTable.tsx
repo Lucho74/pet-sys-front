@@ -43,12 +43,13 @@ interface PetTableProps {
   breeds: IBreed[];
 }
 
-type ColumnKey = 'name' | 'species' | 'breed' | 'birthDate';
+type ColumnKey = 'name' | 'species' | 'breed' | 'owner' | 'birthDate';
 
 const COLUMNS: { key: ColumnKey; label: string; width: number; sortBy?: string }[] = [
   { key: 'name', label: 'Nombre', sortBy: 'name', width: 248 },
   { key: 'species', label: 'Especie', sortBy: 'species', width: 136 },
   { key: 'breed', label: 'Raza', sortBy: 'breed', width: 152 },
+  { key: 'owner', label: 'Dueño', sortBy: 'owner', width: 200 },
   { key: 'birthDate', label: 'Nacimiento', width: 128 },
 ];
 
